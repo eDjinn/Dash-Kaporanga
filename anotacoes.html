@@ -61,7 +61,8 @@
             display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; 
             background-color: var(--card-bg-color); 
             box-shadow: 0 2px 4px var(--card-shadow-color);
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1000; 
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            flex-wrap: wrap; gap: 10px; /* Adicionado para responsividade */
         }
         .header-left-group, .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .main-header h1 { margin: 0; font-size: 1.5em; }
@@ -76,8 +77,7 @@
         .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
         #search-input { width: 220px; padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; }
 
-        /* ⭐️ NOVOS Estilos para o filtro de data ⭐️ */
-        .date-filter-group { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .date-filter-group { display: flex; align-items: center; gap: 8px; font-size: 14px; flex-wrap: wrap; }
         .date-filter-group label { color: var(--secondary-text-color); }
         .date-filter-group input[type="datetime-local"] {
             padding: 7px; border-radius: 4px; border: 1px solid #ccc;
@@ -87,7 +87,6 @@
             background: none; border: none; color: var(--accent-color);
             cursor: pointer; font-weight: bold; font-size: 14px;
         }
-
 
         /* Estilos dos Cards de Anotações */
         #notes-container {
@@ -131,11 +130,58 @@
             width: 90%; max-width: 500px; position: relative; max-height: 90vh; display: flex; flex-direction: column;
         }
         .modal-close { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; }
-        .form { display: flex; flex-direction: column; gap: 15px; }
+        .form { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
         .form label { font-weight: bold; margin-top: 5px; }
         .form input, .form textarea { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; font-size: 1em; }
         .form textarea { flex-grow: 1; resize: vertical; min-height: 150px; }
         .modal-footer { display: flex; justify-content: flex-end; margin-top: 15px; }
+        
+        /* ===== INÍCIO: Responsividade para Dispositivos Móveis ===== */
+        @media (max-width: 1024px) {
+             .main-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .header-left-group {
+                justify-content: center;
+            }
+            .header-actions {
+                justify-content: center;
+                border-top: 1px solid #ddd;
+                padding-top: 10px;
+            }
+            .separator { display: none; }
+            .container {
+                padding-top: 180px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                padding-top: 250px;
+            }
+            .header-left-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            #search-input { width: 100%; }
+            .date-filter-group { 
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+            }
+            .header-actions {
+                 flex-direction: column;
+                 align-items: stretch;
+            }
+             .btn { width: 100%; }
+             #back-btn { width: 40px; height: 40px; align-self: flex-start; }
+            .note-card {
+                height: 220px;
+            }
+        }
+        /* ===== FIM: Responsividade para Dispositivos Móveis ===== */
     </style>
 </head>
 <body>
@@ -152,7 +198,6 @@
             <span class="separator">|</span>
             <input type="text" id="search-input" placeholder="Pesquisar por texto...">
             <span class="separator">|</span>
-            <!-- ⭐️ NOVOS Controles de filtro de data ⭐️ -->
             <div class="date-filter-group">
                 <label for="start-date-filter">De:</label>
                 <input type="datetime-local" id="start-date-filter">
@@ -201,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const noteModal = document.getElementById('note-modal');
     const noteForm = document.getElementById('note-form');
     const modalTitle = document.getElementById('modal-title');
-    // ⭐️ NOVOS Seletores para os filtros de data ⭐️
     const startDateFilter = document.getElementById('start-date-filter');
     const endDateFilter = document.getElementById('end-date-filter');
     const clearDateFilterBtn = document.getElementById('clear-date-filter-btn');
@@ -214,10 +258,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return date.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
     };
 
-    const saveDataToLocalStorage = () => { /* ... (sem alterações) ... */ 
+    const saveDataToLocalStorage = () => { 
         try { localStorage.setItem('notesProjectData', JSON.stringify(notesData)); initialDataState = JSON.stringify(notesData); } catch (e) { console.error("Erro ao salvar dados no LocalStorage:", e); alert("Não foi possível salvar as anotações. O armazenamento do navegador pode estar cheio."); }
     };
-    const loadDataFromLocalStorage = () => { /* ... (sem alterações) ... */ 
+    const loadDataFromLocalStorage = () => { 
         const savedData = localStorage.getItem('notesProjectData'); if (savedData) { try { notesData = JSON.parse(savedData); } catch (e) { console.error("Falha ao carregar dados, começando do zero.", e); notesData = []; } } initialDataState = JSON.stringify(notesData);
     };
     const hasUnsavedChanges = () => JSON.stringify(notesData) !== initialDataState;
@@ -225,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderNotes = (dataToRender = notesData) => {
         notesContainer.innerHTML = '';
         if (dataToRender.length === 0) {
-            notesContainer.innerHTML = `<p style="color: var(--secondary-text-color);">Nenhuma anotação corresponde aos filtros aplicados.</p>`;
+            notesContainer.innerHTML = `<p style="color: var(--secondary-text-color); padding: 20px; text-align: center;">Nenhuma anotação corresponde aos filtros aplicados.</p>`;
             return;
         }
         dataToRender.forEach(note => {
@@ -246,27 +290,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
     
-    // ⭐️ ATUALIZADO: Lógica de filtragem combinada ⭐️
     const filterAndRender = () => {
         const filterText = searchInput.value.toLowerCase();
         const startDate = startDateFilter.value ? new Date(startDateFilter.value).getTime() : null;
         const endDate = endDateFilter.value ? new Date(endDateFilter.value).getTime() : null;
 
-        // 1. Filtra por texto
         let filteredData = notesData.filter(note => {
-            if (!filterText) return true; // Se não houver texto, passa tudo
+            if (!filterText) return true;
             return note.title.toLowerCase().includes(filterText) || note.content.toLowerCase().includes(filterText);
         });
 
-        // 2. Filtra o resultado anterior por data
         if (startDate || endDate) {
             filteredData = filteredData.filter(note => {
-                if (!note.timestamp) return false; // Notas sem data não passam no filtro de data
+                if (!note.timestamp) return false;
                 const noteTime = new Date(note.timestamp).getTime();
-                
                 const afterStart = startDate ? noteTime >= startDate : true;
                 const beforeEnd = endDate ? noteTime <= endDate : true;
-
                 return afterStart && beforeEnd;
             });
         }
@@ -274,22 +313,20 @@ document.addEventListener('DOMContentLoaded', () => {
         renderNotes(filteredData);
     };
 
-    const openModal = (mode, noteId = null) => { /* ... (sem alterações) ... */ 
+    const openModal = (mode, noteId = null) => { 
         noteForm.reset(); if (mode === 'edit' && noteId) { const note = notesData.find(n => n.id === noteId); if (note) { modalTitle.textContent = 'Editar Anotação'; document.getElementById('note-id').value = note.id; document.getElementById('note-title').value = note.title; document.getElementById('note-content').value = note.content; } } else { modalTitle.textContent = 'Adicionar Anotação'; document.getElementById('note-id').value = ''; } noteModal.classList.add('visible');
     };
-    const closeModal = () => { /* ... (sem alterações) ... */ 
+    const closeModal = () => { 
         noteModal.classList.remove('visible');
     };
 
-    // ⭐️ ATUALIZADO: Lógica do Drag-and-Drop para verificar todos os filtros ⭐️
     const initSortable = () => {
         new Sortable(notesContainer, {
             animation: 150, ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen',
             onEnd: (evt) => {
-                // Verifica se qualquer filtro está ativo
                 if (searchInput.value !== '' || startDateFilter.value !== '' || endDateFilter.value !== '') {
                     alert("Limpe todos os filtros para poder reordenar as anotações.");
-                    filterAndRender(); // Cancela a mudança visual
+                    filterAndRender(); 
                     return;
                 }
                 const [movedItem] = notesData.splice(evt.oldIndex, 1);
@@ -299,9 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // --- EVENT LISTENERS ---
     searchInput.addEventListener('input', filterAndRender);
-    // ⭐️ NOVOS Listeners para os filtros de data ⭐️
     startDateFilter.addEventListener('input', filterAndRender);
     endDateFilter.addEventListener('input', filterAndRender);
     clearDateFilterBtn.addEventListener('click', () => {
@@ -309,7 +344,6 @@ document.addEventListener('DOMContentLoaded', () => {
         endDateFilter.value = '';
         filterAndRender();
     });
-
 
     document.getElementById('add-note-btn').addEventListener('click', () => openModal('add'));
     noteModal.querySelector('.modal-close').addEventListener('click', closeModal);
@@ -323,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (id) {
             const noteIndex = notesData.findIndex(n => n.id === id);
-            if (noteIndex > -1) { notesData[noteIndex] = { ...notesData[noteIndex], title, content }; }
+            if (noteIndex > -1) { notesData[noteIndex] = { ...notesData[noteIndex], title, content, timestamp: new Date().toISOString() }; } // Atualiza o timestamp na edição
         } else {
             notesData.unshift({ id: generateId(), title, content, timestamp: new Date().toISOString() });
         }
@@ -332,12 +366,11 @@ document.addEventListener('DOMContentLoaded', () => {
         saveDataToLocalStorage();
     });
 
-    notesContainer.addEventListener('click', e => { /* ... (sem alterações) ... */ 
+    notesContainer.addEventListener('click', e => { 
         const editBtn = e.target.closest('.edit-btn'); if (editBtn) { openModal('edit', editBtn.closest('.note-card').dataset.id); return; }
         const deleteBtn = e.target.closest('.delete-btn'); if (deleteBtn) { if (confirm('Tem certeza que deseja excluir esta anotação?')) { notesData = notesData.filter(n => n.id !== deleteBtn.closest('.note-card').dataset.id); filterAndRender(); saveDataToLocalStorage(); } }
     });
 
-    // --- IMPORT / EXPORT e EVENTOS DE SAÍDA --- (sem alterações)
     document.getElementById('export-json-btn').addEventListener('click', () => { if(notesData.length === 0){ alert("Não há anotações para salvar."); return; } saveDataToLocalStorage(); const dataStr = JSON.stringify(notesData, null, 2); const blob = new Blob([dataStr], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `anotacoes.json`; a.click(); URL.revokeObjectURL(url); });
     document.getElementById('import-json-input').addEventListener('change', (e) => { if (hasUnsavedChanges()) { if (!confirm("Você tem anotações não salvas. Deseja importar um novo arquivo e perder as alterações atuais?")) { e.target.value = ''; return; } } const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (event) => { try { const importedData = JSON.parse(event.target.result); if (Array.isArray(importedData)) { notesData = importedData; saveDataToLocalStorage(); filterAndRender(); alert(`Anotações importadas com sucesso!`); } else { alert('Erro: O arquivo JSON importado deve ser uma lista (array) de anotações.'); } } catch (err) { alert('Falha ao importar: Arquivo JSON inválido.'); console.error("Erro de importação:", err); } }; reader.readAsText(file); e.target.value = ''; });
     document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges()) { if (!confirm("Você tem alterações não salvas. Deseja voltar e perder as alterações?")) { e.preventDefault(); } } });
@@ -347,7 +380,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try { const savedData = localStorage.getItem('centralManagerData'); if (!savedData) return; const appData = JSON.parse(savedData); if (!appData.styleData) return; const style = appData.styleData; const body = document.body; const root = document.documentElement; body.className = ''; body.classList.add(style.theme || 'light-theme'); body.style.backgroundColor = style.bgColor; root.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none'); root.style.setProperty('--bg-opacity', style.bgOpacity || '1'); } catch (e) { console.error("Não foi possível carregar ou aplicar o estilo global.", e); }
     }
 
-    // --- INICIALIZAÇÃO ---
     loadDataFromLocalStorage();
     filterAndRender();
     initSortable();

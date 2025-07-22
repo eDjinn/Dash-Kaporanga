@@ -37,7 +37,7 @@
             background-color: var(--page-bg-color);
             color: var(--primary-text-color);
             margin: 0;
-            padding: 40px 20px 20px;
+            padding: 20px 15px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -63,29 +63,25 @@
             transition: opacity 0.3s ease, background-image 0.5s ease-in-out;
         }
 
-        /* ===== ALTERAÇÃO ===== */
-        /* Espaço superior adicionado para separar do header */
         .main-container { 
             width: 100%; 
             max-width: 1200px;
-            margin-top: 30px; 
+            margin-top: 20px; 
         }
         
         .card-container {
             display: flex;
             justify-content: center;
-            gap: 25px;
+            gap: 20px;
             flex-wrap: wrap;
             min-height: 100px; 
         }
 
-        /* ===== ALTERAÇÃO ===== */
-        /* Linha cinza para separar as seções de cards */
         .section-divider {
             width: 100%;
             border: none;
             border-top: 1px solid var(--secondary-text-color);
-            margin: 25px 0; /* Controla o espaço entre as seções */
+            margin: 25px 0;
             opacity: 0.3;
         }
         
@@ -157,22 +153,22 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 0; /* Espaço inferior removido */
+            margin-bottom: 0;
         }
-        .google-apps-header { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
+        .google-apps-header { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
         .app-link-header img { width: 32px; height: 32px; transition: transform 0.2s ease; }
         .app-link-header:hover img { transform: scale(1.15); }
 
         .google-search-form { display: inline-flex; align-items: center; border: 1px solid #dfe1e5; border-radius: 24px; padding: 5px 15px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
         .google-search-form:hover { box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .google-search-form input[type="text"] { border: none; outline: none; padding: 10px; font-size: 16px; width: 100%; }
-        .google-search-form button { background: none; border: none; cursor: pointer; font-size: 18px; color: #4285F4; }
+        .google-search-form input[type="text"] { border: none; outline: none; padding: 10px; font-size: 16px; width: 100%; background: transparent; }
+        .google-search-form button { background: none; border: none; cursor: pointer; font-size: 18px; color: #4285F4; padding-right: 5px; }
 
         .page-controls {
             margin-top: 40px; padding: 20px; background-color: var(--card-bg-color);
             border-radius: 10px; box-shadow: 0 4px 8px var(--card-shadow-color);
             display: flex; flex-wrap: wrap; align-items: flex-end;
-            justify-content: center; gap: 25px;
+            justify-content: center; gap: 20px; width: 100%;
         }
 
         .control-group { display: flex; flex-direction: column; align-items: center; }
@@ -214,6 +210,46 @@
         .icon-picker-container input { flex-grow: 1; }
         #emoji-picker-btn { padding: 8px 12px; font-size: 1.2em; border: 1px solid var(--accent-color); background-color: transparent; color: var(--accent-color); border-radius: 5px; cursor: pointer; }
         .emoji-picker-container { position: absolute; top: 110%; right: 0; z-index: 12; display: none; }
+
+        /* ===== INÍCIO: Responsividade para Dispositivos Móveis ===== */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px 10px;
+            }
+
+            .main-container {
+                margin-top: 15px;
+            }
+
+            .google-apps-header {
+                gap: 10px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+            .card-small {
+                width: 150px; /* Reduz um pouco o tamanho */
+                padding: 15px 10px;
+            }
+             .manager-add-placeholder { 
+                width: 100%; 
+                max-width: 300px;
+                height: 150px;
+            }
+            .link-add-placeholder { 
+                width: 150px; 
+                height: 150px;
+            }
+
+            .page-controls {
+                flex-direction: column; /* Empilha os grupos de controle */
+                align-items: center;
+                gap: 25px;
+                padding: 20px 15px;
+            }
+        }
+        /* ===== FIM: Responsividade para Dispositivos Móveis ===== */
     </style>
 </head>
 <body class="light-theme">
@@ -241,8 +277,6 @@
         <div class="content">
             <div id="managers-container" class="card-container"></div>
             
-            <!-- ===== ALTERAÇÃO ===== -->
-            <!-- Linha divisória entre as seções -->
             <hr class="section-divider">
 
             <div id="links-container" class="card-container"></div>
@@ -322,10 +356,6 @@
         let appData = {};
         let currentModalType = null, currentEditingId = null;
 
-        // ===== ALTERAÇÃO =====
-        // Dados iniciais removidos para um início limpo.
-        // A página começará vazia e o usuário pode adicionar seus próprios links
-        // ou importar um layout salvo.
         const defaultData = {
             styleData: { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' },
             layoutData: {
