@@ -53,6 +53,7 @@
         #bulk-actions-container { display: none; }
         #bulk-actions-container.visible { display: flex; align-items: center; gap: 10px; }
         .btn { border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s; color: white; text-align: center; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; padding: 6px 12px; font-size: 14px; }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
         .btn-success { background-color: #28a745; }
         .btn-primary { background-color: var(--accent-color); }
         .btn-secondary { background-color: #6c757d; }
@@ -73,7 +74,7 @@
         .form input, .form textarea, .form select { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; }
         .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; }
         .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
-        .custom-file-button { padding: 10px 15px; background-color: var(--accent-color); color: white; border-radius: 4px; cursor: pointer; text-align: center; }
+        .file-controls { display: flex; align-items: center; gap: 8px; }
         #search-input { width: 250px; padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; }
         
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -119,8 +120,8 @@
             <button id="export-table-btn" class="btn btn-primary">Exportar Tabela</button>
             <button id="show-add-item-modal-btn" class="btn btn-success">Adicionar Item</button>
             <span class="separator">|</span>
-            <div class="file-input-wrapper"><button class="btn btn-secondary">Importar JSON</button><input type="file" id="import-json-input" accept=".json"></div>
-            <button id="export-json-btn" class="btn btn-primary">Salvar JSON</button>
+            <div class="file-input-wrapper"><button class="btn btn-secondary">Importar</button><input type="file" id="import-json-input" accept=".json"></div>
+            <button id="export-json-btn" class="btn btn-primary">Salvar</button>
         </div>
     </header>
 
@@ -229,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div><label for="details-num">#:</label><input type="number" id="details-num" step="any"></div>
                             <div><label for="details-nome">Nome:</label><input type="text" id="details-nome" required></div>
                             <div class="form-grid-full"><label for="details-inspiracao">Inspiração:</label><input type="text" id="details-inspiracao"></div>
+                            <div class="form-grid-full"><label for="details-descricao">Descrição:</label><textarea id="details-descricao" rows="4"></textarea></div>
                             <div><label for="details-local">Local:</label><input type="text" id="details-local"></div>
                             <div><label for="details-map-path">Nome do Arquivo do Mapa:</label><input type="text" id="details-map-path"></div>
                         </div>
@@ -236,8 +238,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     <fieldset><legend>Guia Visual e Textual</legend>
                         <div class="form-grid">
-                            <div><label>Thumb (Imagem):</label><input type="file" id="details-thumb-input" accept="image/*" style="display:none;"><button type="button" class="custom-file-button" onclick="this.previousElementSibling.click();">Escolher Thumb</button><span id="details-thumb-filename">Nenhuma imagem.</span></div>
-                            <div><label>Vídeo Guia:</label><input type="file" id="details-video-input" accept="video/*" style="display:none;"><button type="button" class="custom-file-button" onclick="this.previousElementSibling.click();">Escolher Vídeo</button><span id="details-video-filename">Nenhum vídeo.</span></div>
+                            <div>
+                                <label>Thumb (Imagem):</label>
+                                <div class="file-controls">
+                                    <input type="file" id="details-thumb-input" accept="image/*" style="display:none;">
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('details-thumb-input').click();">Escolher</button>
+                                    <button type="button" class="btn btn-danger btn-sm remove-file-btn" data-input-id="details-thumb-input" data-filename-id="details-thumb-filename" data-default-text="Nenhuma imagem.">Remover</button>
+                                    <span id="details-thumb-filename">Nenhuma imagem.</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label>Vídeo Guia:</label>
+                                 <div class="file-controls">
+                                    <input type="file" id="details-video-input" accept="video/*" style="display:none;">
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('details-video-input').click();">Escolher</button>
+                                    <button type="button" class="btn btn-danger btn-sm remove-file-btn" data-input-id="details-video-input" data-filename-id="details-video-filename" data-default-text="Nenhum vídeo.">Remover</button>
+                                    <span id="details-video-filename">Nenhum vídeo.</span>
+                                </div>
+                            </div>
                             <div class="form-grid-full"><label for="details-titulo-guia">Título Guia (max 20):</label><input type="text" id="details-titulo-guia" maxlength="20"></div>
                             <div class="form-grid-full"><label for="details-texto-guia">Texto Guia (max 110):</label><textarea id="details-texto-guia" rows="3" maxlength="110"></textarea></div>
                         </div>
@@ -307,21 +325,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('details-video-filename').textContent = 'Nenhum vídeo.';
         
         if (mode === 'edit' && itemIndex !== null) {
-            document.getElementById('details-modal-title').textContent = 'Editar Item';
+            const item = minigameData[itemIndex];
+            const title = `#${item['#'] || '?'} - ${item['Nome'] || 'Item sem nome'}`;
+            document.getElementById('details-modal-title').textContent = title;
             document.getElementById('details-item-index').value = itemIndex;
             
-            const item = minigameData[itemIndex];
-            Object.keys(item).forEach(key => {
-                const element = document.getElementById(`details-${key.toLowerCase().replace(/ /g, '-').replace('?', '')}`);
-                if (element) {
-                    if (element.type === 'checkbox') element.checked = item[key];
-                    else element.value = item[key] || '';
-                }
-            });
-             // Manual mappings
+            // Manual mappings for all fields, including the new 'Descrição'
             document.getElementById('details-num').value = item['#'] || '';
             document.getElementById('details-nome').value = item['Nome'] || '';
             document.getElementById('details-inspiracao').value = item['Inspiração'] || '';
+            document.getElementById('details-descricao').value = item['Descrição'] || '';
             document.getElementById('details-local').value = item['Local'] || '';
             document.getElementById('details-map-path').value = item['Nome do Arquivo do mapa'] || '';
             document.getElementById('details-titulo-guia').value = item['Título Guia'] || '';
@@ -354,9 +367,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let item = isNewItem ? { 'Referências': [] } : minigameData[itemIndex];
 
+        // Assign all values from the form
         item['#'] = parseFloat(document.getElementById('details-num').value) || null;
         item['Nome'] = document.getElementById('details-nome').value;
         item['Inspiração'] = document.getElementById('details-inspiracao').value;
+        item['Descrição'] = document.getElementById('details-descricao').value; // Save the new description field
         item['Local'] = document.getElementById('details-local').value;
         item['Nome do Arquivo do mapa'] = document.getElementById('details-map-path').value;
         item['Título Guia'] = document.getElementById('details-titulo-guia').value;
@@ -368,8 +383,12 @@ document.addEventListener('DOMContentLoaded', () => {
         item['Usa Botão Secundário'] = document.getElementById('details-usa-btn2').checked;
         item['Texto Botão Secundário'] = document.getElementById('details-texto-btn2').value;
 
-        const videoFile = document.getElementById('details-video-input').files[0];
-        if (videoFile) item.VideoGuiaFilename = videoFile.name;
+        const videoFileInput = document.getElementById('details-video-input');
+        if (videoFileInput.files[0]) {
+            item.VideoGuiaFilename = videoFileInput.files[0].name;
+        } else if (document.getElementById('details-video-filename').textContent === 'Nenhum vídeo.') {
+            item.VideoGuiaFilename = '';
+        }
         
         // Save curiosities
         item.Curiosidades = [];
@@ -386,13 +405,18 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('details-modal').classList.remove('visible');
         };
         
-        const thumbFile = document.getElementById('details-thumb-input').files[0];
-        if (thumbFile) {
+        const thumbFileInput = document.getElementById('details-thumb-input');
+        if (thumbFileInput.files[0]) {
+            const thumbFile = thumbFileInput.files[0];
             item.ThumbFilename = thumbFile.name;
             const reader = new FileReader();
             reader.onload = (event) => { item.Thumb = event.target.result; onThumbProcessed(); };
             reader.readAsDataURL(thumbFile);
         } else {
+            if (document.getElementById('details-thumb-filename').textContent === 'Nenhuma imagem.') {
+                item.Thumb = '';
+                item.ThumbFilename = '';
+            }
             onThumbProcessed();
         }
     };
@@ -403,6 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const maxCuriosities = Math.max(0, ...minigameData.map(item => (item.Curiosidades || []).length));
         
+        // NOTE: 'Descrição' is intentionally NOT included in the export headers
         const baseHeaders = ["id", "name", "thumb", "local", "path", "guide_text_title", "guide_text", "use_stick", "text_stick", "use_primary", "text_primary", "use_secondary", "text_secondary", "guide_video"];
         for (let i = 1; i <= maxCuriosities; i++) {
             baseHeaders.push(`CURIOSITY_${i}`);
@@ -451,6 +476,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('details-modal').addEventListener('click', (e) => {
         if (e.target.id === 'show-add-item-modal-btn') openDetailsModal('add');
         if (e.target.id === 'add-curiosity-btn') addCuriosityRow(document.getElementById('curiosities-container'));
+        if (e.target.classList.contains('remove-file-btn')) {
+            const button = e.target;
+            const inputEl = document.getElementById(button.dataset.inputId);
+            const filenameEl = document.getElementById(button.dataset.filenameId);
+            if (inputEl) inputEl.value = '';
+            if (filenameEl) filenameEl.textContent = button.dataset.defaultText;
+        }
         if(e.target.classList.contains('modal-overlay') || e.target.classList.contains('modal-close')) e.currentTarget.classList.remove('visible');
     });
 
