@@ -8,15 +8,12 @@
     <style>
         /* ⭐️ INÍCIO DA SEÇÃO DE ESTILO HERDADA ⭐️ */
         :root {
-            /* Váriaveis de Tema (copiadas de index.html ) */
             --primary-text-color: #1a2533;
             --secondary-text-color: #6c757d;
             --page-bg-color: #f4f7f9;
             --card-bg-color: rgba(255, 255, 255, 0.92);
             --card-shadow-color: rgba(0, 0, 0, 0.1);
             --accent-color: #007bff;
-            
-            /* Variaveis do Background (copiadas de index.html ) */
             --bg-image: none;
             --bg-opacity: 1;
         }
@@ -32,7 +29,6 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            /* Modificado para usar variáveis de tema */
             background-color: var(--page-bg-color);
             color: var(--primary-text-color);
             margin: 0;
@@ -41,7 +37,6 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
         
-        /* Background de imagem (copiado de index.html ) */
         body::before {
             content: '';
             position: fixed;
@@ -66,28 +61,26 @@
             justify-content: space-between; 
             align-items: center; 
             padding: 15px 20px; 
-            /* Modificado para usar variáveis */
             background-color: var(--card-bg-color); 
             box-shadow: 0 2px 4px var(--card-shadow-color);
             position: fixed; top: 0; left: 0; right: 0; z-index: 1000; 
+            flex-wrap: wrap; gap: 10px; /* Adicionado para responsividade */
         }
 
-        .header-left-group, .header-actions { display: flex; align-items: center; gap: 10px; }
+        .header-left-group, .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .main-header h1 { margin: 0; font-size: 1.5em; }
         
-        /* Modificado para usar variáveis */
         #project-name { font-size: 1.1em; color: var(--secondary-text-color); font-weight: normal; margin: 0; }
         .separator { color: #ccc; font-size: 1.5em; }
         #search-input { width: 250px; padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; }
         .header-actions .btn { padding: 8px 15px; }
-        #bulk-actions-container { display: none; gap: 10px; align-items: center; }
+        #bulk-actions-container { display: none; gap: 10px; align-items: center; flex-wrap: wrap; }
         #bulk-actions-container.visible { display: flex; }
         
         .modal-overlay { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
         .modal-overlay.visible { display: flex; }
         
         .modal-content { 
-            /* Modificado para usar variáveis */
             background-color: var(--card-bg-color); 
             padding: 25px; 
             border-radius: 8px; 
@@ -101,12 +94,10 @@
         #modal-task-form-container, #modal-group-form-container, #modal-move-form-container { display: none; }
         #modal-task-form-container.visible, #modal-group-form-container.visible, #modal-move-form-container.visible { display: block; }
         
-        /* Modificado para usar variáveis */
         h1, h2 { color: var(--primary-text-color); }
         h2 { text-align: left; }
         
         .card { 
-            /* Modificado para usar variáveis */
             background-color: var(--card-bg-color); 
             padding: 20px; 
             margin-bottom: 20px; 
@@ -123,50 +114,86 @@
         .btn-danger { background-color: #dc3545; }
         .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; }
         .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
-        #summary { display: flex; justify-content: space-around; flex-wrap: wrap; }
-        .summary-item { text-align: center; margin: 10px; flex-basis: 120px; }
+        #summary { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; }
+        .summary-item { text-align: center; margin: 10px; flex-basis: 120px; flex-grow: 1; }
         
-        /* Modificado para usar variáveis */
         .summary-item strong { display: block; font-size: 1.5em; color: var(--accent-color); }
         .summary-item span { font-size: 0.9em; color: var(--secondary-text-color); }
         #progress-bar-container { width: 100%; background-color: #e9ecef; border-radius: 5px; margin-top: 15px; height: 25px; overflow: hidden; }
         #progress-bar { width: 0%; height: 100%; background-color: #28a745; text-align: center; line-height: 25px; color: white; font-weight: bold; transition: width 0.4s ease; }
-        .filters { text-align: center; margin-bottom: 20px; }
+        .filters { text-align: center; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
         
-        /* Modificado para usar variáveis */
-        .filters button { padding: 8px 15px; margin: 0 3px; border-radius: 20px; border: 1px solid var(--accent-color); background-color: transparent; color: var(--accent-color); cursor: pointer; }
+        .filters button { padding: 8px 15px; margin: 0; border-radius: 20px; border: 1px solid var(--accent-color); background-color: transparent; color: var(--accent-color); cursor: pointer; }
         .filters button.active, .filters button:hover { background-color: var(--accent-color); color: white; }
         
-        table { width: 100%; border-collapse: collapse; }
-        /* Modificado para usar variáveis */
-        #tasks-table-container { background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 2px 4px var(--card-shadow-color); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        #tasks-table-container { background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 2px 4px var(--card-shadow-color); overflow-x: auto; }
         th, td { padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left; vertical-align: middle; transition: background-color 0.2s; }
         
-        /* Modificado para usar variáveis */
         th { background-color: var(--accent-color); color: white; font-weight: bold; }
-        .task-row { background-color: transparent; cursor: grab; user-select: none; } /* Usa o fundo do container */
+        .task-row { background-color: transparent; cursor: grab; user-select: none; }
         .task-row.selected > td { background-color: #fff3cd; }
         .task-row.sortable-ghost { background-color: #cce5ff; opacity: 0.7; }
         
-        /* Modificado para usar variáveis */
-        .is-group > td { font-weight: bold; background-color: rgba(0,0,0,0.05); } /* Um fundo sutil para grupos */
+        .is-group > td { font-weight: bold; background-color: rgba(0,0,0,0.05); }
         body.dark-theme .is-group > td { background-color: rgba(255,255,255,0.05); }
 
         .toggle-children { cursor: pointer; display: inline-block; width: 20px; text-align: center; font-family: monospace; font-size: 1.2em; }
-        .control-group { display: flex; align-items: center; gap: 10px; justify-content: center; }
-        .control-group button { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #ccc; background-color: #f0f0f0; cursor: pointer; font-size: 18px; line-height: 28px; text-align: center; padding: 0; }
+        .control-group { display: flex; align-items: center; gap: 5px; justify-content: center; }
+        .control-group button { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #ccc; background-color: #f0f0f0; cursor: pointer; font-size: 16px; line-height: 26px; text-align: center; padding: 0; }
         .control-group button:disabled { opacity: 0.4; cursor: not-allowed; }
-        .control-group .display { font-weight: bold; padding: 5px 10px; border-radius: 5px; min-width: 60px; text-align: center; }
+        .control-group .display { font-weight: bold; padding: 5px; border-radius: 5px; min-width: 50px; text-align: center; font-size: 0.9em; }
         .progress-display.status-0 { background-color: #f8d7da; } .progress-display.status-25 { background-color: #fff3cd; } .progress-display.status-50 { background-color: #cce5ff; } .progress-display.status-75 { background-color: #d4edda; } .progress-display.status-100 { background-color: #a2e8a5; }
         .edit-btn { cursor: pointer; margin-left: 8px; font-size: 0.8em; opacity: 0; transition: opacity 0.2s; }
         .task-row:hover .edit-btn { opacity: 0.7; }
         .edit-btn:hover { opacity: 1; }
         #back-btn { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
         #back-btn svg { width: 22px; height: 22px; }
+
+        /* ===== INÍCIO: Responsividade para Dispositivos Móveis ===== */
+        @media (max-width: 1024px) {
+            .main-header {
+                justify-content: center;
+            }
+            .header-left-group, .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                padding-top: 250px; /* Aumenta o espaço para o header que agora ocupa mais altura */
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+             .header-left-group, .header-actions {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+            }
+            #search-input { width: 100%; }
+            .separator { display: none; }
+            .btn { width: 100%; }
+            #back-btn { width: 40px; height: 40px; align-self: flex-start; }
+            #bulk-actions-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .summary-item { flex-basis: 40%; }
+            .control-group { flex-wrap: wrap; }
+            th, td { padding: 10px 8px; }
+            .task-row td:first-child {
+                word-break: break-all;
+            }
+        }
+        /* ===== FIM: Responsividade para Dispositivos Móveis ===== */
     </style>
 </head>
 <body>
-    <!-- O CONTEÚDO HTML (body) PERMANECE O MESMO -->
     <div class="main-header">
         <div class="header-left-group">
              <a href="index.html " id="back-btn" class="btn btn-secondary" title="Voltar">
@@ -244,7 +271,6 @@
     let initialDataState = '';
     
     document.addEventListener('DOMContentLoaded', () => {
-        // ⭐️ NOVO: Chama a função para aplicar o estilo global
         loadAndApplyGlobalStyle();
 
         document.getElementById('summary').innerHTML = `<div class="summary-item"><strong id="total-dias">0</strong><span>Total de Dias</span></div><div class="summary-item"><strong id="dias-restantes">0.00</strong><span>Dias Restantes</span></div><div class="summary-item"><strong id="countdown-days">0</strong><span>Até a Entrega</span></div><div class="summary-item"><strong id="progresso-geral">0%</strong><span>Progresso Geral</span></div><div id="progress-bar-container"><div id="progress-bar"></div></div>`;
@@ -257,39 +283,24 @@
         setupEventListeners();
     });
 
-    // ⭐️ INÍCIO DA SEÇÃO DE SCRIPT HERDADO ⭐️
-    /**
-     * Carrega os dados de estilo salvos em 'centralManagerData' no localStorage
-     * e os aplica a esta página para manter a consistência visual.
-     */
     function loadAndApplyGlobalStyle() {
         try {
             const savedData = localStorage.getItem('centralManagerData');
-            if (!savedData) return; // Se não houver dados, não faz nada
-
+            if (!savedData) return;
             const appData = JSON.parse(savedData);
-            if (!appData.styleData) return; // Se não houver objeto de estilo, não faz nada
-            
+            if (!appData.styleData) return;
             const style = appData.styleData;
             const body = document.body;
             const root = document.documentElement;
-
-            // Aplica a classe de tema (light/dark) ao body
-            body.className = ''; // Limpa classes existentes para evitar conflitos
+            body.className = '';
             body.classList.add(style.theme || 'light-theme');
-
-            // Aplica a cor de fundo sólida
             body.style.backgroundColor = style.bgColor;
-
-            // Define as propriedades CSS para a imagem de fundo e opacidade
             root.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none');
             root.style.setProperty('--bg-opacity', style.bgOpacity || '1');
-
         } catch (e) {
             console.error("Não foi possível carregar ou aplicar o estilo global.", e);
         }
     }
-    // ⭐️ FIM DA SEÇÃO DE SCRIPT HERDADO ⭐️
 
     const getCanonicalState = () => {
         const state = { tasks: tasksData, progress: progressData, collapsed: Array.from(collapsedGroups).sort(), name: projectName };
@@ -358,7 +369,8 @@
     function updateTitle() { document.getElementById('project-name').textContent = projectName; }
 
     function renderAndCalculate(doSave = true) {
-        sortTasks(tasksData);
+        // Não é mais necessário ordenar aqui, pois a ordem é definida pelo usuário
+        // sortTasks(tasksData);
         calculateAllTotals();
         renderTable();
         updateGroupDropdown('new-task-group');
@@ -474,35 +486,85 @@
         recurse(tasks);
         return map;
     }
-
-    function handleDragEnd() {
-        const allItemsMap = getAllItemsAsMap(tasksData);
-        const newTasksData = [];
-        const parentStack = [{ id: 'root', children: newTasksData }];
-
-        document.querySelectorAll('#tasks-tbody .task-row').forEach(row => {
-            const item = allItemsMap.get(row.dataset.id);
-            if (!item) return;
-
-            const rowLevel = Math.round((parseInt(row.cells[0].style.paddingLeft.replace('px', '')) - 15) / 30);
-            
-            while (rowLevel < parentStack.length - 1) {
-                parentStack.pop();
+    
+    // ===== INÍCIO: FUNÇÃO AUXILIAR PARA ENCONTRAR O PAI =====
+    /**
+     * Encontra a lista de filhos (array) e o índice de um item dentro dessa lista.
+     * @param {Array} list - A lista de tarefas para pesquisar (inicialmente tasksData).
+     * @param {string} childId - O ID do item cujo pai estamos procurando.
+     * @returns {{parentList: Array, index: number}|null} - Retorna o array pai e o índice do filho, ou nulo se não encontrar.
+     */
+    function findParentList(list, childId) {
+        for (let i = 0; i < list.length; i++) {
+            const item = list[i];
+            if (item.id === childId) {
+                return { parentList: list, index: i }; // Encontrou na lista atual
             }
-            
-            const parent = parentStack[parentStack.length - 1];
-            parent.children.push(item);
-            
-            item.children = []; 
-
             if (item.type === 'group') {
-                parentStack.push(item);
+                const found = findParentList(item.children, childId);
+                if (found) {
+                    return found; // Encontrou em um subgrupo
+                }
             }
-        });
-        
-        tasksData = newTasksData;
-        renderAndCalculate(false);
+        }
+        return null; // Não encontrou
     }
+    // ===== FIM: FUNÇÃO AUXILIAR =====
+
+
+    // ===== INÍCIO: CÓDIGO CORRIGIDO E SIMPLIFICADO =====
+    function handleDragEnd(evt) {
+        const movedItemId = evt.item.dataset.id;
+        const allItemsMap = getAllItemsAsMap();
+        const movedItem = allItemsMap.get(movedItemId);
+
+        if (!movedItem) return;
+
+        // 1. "Corta" o item da sua localização antiga na estrutura de dados.
+        // Usamos a mesma função robusta do 'Mover para'.
+        findAndDelete(tasksData, new Set([movedItemId]));
+        
+        // 2. Determina o novo local de inserção com base no DOM.
+        const prevSiblingEl = evt.item.previousElementSibling;
+        
+        let destinationList;
+        let destinationIndex;
+
+        if (!prevSiblingEl) {
+            // Caso 1: Item foi movido para a primeira posição de todas.
+            destinationList = tasksData;
+            destinationIndex = 0;
+        } else {
+            // Caso 2: Item foi movido para depois de outro item.
+            const prevSiblingId = prevSiblingEl.dataset.id;
+            const prevSiblingItem = allItemsMap.get(prevSiblingId);
+
+            if (prevSiblingItem.type === 'group' && !collapsedGroups.has(prevSiblingId)) {
+                // Se o irmão anterior for um grupo ABERTO, o item movido se torna seu primeiro filho.
+                destinationList = prevSiblingItem.children;
+                destinationIndex = 0;
+            } else {
+                // Se o irmão anterior for uma tarefa ou um grupo FECHADO,
+                // o item movido se torna um irmão, inserido no mesmo grupo do anterior.
+                const parentInfo = findParentList(tasksData, prevSiblingId);
+                if (parentInfo) {
+                    destinationList = parentInfo.parentList;
+                    destinationIndex = parentInfo.index + 1;
+                } else {
+                    // Fallback: se algo der errado, coloca no final da raiz.
+                    destinationList = tasksData;
+                    destinationIndex = tasksData.length;
+                }
+            }
+        }
+
+        // 3. "Cola" o item na sua nova localização na estrutura de dados.
+        destinationList.splice(destinationIndex, 0, movedItem);
+
+        // 4. Renderiza tudo para refletir a mudança.
+        renderAndCalculate(true);
+    }
+    // ===== FIM: CÓDIGO CORRIGIDO =====
 
     function updateSummary() {
         const totalProjectDias = tasksData.reduce((sum, task) => sum + (task._totalDias || 0), 0);
@@ -545,7 +607,9 @@
         } else if (e.target.classList.contains('dias-btn')) { 
             item.dias = Math.max(0.25, item.dias + parseFloat(e.target.dataset.delta));
         }
-        renderAndCalculate(false);
+        // Chamamos renderAndCalculate sem salvar para a maioria das ações,
+        // mas o toggle e a edição de nome deveriam salvar, então vamos simplificar.
+        renderAndCalculate(true);
     }
     
     function applyFilter(filterType, changeActiveButton = true) {
@@ -594,7 +658,7 @@
         
         nameInput.value = ''; daysInput.value = '';
         closeModal('add-item-modal');
-        renderAndCalculate(false);
+        renderAndCalculate(true);
     }
 
     function handleAddGroup(e) {
@@ -610,7 +674,7 @@
 
         nameInput.value = '';
         closeModal('add-item-modal');
-        renderAndCalculate(false);
+        renderAndCalculate(true);
     }
 
     function handleExport() {
@@ -658,7 +722,7 @@
     function handleSelectAll(e) {
         selectedItems.clear();
         if (e.target.checked) document.querySelectorAll('#tasks-tbody .task-row:not([style*="display: none"])').forEach(row => selectedItems.add(row.dataset.id));
-        renderAndCalculate(false);
+        renderAndCalculate(false); // Apenas atualização visual, sem salvar
     }
     
     function findAndDelete(items, idsToDelete) {
@@ -676,7 +740,7 @@
         if (selectedItems.size === 0 || !confirm(`Tem certeza que deseja excluir ${selectedItems.size} item(ns)?`)) return;
         findAndDelete(tasksData, selectedItems);
         selectedItems.clear();
-        renderAndCalculate(false);
+        renderAndCalculate(true);
     }
 
     function handleBulkProgress(value) {
@@ -691,7 +755,7 @@
         selectedItems.forEach(id => getChildTasks(allItems.get(id)));
         taskIdsToUpdate.forEach(id => { progressData[id] = value; });
         selectedItems.clear();
-        renderAndCalculate(false);
+        renderAndCalculate(true);
     }
 
     function openMoveModal() {
@@ -726,7 +790,7 @@
         
         selectedItems.clear();
         closeModal('move-item-modal');
-        renderAndCalculate(false);
+        renderAndCalculate(true);
     }
     </script>
 </body>
