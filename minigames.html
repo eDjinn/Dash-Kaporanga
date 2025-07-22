@@ -16,7 +16,6 @@
             --bg-image: none;
             --bg-opacity: 1;
         }
-
         body.dark-theme {
             --primary-text-color: #e0e0e0;
             --secondary-text-color: #b0b0b0;
@@ -25,147 +24,89 @@
             --card-shadow-color: rgba(0, 0, 0, 0.4);
             --accent-color: #4dabf7;
         }
-
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            /* Modificado para usar variáveis */
-            background-color: var(--page-bg-color); 
-            color: var(--primary-text-color); 
-            margin: 0; 
-            padding: 0; 
-            position: relative;
+            background-color: var(--page-bg-color); color: var(--primary-text-color); 
+            margin: 0; padding: 0; position: relative;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
-
         body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            background-image: var(--bg-image);
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: var(--bg-opacity);
-            transition: opacity 0.3s ease, background-image 0.5s ease-in-out;
+            content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; background-image: var(--bg-image); background-size: cover;
+            background-position: center; background-repeat: no-repeat;
+            opacity: var(--bg-opacity); transition: opacity 0.3s ease, background-image 0.5s ease-in-out;
         }
         /* ⭐️ FIM DA SEÇÃO DE ESTILO HERDADA ⭐️ */
 
-        .container { max-width: 1600px; margin: 0 auto; padding: 20px; padding-top: 90px; }
-        
+        .container { max-width: 1800px; margin: 0 auto; padding: 20px; padding-top: 90px; }
         .main-header { 
             display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; 
-            /* Modificado para usar variáveis */
-            background-color: var(--card-bg-color); 
-            box-shadow: 0 2px 4px var(--card-shadow-color);
+            background-color: var(--card-bg-color); box-shadow: 0 2px 4px var(--card-shadow-color);
             position: fixed; top: 0; left: 0; right: 0; z-index: 1000; 
         }
-
         .header-left-group, .header-actions { display: flex; align-items: center; gap: 10px; }
         .main-header h1, .main-header h2 { margin: 0; }
         .main-header h1 { font-size: 1.5em; }
-        
-        /* Modificado para usar variáveis */
         #project-name { font-size: 1.1em; color: var(--secondary-text-color); font-weight: normal; }
-        
         .separator { color: #ccc; font-size: 1.5em; }
         .header-actions .btn { padding: 8px 15px; }
         #bulk-actions-container { display: none; }
         #bulk-actions-container.visible { display: flex; align-items: center; gap: 10px; }
-        .btn { border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s; color: white; text-align: center; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; }
+        .btn { border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s; color: white; text-align: center; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; padding: 6px 12px; font-size: 14px; }
         .btn-success { background-color: #28a745; }
-        .btn-primary { background-color: var(--accent-color); } /* Modificado */
+        .btn-primary { background-color: var(--accent-color); }
         .btn-secondary { background-color: #6c757d; }
         .btn-danger { background-color: #dc3545; }
-        
         #back-btn { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
         #back-btn svg { width: 22px; height: 22px; }
 
         .modal-overlay { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
         .modal-overlay.visible { display: flex; }
-        
         .modal-content { 
-            /* Modificado para usar variáveis */
-            background-color: var(--card-bg-color); 
-            color: var(--primary-text-color);
-            padding: 25px; border-radius: 8px; 
-            box-shadow: 0 5px 15px var(--card-shadow-color); 
-            width: 90%; max-width: 680px; position: relative; max-height: 90vh; overflow-y: auto; 
+            background-color: var(--card-bg-color); color: var(--primary-text-color);
+            padding: 25px; border-radius: 8px; box-shadow: 0 5px 15px var(--card-shadow-color); 
+            width: 90%; max-width: 850px; position: relative; max-height: 90vh; overflow-y: auto; 
         }
-
         .modal-close { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; }
         .form { display: flex; flex-direction: column; gap: 10px; }
         .form label { font-weight: bold; margin-top: 5px; }
-        .form input, .form textarea { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; }
+        .form input, .form textarea, .form select { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; }
         .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; }
         .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
+        .custom-file-button { padding: 10px 15px; background-color: var(--accent-color); color: white; border-radius: 4px; cursor: pointer; text-align: center; }
         #search-input { width: 250px; padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; }
         
-        #curiosity-photo-container { 
-            width: 100%; max-width: 636px; height: 450px; border: 2px dashed #ccc; border-radius: 4px; 
-            display: flex; justify-content: center; align-items: center; cursor: pointer; 
-            background-color: var(--page-bg-color); /* Modificado */
-            margin-top: 10px; overflow: hidden; 
-        }
-
-        #curiosity-photo-container:hover { border-color: var(--accent-color); }
-        #curiosity-photo-preview { max-width: 100%; max-height: 100%; object-fit: contain; }
-        #curiosity-photo-placeholder { color: var(--secondary-text-color); text-align: center; } /* Modificado */
-        #char-counter { text-align: right; font-size: 0.8em; color: var(--secondary-text-color); } /* Modificado */
-        .curiosity-item { cursor: pointer; display: block; margin-bottom: 5px; color: #0056b3; text-decoration: underline; }
-        .modal-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-        
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        
-        #table-container { 
-            /* Modificado para usar variáveis */
-            background-color: var(--card-bg-color); 
-            border-radius: 8px; 
-            box-shadow: 0 2px 4px var(--card-shadow-color);
-            overflow: hidden; 
-        }
-
-        th, td { padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left; vertical-align: top; word-wrap: break-word; }
-        
-        /* Modificado para usar variáveis */
+        #table-container { background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 2px 4px var(--card-shadow-color); overflow: hidden; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left; vertical-align: middle; word-wrap: break-word; }
         th { background-color: var(--accent-color); color: white; font-weight: bold; user-select: none; position: relative; }
-
         th[data-column] { cursor: pointer; }
         th[data-column]::after { content: ' \2195'; opacity: 0.4; }
         th[data-column].sorted-asc::after { content: ' \2191'; opacity: 1; }
         th[data-column].sorted-desc::after { content: ' \2193'; opacity: 1; }
         th.no-sort { cursor: default; }
-        
         tr.selected-row > td { background-color: #fff3cd !important; }
-        /* Modificado para usar um overlay sutil */
         tr:hover > td { background-color: rgba(128, 128, 128, 0.1); }
-        body.dark-theme tr:hover > td { background-color: rgba(128, 128, 128, 0.2); }
+        
+        .table-thumb { max-width: 80px; max-height: 45px; border-radius: 4px; object-fit: cover; background-color: #eee; }
+        
+        fieldset { border: 1px solid #ccc; border-radius: 4px; padding: 15px; margin: 15px 0; }
+        legend { font-weight: bold; padding: 0 10px; color: var(--accent-color); font-size: 1.1em;}
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-grid-full { grid-column: 1 / -1; }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; }
 
-        td.editable { cursor: pointer; position: relative; }
-        .edit-pencil { display: inline-block; opacity: 0; transition: opacity 0.2s ease-in-out; margin-left: 8px; font-size: 0.9em; }
-        td.editable:hover .edit-pencil, .reference-item:hover .edit-pencil { opacity: 0.6; }
-        .edit-pencil:hover { opacity: 1; }
-        
-        /* Modificado para usar variáveis */
-        .inline-edit-input { width: 95%; padding: 8px; margin: -9px -10px; border: 2px solid var(--accent-color); border-radius: 4px; font-family: inherit; font-size: inherit; box-sizing: border-box; }
-        .reference-item { display: flex; align-items: center; margin-bottom: 5px; }
-        .reference-item a { color: var(--accent-color); text-decoration: none; flex-grow: 1; }
-        
-        .add-btn { display: inline-block; cursor: pointer; margin-top: 8px; padding: 2px 8px; border: 1px dashed #28a745; color: #28a745; border-radius: 4px; font-weight: bold; font-size: 0.9em; }
+        .curiosity-entry { border: 1px solid #ddd; border-radius: 4px; padding: 15px; margin-top: 10px; display: grid; grid-template-columns: 1fr 200px; gap: 15px; align-items: flex-start; }
+        .curiosity-text-area { display: flex; flex-direction: column; }
+        .curiosity-char-counter { text-align: right; font-size: 0.8em; color: var(--secondary-text-color); margin-top: 5px; }
+        .curiosity-image-area { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .curiosity-preview { width: 100%; max-width: 200px; height: 112px; border: 2px dashed #ccc; border-radius: 4px; object-fit: cover; background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; color: var(--secondary-text-color); font-size: 0.9em; }
     </style>
 </head>
 <body>
     <header class="main-header">
         <div class="header-left-group">
-            <a href="index.html " id="back-btn" class="btn btn-secondary" title="Voltar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-            </a>
+            <a href="index.html " id="back-btn" class="btn btn-secondary" title="Voltar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></a>
             <span class="separator">|</span>
             <h1>Minigames</h1>
             <span class="separator">|</span>
@@ -174,17 +115,12 @@
             <input type="text" id="search-input" placeholder="Pesquisar na tabela...">
         </div>
         <div class="header-actions">
-            <div id="bulk-actions-container">
-                <button id="delete-selected-btn" class="btn btn-danger">Excluir</button>
-                <span class="separator">|</span>
-            </div>
+            <div id="bulk-actions-container"><button id="delete-selected-btn" class="btn btn-danger">Excluir</button><span class="separator">|</span></div>
+            <button id="export-table-btn" class="btn btn-primary">Exportar Tabela</button>
             <button id="show-add-item-modal-btn" class="btn btn-success">Adicionar Item</button>
             <span class="separator">|</span>
-            <div class="file-input-wrapper">
-                <button class="btn btn-secondary">Importar</button>
-                <input type="file" id="import-json-input" accept=".json">
-            </div>
-            <button id="export-json-btn" class="btn btn-primary">Salvar</button>
+            <div class="file-input-wrapper"><button class="btn btn-secondary">Importar JSON</button><input type="file" id="import-json-input" accept=".json"></div>
+            <button id="export-json-btn" class="btn btn-primary">Salvar JSON</button>
         </div>
     </header>
 
@@ -194,12 +130,12 @@
                 <thead>
                     <tr>
                         <th style="width: 5%;" data-column="#">#</th>
-                        <th style="width: 15%;" data-column="Nome">Nome</th>
-                        <th style="width: 15%;" data-column="Inspiração">Inspiração</th>
-                        <th style="width: 25%;" data-column="Descrição">Descrição</th>
-                        <th style="width: 10%;" data-column="Local">Local</th>
+                        <th style="width: 10%;" class="no-sort">Thumb</th>
+                        <th style="width: 20%;" data-column="Nome">Nome</th>
+                        <th style="width: 20%;" data-column="Inspiração">Inspiração</th>
+                        <th style="width: 15%;" data-column="Local">Local</th>
                         <th style="width: 15%;" class="no-sort">Referências</th>
-                        <th style="width: 15%;" class="no-sort">Curiosidades</th>
+                        <th style="width: 10%;" class="no-sort">Ver Mais</th>
                         <th style="width: 5%; text-align: center;" class="no-sort"><input type="checkbox" id="select-all-checkbox" title="Selecionar Todos"></th>
                     </tr>
                 </thead>
@@ -208,14 +144,10 @@
         </div>
     </div>
 
-    <!-- Modals -->
-    <div id="add-item-modal" class="modal-overlay"></div>
-    <div id="reference-modal" class="modal-overlay"></div>
-    <div id="curiosity-modal" class="modal-overlay"></div>
+    <div id="details-modal" class="modal-overlay"></div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // ⭐️ NOVO: Chama a função para aplicar o estilo global
     loadAndApplyGlobalStyle();
 
     let minigameData = [];
@@ -224,21 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSort = {};
     let initialDataState = '';
     
-    const tableBody = document.getElementById('minigames-tbody');
-    const searchInput = document.getElementById('search-input');
-    
+    // --- Funções Principais (Save, Load, Render) ---
     const saveDataToLocalStorage = () => {
         try {
-            const dataToSave = {
-                projectName: projectName,
-                games: minigameData
-            };
+            const dataToSave = { projectName, games: minigameData };
             localStorage.setItem('minigameProjectData', JSON.stringify(dataToSave));
             initialDataState = JSON.stringify(minigameData);
-        } catch (e) {
-            console.error("Erro ao salvar dados no LocalStorage:", e);
-            alert("Não foi possível salvar os dados. O armazenamento do navegador pode estar cheio.");
-        }
+        } catch (e) { console.error("Erro ao salvar dados:", e); alert("Não foi possível salvar os dados."); }
     };
 
     const loadDataFromLocalStorage = () => {
@@ -248,307 +172,350 @@ document.addEventListener('DOMContentLoaded', () => {
                 const parsed = JSON.parse(savedData);
                 minigameData = parsed.games || []; 
                 projectName = parsed.projectName || "Projeto sem nome";
-            } catch (e) {
-                console.error("Falha ao carregar dados, começando do zero.", e);
-                minigameData = [];
-                projectName = "Erro ao carregar";
-            }
-        } else {
-            minigameData = [];
-            projectName = "Nenhum projeto carregado";
-        }
+            } catch (e) { minigameData = []; projectName = "Erro ao carregar"; }
+        } else { minigameData = []; projectName = "Nenhum projeto carregado"; }
         initialDataState = JSON.stringify(minigameData);
     };
     
-    const hasUnsavedChanges = () => {
-        const currentState = JSON.stringify(minigameData);
-        return currentState !== initialDataState;
-    };
-
+    const hasUnsavedChanges = () => JSON.stringify(minigameData) !== initialDataState;
     const updateHeader = () => { document.getElementById('project-name').textContent = projectName; };
 
     const renderTable = (dataToRender) => {
+        const tableBody = document.getElementById('minigames-tbody');
         tableBody.innerHTML = '';
+        const placeholderThumb = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='45' viewBox='0 0 80 45'%3E%3Crect width='80' height='45' fill='%23e9ecef'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%236c757d' font-family='sans-serif' font-size='10px'%3EN/A%3C/text%3E%3C/svg%3E";
+
         dataToRender.forEach((item) => {
             const originalIndex = minigameData.findIndex(originalItem => originalItem === item);
             if (originalIndex === -1) return;
+
             const row = document.createElement('tr');
             if (selectedItems.has(originalIndex)) row.classList.add('selected-row');
-            const referencesHTML = (item['Referências'] || []).map((ref, i) => `<div class="reference-item"><a href="${ref.url || '#'}" target="_blank">${ref.nome || 'Link'}</a><span class="edit-pencil edit-ref-btn" data-item-index="${originalIndex}" data-ref-index="${i}">✏️</span></div>`).join('');
-            const curiositiesHTML = (item['Curiosidades'] || []).map((cur, i) => `<div class="curiosity-item" data-item-index="${originalIndex}" data-curiosity-index="${i}">${cur.nome || 'Curiosidade'}</div>`).join('');
-            row.innerHTML = `<td class="editable" data-index="${originalIndex}" data-key="#"><span class="cell-content">${item['#'] || ''}</span><span class="edit-pencil">✏️</span></td><td class="editable" data-index="${originalIndex}" data-key="Nome"><span class="cell-content">${item['Nome'] || ''}</span><span class="edit-pencil">✏️</span></td><td class="editable" data-index="${originalIndex}" data-key="Inspiração"><span class="cell-content">${item['Inspiração'] || ''}</span><span class="edit-pencil">✏️</span></td><td class="editable" data-index="${originalIndex}" data-key="Descrição"><span class="cell-content">${item['Descrição'] || ''}</span><span class="edit-pencil">✏️</span></td><td class="editable" data-index="${originalIndex}" data-key="Local"><span class="cell-content">${item['Local'] || ''}</span><span class="edit-pencil">✏️</span></td><td>${referencesHTML}<span class="add-btn add-ref-btn" data-item-index="${originalIndex}">+</span></td><td>${curiositiesHTML}<span class="add-btn add-curiosity-btn" data-item-index="${originalIndex}">+</span></td><td style="text-align: center;"><input type="checkbox" class="select-checkbox" data-index="${originalIndex}" ${selectedItems.has(originalIndex) ? 'checked' : ''}></td>`;
+            
+            const referencesHTML = (item['Referências'] || []).map(ref => `<div><a href="${ref.url || '#'}" target="_blank">${ref.nome || 'Link'}</a></div>`).join('');
+            
+            row.innerHTML = `
+                <td>${item['#'] || ''}</td>
+                <td><img src="${item.Thumb || placeholderThumb}" alt="Thumb" class="table-thumb"></td>
+                <td>${item['Nome'] || ''}</td>
+                <td>${item['Inspiração'] || ''}</td>
+                <td>${item['Local'] || ''}</td>
+                <td>${referencesHTML || 'N/A'}</td>
+                <td style="text-align: center;"><button class="btn btn-primary open-details-btn" data-index="${originalIndex}">Ver Mais</button></td>
+                <td style="text-align: center;"><input type="checkbox" class="select-checkbox" data-index="${originalIndex}" ${selectedItems.has(originalIndex) ? 'checked' : ''}></td>`;
             tableBody.appendChild(row);
         });
     };
     
     const filterAndRender = () => {
-        const filterText = searchInput.value.toLowerCase();
+        const filterText = document.getElementById('search-input').value.toLowerCase();
         const filteredData = filterText 
-            ? minigameData.filter(item => Object.values(item).some(val => String(val).toLowerCase().includes(filterText)))
+            ? minigameData.filter(item => ['#', 'Nome', 'Inspiração', 'Local'].some(key => String(item[key] || '').toLowerCase().includes(filterText)))
             : minigameData;
         renderTable(filteredData);
     };
 
-    const updateBulkActionsVisibility = () => {
-        document.getElementById('bulk-actions-container').classList.toggle('visible', selectedItems.size > 0);
+    // --- Lógica do Modal Principal (Ver Mais / Adicionar) ---
+    const setupDetailsModal = () => {
+        const modalHTML = `
+            <div class="modal-content">
+                <span class="modal-close">×</span>
+                <h2 id="details-modal-title">Detalhes do Item</h2>
+                <form id="details-form" class="form">
+                    <input type="hidden" id="details-item-index">
+                    
+                    <fieldset><legend>Informações Básicas</legend>
+                        <div class="form-grid">
+                            <div><label for="details-num">#:</label><input type="number" id="details-num" step="any"></div>
+                            <div><label for="details-nome">Nome:</label><input type="text" id="details-nome" required></div>
+                            <div class="form-grid-full"><label for="details-inspiracao">Inspiração:</label><input type="text" id="details-inspiracao"></div>
+                            <div><label for="details-local">Local:</label><input type="text" id="details-local"></div>
+                            <div><label for="details-map-path">Nome do Arquivo do Mapa:</label><input type="text" id="details-map-path"></div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset><legend>Guia Visual e Textual</legend>
+                        <div class="form-grid">
+                            <div><label>Thumb (Imagem):</label><input type="file" id="details-thumb-input" accept="image/*" style="display:none;"><button type="button" class="custom-file-button" onclick="this.previousElementSibling.click();">Escolher Thumb</button><span id="details-thumb-filename">Nenhuma imagem.</span></div>
+                            <div><label>Vídeo Guia:</label><input type="file" id="details-video-input" accept="video/*" style="display:none;"><button type="button" class="custom-file-button" onclick="this.previousElementSibling.click();">Escolher Vídeo</button><span id="details-video-filename">Nenhum vídeo.</span></div>
+                            <div class="form-grid-full"><label for="details-titulo-guia">Título Guia (max 20):</label><input type="text" id="details-titulo-guia" maxlength="20"></div>
+                            <div class="form-grid-full"><label for="details-texto-guia">Texto Guia (max 110):</label><textarea id="details-texto-guia" rows="3" maxlength="110"></textarea></div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset><legend>Controles Opcionais</legend>
+                        <div class="checkbox-group"><input type="checkbox" id="details-usa-stick" style="width:auto;"><label for="details-usa-stick">Usa Stick?</label><input type="text" id="details-texto-stick" placeholder="Texto Stick (max 20)" maxlength="20"></div>
+                        <div class="checkbox-group"><input type="checkbox" id="details-usa-btn1" style="width:auto;"><label for="details-usa-btn1">Usa Botão Primário?</label><input type="text" id="details-texto-btn1" placeholder="Texto Botão (max 20)" maxlength="20"></div>
+                        <div class="checkbox-group"><input type="checkbox" id="details-usa-btn2" style="width:auto;"><label for="details-usa-btn2">Usa Botão Secundário?</label><input type="text" id="details-texto-btn2" placeholder="Texto Botão (max 20)" maxlength="20"></div>
+                    </fieldset>
+
+                    <fieldset><legend>Curiosidades</legend>
+                        <div id="curiosities-container"></div>
+                        <button type="button" id="add-curiosity-btn" class="btn btn-secondary" style="margin-top: 10px;">Adicionar Curiosidade</button>
+                    </fieldset>
+                    
+                    <button type="submit" class="btn btn-success" style="width:100%; padding: 15px; font-size: 1.2em;">Salvar Alterações</button>
+                </form>
+            </div>`;
+        document.getElementById('details-modal').innerHTML = modalHTML;
+    };
+    
+    // --- Lógica das Curiosidades ---
+    const addCuriosityRow = (container, data = {}) => {
+        const uniqueId = `curiosity-file-${Date.now()}-${Math.random()}`;
+        const entry = document.createElement('div');
+        entry.className = 'curiosity-entry';
+        
+        entry.innerHTML = `
+            <div class="curiosity-text-area">
+                <textarea class="curiosity-text" placeholder="Texto da curiosidade (max 250)" maxlength="250">${data.texto || ''}</textarea>
+                <div class="curiosity-char-counter">0 / 250</div>
+            </div>
+            <div class="curiosity-image-area">
+                <img src="${data.foto || ''}" class="curiosity-preview" alt="Preview">
+                <input type="file" id="${uniqueId}" class="curiosity-image-input" accept="image/*" style="display:none;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('${uniqueId}').click();">Escolher Imagem</button>
+                <button type="button" class="btn btn-danger btn-sm remove-curiosity-btn">Remover</button>
+            </div>
+        `;
+
+        const textarea = entry.querySelector('.curiosity-text');
+        const charCounter = entry.querySelector('.curiosity-char-counter');
+        const updateCounter = () => { charCounter.textContent = `${textarea.value.length} / 250`; };
+        textarea.addEventListener('input', updateCounter);
+        updateCounter(); // Initial call
+
+        entry.querySelector('.curiosity-image-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    entry.querySelector('.curiosity-preview').src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        entry.querySelector('.remove-curiosity-btn').addEventListener('click', () => entry.remove());
+        container.appendChild(entry);
+    };
+    
+    const openDetailsModal = (mode, itemIndex = null) => {
+        const form = document.getElementById('details-form');
+        form.reset();
+        document.getElementById('details-thumb-filename').textContent = 'Nenhuma imagem.';
+        document.getElementById('details-video-filename').textContent = 'Nenhum vídeo.';
+        
+        if (mode === 'edit' && itemIndex !== null) {
+            document.getElementById('details-modal-title').textContent = 'Editar Item';
+            document.getElementById('details-item-index').value = itemIndex;
+            
+            const item = minigameData[itemIndex];
+            Object.keys(item).forEach(key => {
+                const element = document.getElementById(`details-${key.toLowerCase().replace(/ /g, '-').replace('?', '')}`);
+                if (element) {
+                    if (element.type === 'checkbox') element.checked = item[key];
+                    else element.value = item[key] || '';
+                }
+            });
+             // Manual mappings
+            document.getElementById('details-num').value = item['#'] || '';
+            document.getElementById('details-nome').value = item['Nome'] || '';
+            document.getElementById('details-inspiracao').value = item['Inspiração'] || '';
+            document.getElementById('details-local').value = item['Local'] || '';
+            document.getElementById('details-map-path').value = item['Nome do Arquivo do mapa'] || '';
+            document.getElementById('details-titulo-guia').value = item['Título Guia'] || '';
+            document.getElementById('details-texto-guia').value = item['Texto Guia'] || '';
+            document.getElementById('details-usa-stick').checked = item['Usa Stick'] || false;
+            document.getElementById('details-texto-stick').value = item['Texto Stick'] || '';
+            document.getElementById('details-usa-btn1').checked = item['Usa Botão Primário'] || false;
+            document.getElementById('details-texto-btn1').value = item['Texto Botão Primário'] || '';
+            document.getElementById('details-usa-btn2').checked = item['Usa Botão Secundário'] || false;
+            document.getElementById('details-texto-btn2').value = item['Texto Botão Secundário'] || '';
+            document.getElementById('details-thumb-filename').textContent = item.ThumbFilename || 'Nenhuma imagem.';
+            document.getElementById('details-video-filename').textContent = item.VideoGuiaFilename || 'Nenhum vídeo.';
+            
+            const curiositiesContainer = document.getElementById('curiosities-container');
+            curiositiesContainer.innerHTML = '';
+            (item.Curiosidades || []).forEach(curiosity => addCuriosityRow(curiositiesContainer, curiosity));
+
+        } else {
+            document.getElementById('details-modal-title').textContent = 'Adicionar Novo Item';
+            document.getElementById('details-item-index').value = ''; // Indica modo de adição
+            document.getElementById('curiosities-container').innerHTML = ''; // Limpa curiosidades
+        }
+        document.getElementById('details-modal').classList.add('visible');
     };
 
-    const saveInlineEdit = (inputElement) => {
-        const cell = inputElement.parentElement;
-        const index = cell.dataset.index;
-        const key = cell.dataset.key;
-        let newValue = inputElement.value;
-        if (index !== undefined && key && minigameData[index]) {
-            if (key === '#') {
-                newValue = newValue ? parseFloat(newValue) : null;
-            }
-            minigameData[index][key] = newValue;
-            filterAndRender(); 
+    const saveDetailsForm = (e) => {
+        e.preventDefault();
+        const itemIndex = document.getElementById('details-item-index').value;
+        const isNewItem = itemIndex === '';
+        
+        let item = isNewItem ? { 'Referências': [] } : minigameData[itemIndex];
+
+        item['#'] = parseFloat(document.getElementById('details-num').value) || null;
+        item['Nome'] = document.getElementById('details-nome').value;
+        item['Inspiração'] = document.getElementById('details-inspiracao').value;
+        item['Local'] = document.getElementById('details-local').value;
+        item['Nome do Arquivo do mapa'] = document.getElementById('details-map-path').value;
+        item['Título Guia'] = document.getElementById('details-titulo-guia').value;
+        item['Texto Guia'] = document.getElementById('details-texto-guia').value;
+        item['Usa Stick'] = document.getElementById('details-usa-stick').checked;
+        item['Texto Stick'] = document.getElementById('details-texto-stick').value;
+        item['Usa Botão Primário'] = document.getElementById('details-usa-btn1').checked;
+        item['Texto Botão Primário'] = document.getElementById('details-texto-btn1').value;
+        item['Usa Botão Secundário'] = document.getElementById('details-usa-btn2').checked;
+        item['Texto Botão Secundário'] = document.getElementById('details-texto-btn2').value;
+
+        const videoFile = document.getElementById('details-video-input').files[0];
+        if (videoFile) item.VideoGuiaFilename = videoFile.name;
+        
+        // Save curiosities
+        item.Curiosidades = [];
+        document.querySelectorAll('#curiosities-container .curiosity-entry').forEach(entry => {
+            item.Curiosidades.push({
+                texto: entry.querySelector('.curiosity-text').value,
+                foto: entry.querySelector('.curiosity-preview').src
+            });
+        });
+
+        const onThumbProcessed = () => {
+            if (isNewItem) minigameData.push(item);
+            filterAndRender();
+            document.getElementById('details-modal').classList.remove('visible');
+        };
+        
+        const thumbFile = document.getElementById('details-thumb-input').files[0];
+        if (thumbFile) {
+            item.ThumbFilename = thumbFile.name;
+            const reader = new FileReader();
+            reader.onload = (event) => { item.Thumb = event.target.result; onThumbProcessed(); };
+            reader.readAsDataURL(thumbFile);
         } else {
-           filterAndRender(); 
+            onThumbProcessed();
         }
     };
+    
+    // --- Lógica de Exportação ---
+    const exportTableData = () => {
+        if (minigameData.length === 0) { alert("Não há dados para exportar."); return; }
 
-    // --- EVENT LISTENERS ---
-    searchInput.addEventListener('keyup', filterAndRender);
-    tableBody.addEventListener('click', (e) => {
-        if (e.target.classList.contains('add-ref-btn')) openReferenceModal('add', e.target.dataset.itemIndex);
-        if (e.target.classList.contains('edit-ref-btn')) openReferenceModal('edit', e.target.dataset.itemIndex, e.target.dataset.refIndex);
-        if (e.target.classList.contains('add-curiosity-btn')) openCuriosityModal('add', e.target.dataset.itemIndex);
-        if (e.target.classList.contains('curiosity-item')) openCuriosityModal('edit', e.target.dataset.itemIndex, e.target.dataset.curiosityIndex);
+        const maxCuriosities = Math.max(0, ...minigameData.map(item => (item.Curiosidades || []).length));
+        
+        const baseHeaders = ["id", "name", "thumb", "local", "path", "guide_text_title", "guide_text", "use_stick", "text_stick", "use_primary", "text_primary", "use_secondary", "text_secondary", "guide_video"];
+        for (let i = 1; i <= maxCuriosities; i++) {
+            baseHeaders.push(`CURIOSITY_${i}`);
+        }
+        const header = baseHeaders.join('\t');
+
+        const rows = minigameData.map(item => {
+            const rowData = [
+                item['#'] || '', item['Nome'] || '', item['ThumbFilename'] || '', item['Local'] || '',
+                item['Nome do Arquivo do mapa'] || '', item['Título Guia'] || '', item['Texto Guia'] || '',
+                item['Usa Stick'] ? 'TRUE' : 'FALSE', item['Texto Stick'] || '',
+                item['Usa Botão Primário'] ? 'TRUE' : 'FALSE', item['Texto Botão Primário'] || '',
+                item['Usa Botão Secundário'] ? 'TRUE' : 'FALSE', item['Texto Botão Secundário'] || '',
+                item['VideoGuiaFilename'] || ''
+            ];
+            for (let i = 0; i < maxCuriosities; i++) {
+                const curiosity = (item.Curiosidades || [])[i];
+                rowData.push(curiosity ? (curiosity.texto || '').replace(/\s+/g, ' ') : '');
+            }
+            return rowData.join('\t');
+        }).join('\n');
+
+        const tsvContent = `${header}\n${rows}`;
+        const blob = new Blob([`\uFEFF${tsvContent}`], { type: 'text/tab-separated-values;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url;
+        a.download = `${projectName.replace(/ /g, "_") || 'tabela'}.tsv`;
+        a.click(); URL.revokeObjectURL(url);
+    };
+
+    // --- Listeners de Eventos ---
+    document.getElementById('search-input').addEventListener('keyup', filterAndRender);
+    document.getElementById('export-table-btn').addEventListener('click', exportTableData);
+    
+    document.getElementById('table-container').addEventListener('click', (e) => {
+        if (e.target.classList.contains('open-details-btn')) openDetailsModal('edit', e.target.dataset.index);
         if (e.target.classList.contains('select-checkbox')) {
             const index = parseInt(e.target.dataset.index, 10);
-            if (e.target.checked) selectedItems.add(index); else selectedItems.delete(index);
-            updateBulkActionsVisibility();
-            e.target.closest('tr').classList.toggle('selected-row', e.target.checked);
-        }
-        const cell = e.target.closest('td.editable');
-        if (cell && !cell.querySelector('input, textarea')) {
-            const key = cell.dataset.key;
-            const originalValue = minigameData[cell.dataset.index][key] || '';
-            const inputType = key === 'Descrição' ? 'textarea' : (key === '#' ? 'number' : 'text');
-            const inputElement = document.createElement(inputType === 'textarea' ? 'textarea' : 'input');
-            if (inputType !== 'textarea') inputElement.type = inputType;
-            if (inputType === 'number') inputElement.step = 'any';
-            inputElement.className = 'inline-edit-input';
-            inputElement.value = originalValue;
-            cell.innerHTML = '';
-            cell.appendChild(inputElement);
-            inputElement.focus();
-            inputElement.addEventListener('blur', () => saveInlineEdit(inputElement));
-            inputElement.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' && inputType !== 'textarea') inputElement.blur();
-                else if (event.key === 'Escape') filterAndRender();
-            });
+            const row = e.target.closest('tr');
+            if (e.target.checked) { selectedItems.add(index); row.classList.add('selected-row'); } 
+            else { selectedItems.delete(index); row.classList.remove('selected-row'); }
+            document.getElementById('bulk-actions-container').classList.toggle('visible', selectedItems.size > 0);
         }
     });
+
+    document.getElementById('details-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'show-add-item-modal-btn') openDetailsModal('add');
+        if (e.target.id === 'add-curiosity-btn') addCuriosityRow(document.getElementById('curiosities-container'));
+        if(e.target.classList.contains('modal-overlay') || e.target.classList.contains('modal-close')) e.currentTarget.classList.remove('visible');
+    });
+
+    document.getElementById('details-modal').addEventListener('submit', (e) => { if(e.target.id === 'details-form') saveDetailsForm(e); });
+    document.getElementById('details-modal').addEventListener('change', (e) => {
+        if (e.target.id === 'details-thumb-input' || e.target.id === 'details-video-input') {
+            const filename = e.target.files.length > 0 ? e.target.files[0].name : (e.target.id.includes('thumb') ? "Nenhuma imagem." : "Nenhum vídeo.");
+            document.getElementById(`${e.target.id.replace('-input', '')}-filename`).textContent = filename;
+        }
+    });
+
+    // --- Ações em Massa, Import/Export JSON, Ordenação ---
     document.getElementById('select-all-checkbox').addEventListener('change', (e) => {
         const isChecked = e.target.checked;
         selectedItems.clear();
         document.querySelectorAll('#minigames-tbody .select-checkbox').forEach(checkbox => {
-            const row = checkbox.closest('tr');
-            if (row.style.display !== 'none') {
-                checkbox.checked = isChecked;
-                const index = parseInt(checkbox.dataset.index, 10);
-                if (isChecked) selectedItems.add(index);
-                row.classList.toggle('selected-row', isChecked);
-            }
+            checkbox.checked = isChecked;
+            if (isChecked) selectedItems.add(parseInt(checkbox.dataset.index, 10));
+            checkbox.closest('tr').classList.toggle('selected-row', isChecked);
         });
-        updateBulkActionsVisibility();
+        document.getElementById('bulk-actions-container').classList.toggle('visible', selectedItems.size > 0);
     });
+
     document.getElementById('delete-selected-btn').addEventListener('click', () => {
-        if (selectedItems.size === 0) return;
-        if (confirm(`Tem certeza que deseja excluir ${selectedItems.size} item(ns) selecionado(s)?`)) {
-            const sortedIndexes = Array.from(selectedItems).sort((a, b) => b - a);
-            sortedIndexes.forEach(index => minigameData.splice(index, 1));
-            selectedItems.clear();
-            document.getElementById('select-all-checkbox').checked = false;
-            updateBulkActionsVisibility();
-            filterAndRender();
-        }
+        if (selectedItems.size === 0 || !confirm(`Tem certeza que deseja excluir ${selectedItems.size} item(ns)?`)) return;
+        const sortedIndexes = Array.from(selectedItems).sort((a, b) => b - a);
+        sortedIndexes.forEach(index => minigameData.splice(index, 1));
+        selectedItems.clear();
+        document.getElementById('select-all-checkbox').checked = false;
+        document.getElementById('bulk-actions-container').classList.remove('visible');
+        filterAndRender();
     });
 
-    // --- MODALS SETUP E LÓGICA ---
-    const modals = {
-        'add-item-modal': `<div class="modal-content"><span class="modal-close">×</span><h2>Adicionar Novo Item</h2><form id="add-item-form" class="form"><label for="modal-num">#:</label><input type="number" id="modal-num"><label for="modal-nome">Nome:</label><input type="text" id="modal-nome" required><label for="modal-inspiracao">Inspiração:</label><input type="text" id="modal-inspiracao"><label for="modal-descricao">Descrição:</label><textarea id="modal-descricao" rows="4"></textarea><label for="modal-local">Local:</label><input type="text" id="modal-local"><button type="submit" class="btn btn-success">Adicionar Item</button></form></div>`,
-        'reference-modal': `<div class="modal-content"><span class="modal-close">×</span><h2 id="reference-modal-title">Adicionar Referência</h2><form id="reference-form" class="form"><input type="hidden" id="ref-item-index"><input type="hidden" id="ref-edit-index"><label for="ref-name">Nome:</label><input type="text" id="ref-name" required><label for="ref-url">URL:</label><input type="url" id="ref-url" required><button type="submit" class="btn btn-primary">Salvar Referência</button></form></div>`,
-        'curiosity-modal': `<div class="modal-content"><span class="modal-close">×</span><h2 id="curiosity-modal-title">Adicionar Curiosidade</h2><form id="curiosity-form" class="form"><input type="hidden" id="cur-item-index"><input type="hidden" id="cur-edit-index"><label for="cur-name">Nome:</label><input type="text" id="cur-name" required><label for="cur-text">Curiosidade (Texto):</label><textarea id="cur-text" rows="4" maxlength="250"></textarea><div id="char-counter">0 / 250</div><label>Foto (636x450, JPG):</label><div id="curiosity-photo-container"><span id="curiosity-photo-placeholder">Clique para escolher uma imagem</span><img id="curiosity-photo-preview" src="" alt="Preview da curiosidade"></div><input type="file" id="cur-photo-input" accept="image/jpeg" style="display: none;"><div class="modal-footer"><button type="button" id="delete-curiosity-btn" class="btn btn-danger">Excluir</button><button type="submit" class="btn btn-primary">Salvar Curiosidade</button></div></form></div>`
-    };
-    for (const id in modals) document.getElementById(id).innerHTML = modals[id];
-    document.getElementById('show-add-item-modal-btn').addEventListener('click', () => document.getElementById('add-item-modal').classList.add('visible'));
-    document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', e => e.target.closest('.modal-overlay').classList.remove('visible')));
-    document.querySelectorAll('.modal-overlay').forEach(modal => modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('visible'); }));
-    document.getElementById('add-item-form').addEventListener('submit', e => {
-        e.preventDefault();
-        minigameData.push({'#': parseFloat(document.getElementById('modal-num').value) || null, 'Nome': document.getElementById('modal-nome').value, 'Inspiração': document.getElementById('modal-inspiracao').value, 'Descrição': document.getElementById('modal-descricao').value, 'Local': document.getElementById('modal-local').value, 'Referências': [], 'Curiosidades': [] });
-        e.target.reset();
-        filterAndRender();
-        document.getElementById('add-item-modal').classList.remove('visible');
-    });
-    const referenceModal = document.getElementById('reference-modal');
-    const openReferenceModal = (mode, itemIndex, refIndex = null) => {
-        const form = document.getElementById('reference-form');
-        form.reset();
-        document.getElementById('ref-item-index').value = itemIndex;
-        if (mode === 'edit' && refIndex !== null) {
-            document.getElementById('reference-modal-title').textContent = 'Editar Referência';
-            const ref = minigameData[itemIndex]['Referências'][refIndex];
-            document.getElementById('ref-name').value = ref.nome; document.getElementById('ref-url').value = ref.url;
-            document.getElementById('ref-edit-index').value = refIndex;
-        } else {
-            document.getElementById('reference-modal-title').textContent = 'Adicionar Referência';
-            document.getElementById('ref-edit-index').value = '';
-        }
-        referenceModal.classList.add('visible');
-    };
-    document.getElementById('reference-form').addEventListener('submit', e => {
-        e.preventDefault();
-        const itemIndex = document.getElementById('ref-item-index').value, editIndex = document.getElementById('ref-edit-index').value;
-        const newRef = { nome: document.getElementById('ref-name').value, url: document.getElementById('ref-url').value };
-        if (editIndex) minigameData[itemIndex]['Referências'][editIndex] = newRef;
-        else {
-            if (!minigameData[itemIndex]['Referências']) minigameData[itemIndex]['Referências'] = [];
-            minigameData[itemIndex]['Referências'].push(newRef);
-        }
-        filterAndRender();
-        referenceModal.classList.remove('visible');
-    });
-    const curiosityModal = document.getElementById('curiosity-modal');
-    const curPhotoInput = document.getElementById('cur-photo-input');
-    const curPhotoContainer = document.getElementById('curiosity-photo-container');
-    const curPhotoPreview = document.getElementById('curiosity-photo-preview');
-    const curPhotoPlaceholder = document.getElementById('curiosity-photo-placeholder');
-    const curTextarea = document.getElementById('cur-text');
-    const charCounter = document.getElementById('char-counter');
-    const openCuriosityModal = (mode, itemIndex, curiosityIndex = null) => {
-        const form = document.getElementById('curiosity-form');
-        form.reset();
-        curPhotoPreview.src = '';
-        curPhotoPreview.style.display = 'none';
-        curPhotoPlaceholder.style.display = 'block';
-        charCounter.textContent = '0 / 250';
-        document.getElementById('cur-item-index').value = itemIndex;
-        const deleteBtn = document.getElementById('delete-curiosity-btn');
-        if (mode === 'edit' && curiosityIndex !== null) {
-            document.getElementById('curiosity-modal-title').textContent = 'Editar Curiosidade';
-            const curiosity = minigameData[itemIndex]['Curiosidades'][curiosityIndex];
-            document.getElementById('cur-name').value = curiosity.nome;
-            curTextarea.value = curiosity.texto;
-            document.getElementById('cur-edit-index').value = curiosityIndex;
-            if (curiosity.foto && curiosity.foto.startsWith('data:image')) {
-                curPhotoPreview.src = curiosity.foto;
-                curPhotoPreview.style.display = 'block';
-                curPhotoPlaceholder.style.display = 'none';
-            }
-            deleteBtn.style.display = 'block';
-        } else {
-            document.getElementById('curiosity-modal-title').textContent = 'Adicionar Curiosidade';
-            document.getElementById('cur-edit-index').value = '';
-            deleteBtn.style.display = 'none';
-        }
-        curTextarea.dispatchEvent(new Event('input'));
-        curiosityModal.classList.add('visible');
-    };
-    curPhotoContainer.addEventListener('click', () => curPhotoInput.click());
-    curPhotoInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file && file.type === 'image/jpeg') {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                curPhotoPreview.src = event.target.result;
-                curPhotoPreview.style.display = 'block';
-                curPhotoPlaceholder.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            alert('Por favor, selecione um arquivo de imagem .jpg');
-            curPhotoInput.value = '';
-        }
-    });
-    curTextarea.addEventListener('input', () => { charCounter.textContent = `${curTextarea.value.length} / 250`; });
-    document.getElementById('curiosity-form').addEventListener('submit', e => {
-        e.preventDefault();
-        const itemIndex = document.getElementById('cur-item-index').value;
-        const editIndex = document.getElementById('cur-edit-index').value;
-        let currentPhoto = '';
-        if (editIndex && minigameData[itemIndex]['Curiosidades'][editIndex]) {
-            currentPhoto = minigameData[itemIndex]['Curiosidades'][editIndex].foto;
-        }
-        const newCuriosity = { nome: document.getElementById('cur-name').value, texto: document.getElementById('cur-text').value, foto: curPhotoPreview.src.startsWith('data:image') ? curPhotoPreview.src : currentPhoto };
-        if (editIndex !== '') {
-            minigameData[itemIndex]['Curiosidades'][editIndex] = newCuriosity;
-        } else {
-            if (!minigameData[itemIndex]['Curiosidades']) minigameData[itemIndex]['Curiosidades'] = [];
-            minigameData[itemIndex]['Curiosidades'].push(newCuriosity);
-        }
-        filterAndRender();
-        curiosityModal.classList.remove('visible');
-    });
-    document.getElementById('delete-curiosity-btn').addEventListener('click', () => {
-        if (!confirm("Tem certeza que deseja excluir esta curiosidade?")) return;
-        const itemIndex = document.getElementById('cur-item-index').value;
-        const editIndex = document.getElementById('cur-edit-index').value;
-        if (itemIndex && editIndex) {
-            minigameData[itemIndex]['Curiosidades'].splice(editIndex, 1);
-            filterAndRender();
-            curiosityModal.classList.remove('visible');
-        }
-    });
-
-    // --- IMPORT / EXPORT ---
     document.getElementById('export-json-btn').addEventListener('click', () => {
-        if(minigameData.length === 0){
-            alert("Não há dados para exportar. Adicione itens ou importe um arquivo primeiro.");
-            return;
-        }
+        if(minigameData.length === 0){ alert("Não há dados para exportar."); return; }
         saveDataToLocalStorage();
         const dataStr = JSON.stringify(minigameData, null, 2);
         const blob = new Blob([dataStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
+        const a = document.createElement('a'); a.href = url;
         a.download = `${projectName.replace(/ /g, "_") || 'minigames'}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
+        a.click(); URL.revokeObjectURL(url);
     });
 
     document.getElementById('import-json-input').addEventListener('change', (e) => {
-        if (hasUnsavedChanges()) {
-            if (!confirm("Você tem alterações não salvas. Deseja importar um novo projeto e perder as alterações atuais?")) {
-                e.target.value = '';
-                return;
-            }
+        if (hasUnsavedChanges() && !confirm("Você tem alterações não salvas. Deseja importar e perder as alterações atuais?")) {
+            e.target.value = ''; return;
         }
-
-        const file = e.target.files[0];
-        if (!file) return;
+        const file = e.target.files[0]; if (!file) return;
         const nameToLoad = file.name.replace(/\.json$/i, '').replace(/_/g, ' ');
         const reader = new FileReader();
         reader.onload = (event) => {
             try {
                 const importedData = JSON.parse(event.target.result);
                 if (Array.isArray(importedData)) {
-                    projectName = nameToLoad;
-                    minigameData = importedData;
-                    selectedItems.clear();
-                    saveDataToLocalStorage();
-                    updateHeader();
-                    filterAndRender();
-                    updateBulkActionsVisibility();
+                    projectName = nameToLoad; minigameData = importedData;
+                    selectedItems.clear(); saveDataToLocalStorage(); updateHeader();
+                    filterAndRender(); document.getElementById('bulk-actions-container').classList.remove('visible');
                     alert(`Projeto "${projectName}" importado com sucesso!`);
-                } else {
-                    alert('Erro: O arquivo JSON importado deve ser uma lista (array) de itens.');
-                }
-            } catch (err) { 
-                alert('Falha ao importar: Arquivo JSON inválido.'); 
-                console.error("Erro de importação:", err);
-            }
+                } else { alert('Erro: O arquivo JSON deve ser uma lista (array).'); }
+            } catch (err) { alert('Falha ao importar: Arquivo JSON inválido.'); }
         };
-        reader.readAsText(file);
-        e.target.value = '';
+        reader.readAsText(file); e.target.value = '';
     });
     
-    // --- ORDENAÇÃO ---
     document.querySelectorAll('thead th[data-column]').forEach(th => {
         th.addEventListener('click', () => {
             const columnKey = th.dataset.column;
@@ -556,16 +523,8 @@ document.addEventListener('DOMContentLoaded', () => {
             currentSort = { column: columnKey, direction: isAsc ? 'desc' : 'asc' };
             minigameData.sort((a, b) => {
                 let valA = a[columnKey], valB = b[columnKey];
-                const isNumericSort = columnKey === '#';
-                const hasValA = valA !== null && valA !== undefined && valA !== '';
-                const hasValB = valB !== null && valB !== undefined && valB !== '';
-                if (isNumericSort) {
-                    if (hasValA && !hasValB) return -1;
-                    if (!hasValA && hasValB) return 1;
-                    return (valA || 0) - (valB || 0);
-                } else {
-                    return String(valA || '').toLowerCase().localeCompare(String(valB || '').toLowerCase());
-                }
+                if (columnKey === '#') return (valA || 0) - (valB || 0);
+                return String(valA || '').toLowerCase().localeCompare(String(valB || '').toLowerCase());
             });
             if (currentSort.direction === 'desc') minigameData.reverse();
             document.querySelectorAll('thead th[data-column]').forEach(h => h.classList.remove('sorted-asc', 'sorted-desc'));
@@ -574,56 +533,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- EVENTOS DE SAÍDA DA PÁGINA ---
-    document.getElementById('back-btn').addEventListener('click', (e) => {
-        if (hasUnsavedChanges()) {
-            if (!confirm("Você tem alterações não salvas. Deseja voltar e perder as alterações?")) {
-                e.preventDefault(); 
-            }
-        }
-    });
-
-    window.addEventListener('beforeunload', (e) => {
-        if (hasUnsavedChanges()) {
-            e.preventDefault();
-            e.returnValue = '';
-            return '';
-        }
-    });
-
-    // ⭐️ INÍCIO DA SEÇÃO DE SCRIPT HERDADO ⭐️
-    /**
-     * Carrega os dados de estilo salvos em 'centralManagerData' no localStorage
-     * e os aplica a esta página para manter a consistência visual.
-     */
+    document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges() && !confirm("Deseja voltar e perder as alterações não salvas?")) e.preventDefault(); });
+    window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; return ''; } });
     function loadAndApplyGlobalStyle() {
         try {
-            const savedData = localStorage.getItem('centralManagerData');
-            if (!savedData) return;
-
-            const appData = JSON.parse(savedData);
-            if (!appData.styleData) return;
-            
-            const style = appData.styleData;
-            const body = document.body;
-            const root = document.documentElement;
-
-            body.className = '';
-            body.classList.add(style.theme || 'light-theme');
-
+            const savedData = localStorage.getItem('centralManagerData'); if (!savedData) return;
+            const appData = JSON.parse(savedData); if (!appData.styleData) return;
+            const style = appData.styleData, body = document.body, root = document.documentElement;
+            body.className = ''; body.classList.add(style.theme || 'light-theme');
             body.style.backgroundColor = style.bgColor;
-
             root.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none');
             root.style.setProperty('--bg-opacity', style.bgOpacity || '1');
-
-        } catch (e) {
-            console.error("Não foi possível carregar ou aplicar o estilo global.", e);
-        }
+        } catch (e) { console.error("Não foi possível carregar o estilo global.", e); }
     }
-    // ⭐️ FIM DA SEÇÃO DE SCRIPT HERDADO ⭐️
-
+    
     // --- INICIALIZAÇÃO ---
     loadDataFromLocalStorage();
+    setupDetailsModal();
     updateHeader();
     filterAndRender();
 });
