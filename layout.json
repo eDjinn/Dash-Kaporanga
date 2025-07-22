@@ -134,6 +134,13 @@
         "title": "Notas Fiscais",
         "url": "https://prefeituradevassouras.online/engine8.php?m=modnfse_nfe_login",
         "description": "Notas Fiscais da Prefeitura"
+      },
+      {
+        "id": "id_1753192276803_6ys4edv5r",
+        "icon": "🎼",
+        "title": "Bandlab",
+        "url": "https://www.bandlab.com/",
+        "description": "Site pra fazer música"
       }
     ]
   }
