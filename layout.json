@@ -10,14 +10,14 @@
       {
         "id": "m1",
         "icon": "📋",
-        "title": "Gerenciar Tarefas",
+        "title": "Tarefas",
         "url": "tarefas.html",
-        "description": "Contagem do tempo"
+        "description": "Gerenciador de Tarefas"
       },
       {
         "id": "m2",
         "icon": "🎮",
-        "title": "Gerenciar Minigames",
+        "title": "Minigames",
         "url": "minigames.html",
         "description": "Ideias catalogadas dos Minigames"
       },
@@ -43,13 +43,6 @@
         "title": "GEPETO",
         "url": "https://chatgpt.com/",
         "description": "Chat GPT"
-      },
-      {
-        "id": "u2",
-        "icon": "🏛️",
-        "title": "Desenvolve Cultura",
-        "url": "http://cultura.rj.gov.br/desenvolve-cultura/inscricao/",
-        "description": "SECEC"
       },
       {
         "id": "u3",
@@ -80,6 +73,13 @@
         "description": "Assets Ed"
       },
       {
+        "id": "u2",
+        "icon": "🏛️",
+        "title": "Desenvolve Cultura",
+        "url": "http://cultura.rj.gov.br/desenvolve-cultura/inscricao/",
+        "description": "SECEC"
+      },
+      {
         "id": "id_1753140704401_qn6sz5ee6",
         "icon": "🖼️",
         "title": "ILoveIMG",
@@ -92,13 +92,6 @@
         "title": "ILovePDF",
         "url": "https://www.ilovepdf.com/pt",
         "description": "Comprimir PDFs"
-      },
-      {
-        "id": "id_1753141069356_g7k07p2z8",
-        "icon": "🎙️",
-        "title": "Adobe Podcast",
-        "url": "https://podcast.adobe.com/pt/enhance",
-        "description": "Melhorar o Áudio"
       },
       {
         "id": "id_1753141133010_zjserllwg",
@@ -115,11 +108,11 @@
         "description": "Legendar Vídeos"
       },
       {
-        "id": "id_1753141232734_iftsr5j7a",
-        "icon": "📄",
-        "title": "Notas Fiscais",
-        "url": "https://prefeituradevassouras.online/engine8.php?m=modnfse_nfe_login",
-        "description": "Notas Fiscais da Prefeitura"
+        "id": "id_1753148793490_0dbca9f0a",
+        "icon": "🗣️",
+        "title": "Voz de TikTok",
+        "url": "https://countik.com/pt/tiktok-voice-generator",
+        "description": "Gerador de voz de Tiktok"
       },
       {
         "id": "id_1753141353582_5hrpd2yfa",
@@ -129,11 +122,18 @@
         "description": "Plugins para After e Premiere"
       },
       {
-        "id": "id_1753147671959_n867nny04",
-        "icon": "🎼",
-        "title": "Bandlab",
-        "url": "https://www.bandlab.com/",
-        "description": "Site pra fazer música"
+        "id": "id_1753141069356_g7k07p2z8",
+        "icon": "🎙️",
+        "title": "Adobe Podcast",
+        "url": "https://podcast.adobe.com/pt/enhance",
+        "description": "Melhorar o Áudio"
+      },
+      {
+        "id": "id_1753141232734_iftsr5j7a",
+        "icon": "📄",
+        "title": "Notas Fiscais",
+        "url": "https://prefeituradevassouras.online/engine8.php?m=modnfse_nfe_login",
+        "description": "Notas Fiscais da Prefeitura"
       }
     ]
   }
