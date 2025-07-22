@@ -38,7 +38,7 @@
         }
         /* ⭐️ FIM DA SEÇÃO DE ESTILO HERDADA ⭐️ */
 
-        .container { max-width: 1800px; margin: 0 auto; padding: 20px; /* Padding-top será ajustado via JS */ }
+        .container { max-width: 1800px; margin: 0 auto; padding: 20px; padding-top: 90px; }
         .main-header { 
             display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; 
             background-color: var(--card-bg-color); box-shadow: 0 2px 4px var(--card-shadow-color);
@@ -121,7 +121,8 @@
         
         @media (max-width: 768px) {
             .container {
-                padding: 10px; /* Removido padding-top fixo */
+                padding: 10px;
+                padding-top: 220px; /* Aumenta o espaço para o header que agora ocupa mais altura */
             }
             .main-header {
                 justify-content: flex-start;
@@ -199,17 +200,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // ✅ INÍCIO DA CORREÇÃO: Função para ajustar o padding do conteúdo dinamicamente
-    function adjustContentPadding() {
-        const header = document.querySelector('.main-header');
-        const container = document.querySelector('.container');
-        if (header && container) {
-            const headerHeight = header.offsetHeight;
-            container.style.paddingTop = `${headerHeight + 20}px`; // 20px de margem
-        }
-    }
-    // ✅ FIM DA CORREÇÃO
-
     loadAndApplyGlobalStyle();
 
     let minigameData = [];
@@ -534,8 +524,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.getElementById('show-add-item-modal-btn').addEventListener('click', () => openDetailsModal('add'));
     document.getElementById('details-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'show-add-item-modal-btn') openDetailsModal('add');
         if (e.target.id === 'add-curiosity-btn') addCuriosityRow(document.getElementById('curiosities-container'));
         if (e.target.classList.contains('remove-file-btn')) {
             const button = e.target;
@@ -580,7 +570,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('export-json-btn').addEventListener('click', () => {
         if(minigameData.length === 0){ alert("Não há dados para exportar."); return; }
         saveDataToLocalStorage();
-        const dataStr = JSON.stringify({ projectName, games: minigameData }, null, 2);
+        const dataStr = JSON.stringify(minigameData, null, 2);
         const blob = new Blob([dataStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a'); a.href = url;
@@ -593,17 +583,17 @@ document.addEventListener('DOMContentLoaded', () => {
             e.target.value = ''; return;
         }
         const file = e.target.files[0]; if (!file) return;
+        const nameToLoad = file.name.replace(/\.json$/i, '').replace(/_/g, ' ');
         const reader = new FileReader();
         reader.onload = (event) => {
             try {
                 const importedData = JSON.parse(event.target.result);
-                if (Array.isArray(importedData.games)) {
-                    projectName = importedData.projectName || file.name.replace(/\.json$/i, '').replace(/_/g, ' ');
-                    minigameData = importedData.games;
+                if (Array.isArray(importedData)) {
+                    projectName = nameToLoad; minigameData = importedData;
                     selectedItems.clear(); saveDataToLocalStorage(); updateHeader();
                     filterAndRender(); document.getElementById('bulk-actions-container').classList.remove('visible');
                     alert(`Projeto "${projectName}" importado com sucesso!`);
-                } else { alert('Erro: O arquivo JSON deve conter a estrutura correta (um objeto com "projectName" e "games").'); }
+                } else { alert('Erro: O arquivo JSON deve ser uma lista (array).'); }
             } catch (err) { alert('Falha ao importar: Arquivo JSON inválido.'); }
         };
         reader.readAsText(file); e.target.value = '';
@@ -645,11 +635,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDetailsModal();
     updateHeader();
     filterAndRender();
-    
-    // ✅ INÍCIO DA CORREÇÃO: Chamar a função no carregamento e no redimensionamento da janela
-    adjustContentPadding();
-    window.addEventListener('resize', adjustContentPadding);
-    // ✅ FIM DA CORREÇÃO
 });
 </script>
 </body>

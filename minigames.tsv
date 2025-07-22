@@ -1,0 +1,33 @@
+﻿id	name	thumb	local	path	guide_text_title	guide_text	use_stick	text_stick	use_primary	text_primary	use_secondary	text_secondary	guide_video	CURIOSITY_1	CURIOSITY_2	CURIOSITY_3	CURIOSITY_4	CURIOSITY_5
+1	Na Copa do Jequitibá		Parque Estadual dos Três Picos	Minigame01_Hexagon	Tente não cair!	Corra e pule para não cair nos espaços vazios. Cuidado: se você demorar muito, a folha vai cair!	TRUE	Mover	TRUE	Pular	TRUE	Empurrar		- Estima-se que o jequitibá-rosa do Parque Estadual dos Três Picos tenha mais de 1.000 anos, sendo um dos seres vivos mais antigos do estado.	- Com alcance de cerca de 40mts de altura, a copa imponente do jequitibá-rosa se eleva acima da floresta, podendo ser vista de longe.	- Com 6mt de diâmetro e 19mt de circunferência, a base da arvore é tão larga que seriam necessárias varias pessoas de mãos dadas para abraça-la.	- É um dos maiores jequitibás vivos do Brasil, rivalizando com os do Parque Estadual do Vassununga (SP).	- O nome vem do tupi "Yiki-T-Ibá", que significa “fruto em forma de covo”, em referência ao jequi, armadilha de pesca indígena.
+2	Batata Quente		?				FALSE		FALSE		FALSE							
+3	O Mestre Mandou		Unknown	Minigame03_MestreMandou	Texto Título Guia	Texto Guia	TRUE	Mover	FALSE	-	FALSE	-						
+5	Dois Mestres		Unknown	Minigame05_DoisMestres	Texto Título Guia	Texto Guia	TRUE	Mover	FALSE	-	FALSE	-						
+6	Acerte o Tempo		Unknown	Minigame06_Tempo	Texto Título Guia	Texto Guia	FALSE	-	TRUE	Contar	FALSE	-						
+7	Warlock		Arubinha	Minigame07_Warlock	Texto Título Guia	Texto Guia	TRUE	Mover	TRUE	Atirar	TRUE	Mirar		- A faixa de areia tem cerca de 700 a 800 metros, permitindo longas caminhadas com vista panorâmica da lagoa.	- A região é conhecida por ser um ponto forte para a prática de kitesurf, com ventos constantes e águas propícias para manobras.	- Um lado da ponta apresenta águas mais profundas e ventosas, enquanto o outro oferece águas rasas e transparentes, com muitas conchas na areia.	- Não há quiosques, banheiros ou lixeiras — o local é 100% natureza, e os visitantes devem levar tudo o que precisarem (e trazer de volta!).	- A faixa de areia que avança pela lagoa lembra o famoso Caminho de Moisés, em Maragogi (AL), permitindo caminhar “dentro da água”.
+8	Escalada		Pico das Agulhas Negras	Minigame08_CorridaAoTopo	Alcance o topo!	Evite os obstaculos e seja o primeiro a alcançar o topo.	TRUE	Mover	TRUE	Pular	TRUE	Empurrar		- Com 2.791,5 metros de altitude, o pico é o mais alto do RJ e o quinto mais alto do Brasil.	- O Parque Nacional do Itatiaia foi fundado em 1937, sendo o mais antigo do país.	- A montanha é composta por granito e gnaisse, formados há milhões de anos por atividade vulcânica subterrânea.	- O pico já registrou neve e geada, especialmente entre junho e agosto. A última vez que teve um grande acumulo de neve, foi 1985, onde chegou a ter 15 cm e é a terceira maior precipitação que já aconteceu no Brasil.	- Do topo, é possível ver partes de três estados: RJ, MG e SP — além de outras montanhas como o Morro do Couto e o Maciço das Prateleiras.
+9	PIM PIM POM		Praça Barão de Campo Belo	Minigame09_Clefairy	Siga o maestro!	Use o direcional para fazer o mesmo movimento do maestro após o sinal.	TRUE	Toque uma nota	FALSE	-	FALSE	-		- A praça foi idealizada e construída a pedido de Laureano Corrêa Castro, Barão de Campo Belo, entre os anos de 1835 e 1857, demonstrando a influência e o prestígio da aristocracia local.	- Um dos elementos mais icônicos é o Chafariz Monumental, erguido em 1846, que simboliza a arte e o refinamento da época imperial.	- As palmeiras que cercam a praça são descendentes diretas da “Palma Mater” do Jardim Botânico do Rio de Janeiro.	- Ao redor da praça, destacam-se casarões e edificações do século XIX que contam a história do florescimento econômico de Vassouras durante o ciclo do café.	- A praça abriga um raro relógio solar de 1851, encomendado pelo Barão de Campo Belo. Esse tipo de instrumento mede o tempo com base na posição do sol e da sombra projetada por um gnômon (a haste central).
+	Desviar						FALSE		FALSE		FALSE							
+	Contagem		Ponte Bela				FALSE		FALSE		FALSE							
+							FALSE		FALSE		FALSE							
+	3 cortes						FALSE		FALSE		FALSE							
+	Pombos na Praça		Praça XV				FALSE		FALSE		FALSE							
+	Sumô		Dedo de Deus				FALSE		FALSE		FALSE							
+	Obstáculos voando						FALSE		FALSE		FALSE							
+	Galinha atravessando a rua		?				FALSE		FALSE		FALSE							
+	Futebol com os parças		?				FALSE		FALSE		FALSE							
+	Pique-Bandeira		?				FALSE		FALSE		FALSE							
+	Dança das Cadeiras		?				FALSE		FALSE		FALSE							
+	Batatinha Frita						FALSE		FALSE		FALSE							
+	Corrida de Saco						FALSE		FALSE		FALSE							
+	Bombas no labirinto		?				FALSE		FALSE		FALSE							
+							FALSE		FALSE		FALSE							
+	Chão que cai		?				FALSE		FALSE		FALSE							
+	Corrida		Jardim de Vassouras				FALSE		FALSE		FALSE							
+	Corrida 2		?				FALSE		FALSE		FALSE							
+	Pular Corda		?				FALSE		FALSE		FALSE							
+	Queimada		Ilha do Japonês				FALSE		FALSE		FALSE							
+	Desafio do Ovo		Ilha do Boi				FALSE		FALSE		FALSE							
+	Jogo dos Copos		?				FALSE		FALSE		FALSE							
+	?		Pedra do Sino				FALSE		FALSE		FALSE							
+	?		Lago azul de Tanguá				FALSE		FALSE		FALSE							
