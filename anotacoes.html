@@ -56,7 +56,7 @@
         /* ⭐️ FIM DA SEÇÃO DE ESTILO HERDADA ⭐️ */
 
         /* Estilos do Cabeçalho e Controles Globais */
-        .container { max-width: 1600px; margin: 0 auto; padding: 20px; padding-top: 90px; }
+        .container { max-width: 1600px; margin: 0 auto; padding: 20px; /* Padding-top será ajustado via JS */ }
         .main-header { 
             display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; 
             background-color: var(--card-bg-color); 
@@ -151,15 +151,11 @@
                 padding-top: 10px;
             }
             .separator { display: none; }
-            .container {
-                padding-top: 180px;
-            }
         }
         
         @media (max-width: 768px) {
             .container {
-                padding: 10px;
-                padding-top: 250px;
+                padding: 10px; /* Removido padding-top fixo */
             }
             .header-left-group {
                 flex-direction: column;
@@ -236,6 +232,17 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // ✅ INÍCIO DA CORREÇÃO: Função para ajustar o padding do conteúdo dinamicamente
+    function adjustContentPadding() {
+        const header = document.querySelector('.main-header');
+        const container = document.querySelector('.container');
+        if (header && container) {
+            const headerHeight = header.offsetHeight;
+            container.style.paddingTop = `${headerHeight + 20}px`; // 20px de margem
+        }
+    }
+    // ✅ FIM DA CORREÇÃO
+
     loadAndApplyGlobalStyle();
 
     let notesData = [];
@@ -383,6 +390,11 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDataFromLocalStorage();
     filterAndRender();
     initSortable();
+
+    // ✅ INÍCIO DA CORREÇÃO: Chamar a função no carregamento e no redimensionamento da janela
+    adjustContentPadding();
+    window.addEventListener('resize', adjustContentPadding);
+    // ✅ FIM DA CORREÇÃO
 });
 </script>
 </body>

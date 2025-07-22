@@ -54,7 +54,7 @@
         }
         /* ⭐️ FIM DA SEÇÃO DE ESTILO HERDADA ⭐️ */
 
-        .container { max-width: 950px; margin: 0 auto; padding: 20px; padding-top: 90px; }
+        .container { max-width: 950px; margin: 0 auto; padding: 20px; /* Padding-top será ajustado via JS */ }
         
         .main-header { 
             display: flex; 
@@ -163,8 +163,7 @@
 
         @media (max-width: 768px) {
             .container {
-                padding: 10px;
-                padding-top: 250px; /* Aumenta o espaço para o header que agora ocupa mais altura */
+                padding: 10px; /* Removido padding-top fixo */
             }
             .main-header {
                 flex-direction: column;
@@ -271,6 +270,17 @@
     let initialDataState = '';
     
     document.addEventListener('DOMContentLoaded', () => {
+        // ✅ INÍCIO DA CORREÇÃO: Função para ajustar o padding do conteúdo dinamicamente
+        function adjustContentPadding() {
+            const header = document.querySelector('.main-header');
+            const container = document.querySelector('.container');
+            if (header && container) {
+                const headerHeight = header.offsetHeight;
+                container.style.paddingTop = `${headerHeight + 20}px`; // 20px de margem
+            }
+        }
+        // ✅ FIM DA CORREÇÃO
+
         loadAndApplyGlobalStyle();
 
         document.getElementById('summary').innerHTML = `<div class="summary-item"><strong id="total-dias">0</strong><span>Total de Dias</span></div><div class="summary-item"><strong id="dias-restantes">0.00</strong><span>Dias Restantes</span></div><div class="summary-item"><strong id="countdown-days">0</strong><span>Até a Entrega</span></div><div class="summary-item"><strong id="progresso-geral">0%</strong><span>Progresso Geral</span></div><div id="progress-bar-container"><div id="progress-bar"></div></div>`;
@@ -281,6 +291,11 @@
         renderAndCalculate(false);
         initialDataState = getCanonicalState();
         setupEventListeners();
+
+        // ✅ INÍCIO DA CORREÇÃO: Chamar a função no carregamento e no redimensionamento da janela
+        adjustContentPadding();
+        window.addEventListener('resize', adjustContentPadding);
+        // ✅ FIM DA CORREÇÃO
     });
 
     function loadAndApplyGlobalStyle() {
