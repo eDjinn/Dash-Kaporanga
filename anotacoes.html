@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minhas Anotações</title>
-    <!-- Importa a biblioteca para Drag-and-Drop -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
         /* ⭐️ INÍCIO DA SEÇÃO DE ESTILO HERDADA ⭐️ */
@@ -18,7 +17,6 @@
             --bg-image: none;
             --bg-opacity: 1;
         }
-
         body.dark-theme {
             --primary-text-color: #e0e0e0;
             --secondary-text-color: #b0b0b0;
@@ -27,42 +25,28 @@
             --card-shadow-color: rgba(0, 0, 0, 0.4);
             --accent-color: #4dabf7;
         }
-
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             background-color: var(--page-bg-color); 
             color: var(--primary-text-color); 
-            margin: 0; 
-            padding: 0; 
-            position: relative;
+            margin: 0; padding: 0; position: relative;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
-
         body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            background-image: var(--bg-image);
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: var(--bg-opacity);
-            transition: opacity 0.3s ease, background-image 0.5s ease-in-out;
+            content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; background-image: var(--bg-image); background-size: cover;
+            background-position: center; background-repeat: no-repeat;
+            opacity: var(--bg-opacity); transition: opacity 0.3s ease, background-image 0.5s ease-in-out;
         }
         /* ⭐️ FIM DA SEÇÃO DE ESTILO HERDADA ⭐️ */
 
-        /* Estilos do Cabeçalho e Controles Globais */
         .container { max-width: 1600px; margin: 0 auto; padding: 20px; padding-top: 90px; }
         .main-header { 
             display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; 
             background-color: var(--card-bg-color); 
             box-shadow: 0 2px 4px var(--card-shadow-color);
             position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-            flex-wrap: wrap; gap: 10px; /* Adicionado para responsividade */
+            flex-wrap: wrap; gap: 10px;
         }
         .header-left-group, .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .main-header h1 { margin: 0; font-size: 1.5em; }
@@ -75,25 +59,14 @@
         #back-btn svg { width: 22px; height: 22px; }
         .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; }
         .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
-        #search-input { width: 220px; padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; }
+        #search-input { width: 220px; padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; background-color: var(--page-bg-color); color: var(--primary-text-color); }
 
         .date-filter-group { display: flex; align-items: center; gap: 8px; font-size: 14px; flex-wrap: wrap; }
         .date-filter-group label { color: var(--secondary-text-color); }
-        .date-filter-group input[type="datetime-local"] {
-            padding: 7px; border-radius: 4px; border: 1px solid #ccc;
-            background-color: var(--page-bg-color); color: var(--primary-text-color);
-        }
-        #clear-date-filter-btn {
-            background: none; border: none; color: var(--accent-color);
-            cursor: pointer; font-weight: bold; font-size: 14px;
-        }
+        .date-filter-group input[type="datetime-local"] { padding: 7px; border-radius: 4px; border: 1px solid #ccc; background-color: var(--page-bg-color); color: var(--primary-text-color); }
+        #clear-date-filter-btn { background: none; border: none; color: var(--accent-color); cursor: pointer; font-weight: bold; font-size: 14px; }
 
-        /* Estilos dos Cards de Anotações */
-        #notes-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
+        #notes-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .note-card {
             background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 4px 8px var(--card-shadow-color);
             padding: 15px; display: flex; flex-direction: column; gap: 10px; word-wrap: break-word;
@@ -103,25 +76,15 @@
         .note-card.sortable-ghost { opacity: 0.4; background: var(--accent-color); }
         .note-card.sortable-chosen { cursor: grabbing; }
 
-        .note-card-header {
-            display: flex; justify-content: space-between; align-items: flex-start;
-            border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 5px;
-        }
+        .note-card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 5px; }
         body.dark-theme .note-card-header { border-color: #444; }
         .note-card-title { font-size: 1.2em; font-weight: bold; color: var(--accent-color); margin: 0; word-break: break-all; }
-        .note-card-actions button {
-            background: none; border: none; cursor: pointer; font-size: 1.1em;
-            opacity: 0.6; transition: opacity 0.2s; padding: 2px; color: var(--secondary-text-color);
-        }
+        .note-card-actions button { background: none; border: none; cursor: pointer; font-size: 1.1em; opacity: 0.6; transition: opacity 0.2s; padding: 2px; color: var(--secondary-text-color); }
         .note-card-actions button:hover { opacity: 1; }
         .note-card-content { flex-grow: 1; overflow-y: auto; white-space: pre-wrap; font-size: 0.95em; }
-        .note-card-footer {
-            margin-top: auto; padding-top: 8px; text-align: right; font-size: 0.8em;
-            color: var(--secondary-text-color); border-top: 1px solid #eee;
-        }
+        .note-card-footer { margin-top: auto; padding-top: 8px; text-align: right; font-size: 0.8em; color: var(--secondary-text-color); border-top: 1px solid #eee; }
         body.dark-theme .note-card-footer { border-color: #444; }
         
-        /* Estilos do Modal */
         .modal-overlay { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
         .modal-overlay.visible { display: flex; }
         .modal-content { 
@@ -132,87 +95,47 @@
         .modal-close { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; }
         .form { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
         .form label { font-weight: bold; margin-top: 5px; }
-        .form input, .form textarea { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; font-size: 1em; }
+        .form input, .form textarea { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; font-size: 1em; background-color: var(--page-bg-color); color: var(--primary-text-color); }
         .form textarea { flex-grow: 1; resize: vertical; min-height: 150px; }
         .modal-footer { display: flex; justify-content: flex-end; margin-top: 15px; }
         
-        /* ===== INÍCIO: Responsividade para Dispositivos Móveis ===== */
         @media (max-width: 1024px) {
-             .main-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .header-left-group {
-                justify-content: center;
-            }
-            .header-actions {
-                justify-content: center;
-                border-top: 1px solid #ddd;
-                padding-top: 10px;
-            }
+            .main-header { flex-direction: column; align-items: stretch; }
+            .header-left-group, .header-actions { justify-content: center; }
+            .header-actions { border-top: 1px solid #ddd; padding-top: 10px; }
             .separator { display: none; }
-            .container {
-                padding-top: 180px;
-            }
+            .container { padding-top: 180px; }
         }
-        
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-                padding-top: 250px;
-            }
-            .header-left-group {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            #search-input { width: 100%; }
-            .date-filter-group { 
-                flex-direction: column;
-                align-items: stretch;
-                width: 100%;
-            }
-            .header-actions {
-                 flex-direction: column;
-                 align-items: stretch;
-            }
-             .btn { width: 100%; }
-             #back-btn { width: 40px; height: 40px; align-self: flex-start; }
-            .note-card {
-                height: 220px;
-            }
+            .container { padding: 10px; padding-top: 250px; }
+            .header-left-group, .header-actions { flex-direction: column; align-items: stretch; }
+            #search-input, .date-filter-group { width: 100%; }
+            .date-filter-group { flex-direction: column; align-items: stretch; }
+            .btn, #back-btn { width: 100%; }
+            #back-btn { width: 40px; height: 40px; align-self: flex-start; }
+            .note-card { height: 220px; }
         }
-        /* ===== FIM: Responsividade para Dispositivos Móveis ===== */
     </style>
 </head>
 <body>
     <header class="main-header">
         <div class="header-left-group">
-            <a href="index.html " id="back-btn" class="btn btn-secondary" title="Voltar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-            </a>
+            <a href="index.html" id="back-btn" class="btn btn-secondary" title="Voltar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></a>
             <span class="separator">|</span>
             <h1>Anotações</h1>
             <span class="separator">|</span>
             <input type="text" id="search-input" placeholder="Pesquisar por texto...">
             <span class="separator">|</span>
             <div class="date-filter-group">
-                <label for="start-date-filter">De:</label>
-                <input type="datetime-local" id="start-date-filter">
-                <label for="end-date-filter">Até:</label>
-                <input type="datetime-local" id="end-date-filter">
+                <label for="start-date-filter">De:</label><input type="datetime-local" id="start-date-filter">
+                <label for="end-date-filter">Até:</label><input type="datetime-local" id="end-date-filter">
                 <button id="clear-date-filter-btn">Limpar</button>
             </div>
         </div>
         <div class="header-actions">
             <button id="add-note-btn" class="btn btn-success">Adicionar Anotação</button>
             <span class="separator">|</span>
-            <div class="file-input-wrapper">
-                <button class="btn btn-secondary">Importar</button>
-                <input type="file" id="import-json-input" accept=".json">
-            </div>
+            <div class="file-input-wrapper"><button class="btn btn-secondary">Importar</button><input type="file" id="import-json-input" accept=".json"></div>
             <button id="export-json-btn" class="btn btn-primary">Salvar</button>
         </div>
     </header>
@@ -234,13 +157,81 @@
         </div>
     </div>
 
+    <!-- MUDANÇA: Scripts do Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    loadAndApplyGlobalStyle();
+
+    // ===================================================================
+    //  BLOCO DE CONFIGURAÇÃO E LÓGICA DO FIREBASE
+    // ===================================================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyC9OjBDOX9UUlCrPuhIZj5ipolRT4Gu420",
+        authDomain: "gerenciadorcentral-f01e3.firebaseapp.com",
+        projectId: "gerenciadorcentral-f01e3",
+        storageBucket: "gerenciadorcentral-f01e3.appspot.com",
+        messagingSenderId: "8874050225",
+        appId: "1:8874050225:web:a536c7feb14f36af7cd890"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const notesDocRef = db.collection('settings').doc('notes-data');
+    const styleDocRef = db.collection('settings').doc('main-dashboard');
 
     let notesData = [];
     let initialDataState = '[]';
 
+    // MUDANÇA: Salva dados no Firestore
+    const saveDataToFirebase = () => {
+        const dataToSave = { notes: notesData };
+        notesDocRef.set(dataToSave)
+            .then(() => {
+                initialDataState = JSON.stringify(notesData);
+            })
+            .catch(error => console.error("Erro ao salvar no Firebase:", error));
+    };
+
+    // MUDANÇA: Carrega dados do Firestore
+    const loadDataFromFirebase = () => {
+        notesDocRef.onSnapshot(doc => {
+            if (doc.exists) {
+                notesData = doc.data().notes || [];
+            } else {
+                notesData = [];
+            }
+            initialDataState = JSON.stringify(notesData);
+            filterAndRender();
+        }, error => {
+            console.error("Erro ao carregar dados do Firebase:", error);
+        });
+    };
+
+    // MUDANÇA: Carrega estilos do Firestore
+    async function loadAndApplyGlobalStyle() {
+        try {
+            const doc = await styleDocRef.get();
+            if (doc.exists && doc.data().styleData) {
+                const style = doc.data().styleData;
+                const body = document.body;
+                const root = document.documentElement;
+                body.className = '';
+                body.classList.add(style.theme || 'light-theme');
+                body.style.backgroundColor = style.bgColor;
+                root.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none');
+                root.style.setProperty('--bg-opacity', style.bgOpacity || '1');
+            }
+        } catch (e) {
+            console.error("Não foi possível carregar estilos do Firebase.", e);
+        }
+    }
+
+    // ===================================================================
+    //  FUNÇÕES DO APLICATIVO (O restante do código)
+    // ===================================================================
+    
     const notesContainer = document.getElementById('notes-container');
     const searchInput = document.getElementById('search-input');
     const noteModal = document.getElementById('note-modal');
@@ -258,18 +249,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return date.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
     };
 
-    const saveDataToLocalStorage = () => { 
-        try { localStorage.setItem('notesProjectData', JSON.stringify(notesData)); initialDataState = JSON.stringify(notesData); } catch (e) { console.error("Erro ao salvar dados no LocalStorage:", e); alert("Não foi possível salvar as anotações. O armazenamento do navegador pode estar cheio."); }
-    };
-    const loadDataFromLocalStorage = () => { 
-        const savedData = localStorage.getItem('notesProjectData'); if (savedData) { try { notesData = JSON.parse(savedData); } catch (e) { console.error("Falha ao carregar dados, começando do zero.", e); notesData = []; } } initialDataState = JSON.stringify(notesData);
-    };
     const hasUnsavedChanges = () => JSON.stringify(notesData) !== initialDataState;
 
     const renderNotes = (dataToRender = notesData) => {
         notesContainer.innerHTML = '';
         if (dataToRender.length === 0) {
-            notesContainer.innerHTML = `<p style="color: var(--secondary-text-color); padding: 20px; text-align: center;">Nenhuma anotação corresponde aos filtros aplicados.</p>`;
+            notesContainer.innerHTML = `<p style="color: var(--secondary-text-color); padding: 20px; text-align: center;">Nenhuma anotação encontrada.</p>`;
             return;
         }
         dataToRender.forEach(note => {
@@ -284,8 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="note-card-content">${note.content}</div>
-                <footer class="note-card-footer">${formatTimestamp(note.timestamp)}</footer>
-            `;
+                <footer class="note-card-footer">${formatTimestamp(note.timestamp)}</footer>`;
             notesContainer.appendChild(card);
         });
     };
@@ -297,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let filteredData = notesData.filter(note => {
             if (!filterText) return true;
-            return note.title.toLowerCase().includes(filterText) || note.content.toLowerCase().includes(filterText);
+            return (note.title || '').toLowerCase().includes(filterText) || (note.content || '').toLowerCase().includes(filterText);
         });
 
         if (startDate || endDate) {
@@ -309,41 +293,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 return afterStart && beforeEnd;
             });
         }
-        
         renderNotes(filteredData);
     };
 
     const openModal = (mode, noteId = null) => { 
-        noteForm.reset(); if (mode === 'edit' && noteId) { const note = notesData.find(n => n.id === noteId); if (note) { modalTitle.textContent = 'Editar Anotação'; document.getElementById('note-id').value = note.id; document.getElementById('note-title').value = note.title; document.getElementById('note-content').value = note.content; } } else { modalTitle.textContent = 'Adicionar Anotação'; document.getElementById('note-id').value = ''; } noteModal.classList.add('visible');
+        noteForm.reset(); 
+        if (mode === 'edit' && noteId) { 
+            const note = notesData.find(n => n.id === noteId); 
+            if (note) { 
+                modalTitle.textContent = 'Editar Anotação'; 
+                document.getElementById('note-id').value = note.id; 
+                document.getElementById('note-title').value = note.title; 
+                document.getElementById('note-content').value = note.content; 
+            } 
+        } else { 
+            modalTitle.textContent = 'Adicionar Anotação'; 
+            document.getElementById('note-id').value = ''; 
+        } 
+        noteModal.classList.add('visible');
     };
-    const closeModal = () => { 
-        noteModal.classList.remove('visible');
-    };
+
+    const closeModal = () => noteModal.classList.remove('visible');
 
     const initSortable = () => {
         new Sortable(notesContainer, {
-            animation: 150, ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen',
+            animation: 150, ghostClass: 'sortable-ghost',
             onEnd: (evt) => {
-                if (searchInput.value !== '' || startDateFilter.value !== '' || endDateFilter.value !== '') {
+                if (searchInput.value || startDateFilter.value || endDateFilter.value) {
                     alert("Limpe todos os filtros para poder reordenar as anotações.");
-                    filterAndRender(); 
-                    return;
+                    filterAndRender(); return;
                 }
                 const [movedItem] = notesData.splice(evt.oldIndex, 1);
                 notesData.splice(evt.newIndex, 0, movedItem);
-                saveDataToLocalStorage();
+                saveDataToFirebase();
             }
         });
     };
 
+    // --- Listeners de Eventos ---
     searchInput.addEventListener('input', filterAndRender);
     startDateFilter.addEventListener('input', filterAndRender);
     endDateFilter.addEventListener('input', filterAndRender);
-    clearDateFilterBtn.addEventListener('click', () => {
-        startDateFilter.value = '';
-        endDateFilter.value = '';
-        filterAndRender();
-    });
+    clearDateFilterBtn.addEventListener('click', () => { startDateFilter.value = ''; endDateFilter.value = ''; filterAndRender(); });
 
     document.getElementById('add-note-btn').addEventListener('click', () => openModal('add'));
     noteModal.querySelector('.modal-close').addEventListener('click', closeModal);
@@ -357,31 +348,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (id) {
             const noteIndex = notesData.findIndex(n => n.id === id);
-            if (noteIndex > -1) { notesData[noteIndex] = { ...notesData[noteIndex], title, content, timestamp: new Date().toISOString() }; } // Atualiza o timestamp na edição
+            if (noteIndex > -1) { notesData[noteIndex] = { ...notesData[noteIndex], title, content, timestamp: new Date().toISOString() }; }
         } else {
             notesData.unshift({ id: generateId(), title, content, timestamp: new Date().toISOString() });
         }
-        filterAndRender();
         closeModal();
-        saveDataToLocalStorage();
+        saveDataToFirebase(); // A chamada para renderizar virá do listener do Firebase
     });
 
     notesContainer.addEventListener('click', e => { 
         const editBtn = e.target.closest('.edit-btn'); if (editBtn) { openModal('edit', editBtn.closest('.note-card').dataset.id); return; }
-        const deleteBtn = e.target.closest('.delete-btn'); if (deleteBtn) { if (confirm('Tem certeza que deseja excluir esta anotação?')) { notesData = notesData.filter(n => n.id !== deleteBtn.closest('.note-card').dataset.id); filterAndRender(); saveDataToLocalStorage(); } }
+        const deleteBtn = e.target.closest('.delete-btn'); if (deleteBtn) { if (confirm('Tem certeza que deseja excluir esta anotação?')) { notesData = notesData.filter(n => n.id !== deleteBtn.closest('.note-card').dataset.id); saveDataToFirebase(); } }
     });
 
-    document.getElementById('export-json-btn').addEventListener('click', () => { if(notesData.length === 0){ alert("Não há anotações para salvar."); return; } saveDataToLocalStorage(); const dataStr = JSON.stringify(notesData, null, 2); const blob = new Blob([dataStr], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `anotacoes.json`; a.click(); URL.revokeObjectURL(url); });
-    document.getElementById('import-json-input').addEventListener('change', (e) => { if (hasUnsavedChanges()) { if (!confirm("Você tem anotações não salvas. Deseja importar um novo arquivo e perder as alterações atuais?")) { e.target.value = ''; return; } } const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (event) => { try { const importedData = JSON.parse(event.target.result); if (Array.isArray(importedData)) { notesData = importedData; saveDataToLocalStorage(); filterAndRender(); alert(`Anotações importadas com sucesso!`); } else { alert('Erro: O arquivo JSON importado deve ser uma lista (array) de anotações.'); } } catch (err) { alert('Falha ao importar: Arquivo JSON inválido.'); console.error("Erro de importação:", err); } }; reader.readAsText(file); e.target.value = ''; });
-    document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges()) { if (!confirm("Você tem alterações não salvas. Deseja voltar e perder as alterações?")) { e.preventDefault(); } } });
-    window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; return ''; } });
-    
-    function loadAndApplyGlobalStyle() {
-        try { const savedData = localStorage.getItem('centralManagerData'); if (!savedData) return; const appData = JSON.parse(savedData); if (!appData.styleData) return; const style = appData.styleData; const body = document.body; const root = document.documentElement; body.className = ''; body.classList.add(style.theme || 'light-theme'); body.style.backgroundColor = style.bgColor; root.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none'); root.style.setProperty('--bg-opacity', style.bgOpacity || '1'); } catch (e) { console.error("Não foi possível carregar ou aplicar o estilo global.", e); }
-    }
+    document.getElementById('export-json-btn').addEventListener('click', () => { 
+        if(notesData.length === 0){ alert("Não há anotações para salvar."); return; } 
+        const dataToExport = { notes: notesData }; // MUDANÇA: Exporta no formato de objeto
+        const dataStr = JSON.stringify(dataToExport, null, 2); 
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([dataStr], { type: 'application/json' })); 
+        a.download = `anotacoes_backup.json`; a.click(); URL.revokeObjectURL(a.href); 
+    });
 
-    loadDataFromLocalStorage();
-    filterAndRender();
+    document.getElementById('import-json-input').addEventListener('change', (e) => { 
+        if (hasUnsavedChanges() && !confirm("Isto substituirá suas anotações. Deseja continuar?")) { e.target.value = ''; return; } 
+        const file = e.target.files[0]; if (!file) return; 
+        const reader = new FileReader(); 
+        reader.onload = (event) => { 
+            try { 
+                const importedData = JSON.parse(event.target.result); 
+                // MUDANÇA: Aceita tanto o formato antigo (array) quanto o novo (objeto)
+                let importedNotes = [];
+                if (Array.isArray(importedData)) {
+                    importedNotes = importedData;
+                } else if (importedData && Array.isArray(importedData.notes)) {
+                    importedNotes = importedData.notes;
+                } else {
+                    alert('Erro: Formato de arquivo JSON inválido.'); return;
+                }
+                notesData = importedNotes; 
+                saveDataToFirebase();
+                alert(`Anotações importadas com sucesso!`); 
+            } catch (err) { alert('Falha ao importar: Arquivo JSON inválido.'); } 
+        }; 
+        reader.readAsText(file); e.target.value = ''; 
+    });
+
+    document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges() && !confirm("Sair e perder alterações não salvas?")) e.preventDefault(); });
+    window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; } });
+    
+    // --- INICIALIZAÇÃO ---
+    loadAndApplyGlobalStyle();
+    loadDataFromFirebase();
     initSortable();
 });
 </script>
