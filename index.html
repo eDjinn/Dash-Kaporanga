@@ -175,11 +175,19 @@
         .control-group > label { font-weight: 500; font-size: 0.9em; color: var(--primary-text-color); margin-bottom: 8px; }
         .control-group .button-container { display: inline-flex; gap: 10px; }
         
-        #bg-button, #export-layout-btn, #import-layout-label {
+        #bg-button, #export-layout-btn, #import-layout-label, #remove-bg-btn {
             display: inline-flex; align-items: center; justify-content: center;
             height: 38px; padding: 0 16px; font-size: 14px; font-weight: 500;
-            color: #fff; background-color: var(--accent-color); border: 1px solid var(--accent-color);
+            color: #fff;
             border-radius: 5px; box-sizing: border-box; cursor: pointer; transition: opacity 0.2s ease;
+        }
+        
+        #bg-button, #export-layout-btn, #import-layout-label {
+            background-color: var(--accent-color); border: 1px solid var(--accent-color);
+        }
+        
+        #remove-bg-btn {
+             background-color: #dc3545; border: 1px solid #dc3545;
         }
 
         #light-theme-btn, #dark-theme-btn {
@@ -189,7 +197,7 @@
             border-radius: 5px; box-sizing: border-box; cursor: pointer; transition: all 0.2s ease;
         }
 
-        #bg-button:hover, #export-layout-btn:hover, #import-layout-label:hover { opacity: 0.85; }
+        #bg-button:hover, #export-layout-btn:hover, #import-layout-label:hover, #remove-bg-btn:hover { opacity: 0.85; }
         #light-theme-btn:hover, #dark-theme-btn:hover { color: #fff; background-color: var(--accent-color); border-color: var(--accent-color); }
         #bg-input, #import-layout-input { display: none; }
 
@@ -314,9 +322,12 @@
             </div>
         </div>
         <div class="control-group">
-            <label for="bg-button">Plano de Fundo</label>
-            <button id="bg-button">Imagem</button>
-            <input type="file" id="bg-input" accept="image/*">
+            <label>Plano de Fundo</label>
+            <div class="button-container">
+                <button id="bg-button">Imagem</button>
+                <input type="file" id="bg-input" accept="image/*">
+                <button id="remove-bg-btn">Remover</button>
+            </div>
         </div>
         <div class="control-group">
             <label for="opacity-slider">Opacidade</label>
@@ -341,7 +352,7 @@
         const body = document.body, root = document.documentElement;
         const managersContainer = document.getElementById('managers-container'), linksContainer = document.getElementById('links-container');
         const lightThemeBtn = document.getElementById('light-theme-btn'), darkThemeBtn = document.getElementById('dark-theme-btn');
-        const bgButton = document.getElementById('bg-button'), bgInput = document.getElementById('bg-input');
+        const bgButton = document.getElementById('bg-button'), bgInput = document.getElementById('bg-input'), removeBgBtn = document.getElementById('remove-bg-btn');
         const opacitySlider = document.getElementById('opacity-slider'), colorPicker = document.getElementById('color-picker');
         const exportLayoutBtn = document.getElementById('export-layout-btn'), importLayoutInput = document.getElementById('import-layout-input');
         const modalBackdrop = document.getElementById('modal-backdrop'), modal = document.getElementById('add-item-modal');
@@ -484,6 +495,13 @@
         colorPicker.addEventListener('input', (e) => { appData.styleData.bgColor = e.target.value; applyStyles(); saveAllData(); });
         opacitySlider.addEventListener('input', (e) => { appData.styleData.bgOpacity = e.target.value; applyStyles(); saveAllData(); });
         bgButton.addEventListener('click', () => bgInput.click());
+        
+        removeBgBtn.addEventListener('click', () => {
+            appData.styleData.bgImage = null;
+            applyStyles();
+            saveAllData();
+        });
+        
         bgInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(file) {
