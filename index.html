@@ -120,6 +120,12 @@
         .card-small h3 { font-size: 1.1em; }
         .card-small p { font-size: 0.85em; }
 
+        /* MUDANÇA: Adicionado estilo para os novos cards menores */
+        .card-tiny { width: 120px; height: 120px; padding: 15px 10px; justify-content: center; }
+        .card-tiny .card-icon { font-size: 2.8em; margin-bottom: 10px; }
+        .card-tiny h3 { font-size: 1em; margin-bottom: 0; }
+        .card-tiny p { display: none; } /* Garante que a descrição não apareça */
+
         .add-card-placeholder {
             border: 2px dashed var(--secondary-text-color);
             color: var(--secondary-text-color);
@@ -135,6 +141,9 @@
         .add-card-placeholder:hover { opacity: 1; border-color: var(--accent-color); color: var(--accent-color); transform: scale(1.05); }
         .manager-add-placeholder { width: 300px; height: 215px; }
         .link-add-placeholder { width: 175px; height: 180px; }
+        /* MUDANÇA: Adicionado estilo para o placeholder dos novos cards */
+        .quick-access-add-placeholder { width: 120px; height: 120px; }
+
 
         .card-actions {
             position: absolute;
@@ -231,8 +240,10 @@
             .google-apps-header { gap: 10px; }
             .card { padding: 20px; }
             .card-small { width: 150px; padding: 15px 10px; }
+            .card-tiny { width: 100px; height: 100px; } /* Ajuste responsivo para cards menores */
             .manager-add-placeholder { width: 100%; max-width: 300px; height: 150px; }
             .link-add-placeholder { width: 150px; height: 150px; }
+            .quick-access-add-placeholder { width: 100px; height: 100px; }
             .page-controls { flex-direction: column; align-items: center; gap: 25px; padding: 20px 15px; }
         }
     </style>
@@ -241,16 +252,16 @@
 
     <header class="header-container">
         <div class="google-apps-header">
-            <a href="https://myaccount.google.com/" class="app-link-header" target="_blank" rel="noopener noreferrer" title="Conta Google"><img src="https://ssl.gstatic.com/images/branding/product/2x/avatar_circle_blue_96dp.png" alt="Conta Google"></a>
-            <a href="https://mail.google.com/" class="app-link-header" target="_blank" rel="noopener noreferrer" title="Gmail"><img src="https://ssl.gstatic.com/images/branding/product/1x/gmail_2020q4_48dp.png" alt="Gmail"></a>
-            <a href="https://drive.google.com/" class="app-link-header" target="_blank" rel="noopener noreferrer" title="Google Drive"><img src="https://ssl.gstatic.com/images/branding/product/2x/drive_48dp.png" alt="Google Drive"></a>
-            <a href="https://docs.google.com/" class="app-link-header" target="_blank" rel="noopener noreferrer" title="Google Documentos"><img src="https://ssl.gstatic.com/images/branding/product/2x/docs_48dp.png" alt="Google Documentos"></a>
-            <a href="https://sheets.google.com/" class="app-link-header" target="_blank" rel="noopener noreferrer" title="Google Planilhas"><img src="https://ssl.gstatic.com/images/branding/product/2x/sheets_48dp.png" alt="Google Planilhas"></a>
-            <a href="https://youtube.com/" class="app-link-header" target="_blank" rel="noopener noreferrer" title="YouTube"><img src="https://ssl.gstatic.com/images/branding/product/2x/youtube_48dp.png" alt="YouTube"></a>
-            <a href="https://maps.google.com/" class="app-link-header" target="_blank" rel="noopener noreferrer" title="Google Maps"><img src="https://ssl.gstatic.com/images/branding/product/2x/maps_48dp.png" alt="Google Maps"></a>
-            <a href="https://calendar.google.com/" class="app-link-header" target="_blank" rel="noopener noreferrer" title="Google Calendário"><img src="https://ssl.gstatic.com/images/branding/product/2x/calendar_48dp.png" alt="Google Calendário"></a>
-            <a href="https://photos.google.com/" class="app-link-header" target="_blank" rel="noopener noreferrer" title="Google Fotos"><img src="https://ssl.gstatic.com/images/branding/product/2x/photos_48dp.png" alt="Google Fotos"></a>
-            <a href="https://translate.google.com/" class="app-link-header" target="_blank" rel="noopener noreferrer" title="Google Tradutor"><img src="https://www.gstatic.com/images/branding/product/1x/translate_48dp.png" alt="Google Tradutor"></a>
+             <a href="https://myaccount.google.com/" class="app-link-header" title="Conta Google"><img src="https://ssl.gstatic.com/images/branding/product/2x/avatar_circle_blue_96dp.png" alt="Conta Google"></a>
+             <a href="https://mail.google.com/" class="app-link-header" title="Gmail"><img src="https://ssl.gstatic.com/images/branding/product/1x/gmail_2020q4_48dp.png" alt="Gmail"></a>
+             <a href="https://drive.google.com/" class="app-link-header" title="Google Drive"><img src="https://ssl.gstatic.com/images/branding/product/2x/drive_48dp.png" alt="Google Drive"></a>
+             <a href="https://docs.google.com/" class="app-link-header" title="Google Documentos"><img src="https://ssl.gstatic.com/images/branding/product/2x/docs_48dp.png" alt="Google Documentos"></a>
+             <a href="https://sheets.google.com/" class="app-link-header" title="Google Planilhas"><img src="https://ssl.gstatic.com/images/branding/product/2x/sheets_48dp.png" alt="Google Planilhas"></a>
+             <a href="https://youtube.com/" class="app-link-header" title="YouTube"><img src="https://ssl.gstatic.com/images/branding/product/2x/youtube_48dp.png" alt="YouTube"></a>
+             <a href="https://maps.google.com/" class="app-link-header" title="Google Maps"><img src="https://ssl.gstatic.com/images/branding/product/2x/maps_48dp.png" alt="Google Maps"></a>
+             <a href="https://calendar.google.com/" class="app-link-header" title="Google Calendário"><img src="https://ssl.gstatic.com/images/branding/product/2x/calendar_48dp.png" alt="Google Calendário"></a>
+             <a href="https://photos.google.com/" class="app-link-header" title="Google Fotos"><img src="https://ssl.gstatic.com/images/branding/product/2x/photos_48dp.png" alt="Google Fotos"></a>
+             <a href="https://translate.google.com/" class="app-link-header" title="Google Tradutor"><img src="https://www.gstatic.com/images/branding/product/1x/translate_48dp.png" alt="Google Tradutor"></a>
         </div>
         <form action="https://www.google.com/search" method="get" target="_blank" class="google-search-form">
             <button type="submit">🔍</button>
@@ -261,10 +272,11 @@
     <main class="main-container">
         <div class="content">
             <div id="managers-container" class="card-container"></div>
-            
             <hr class="section-divider">
-
             <div id="links-container" class="card-container"></div>
+            <!-- MUDANÇA: Adicionada nova seção para Acesso Rápido -->
+            <hr class="section-divider">
+            <div id="quick-access-container" class="card-container"></div>
         </div>
     </main>
     
@@ -275,9 +287,7 @@
                 <div class="icon-picker-container">
                     <input type="text" id="item-icon" placeholder="Ícone (ex: 🚀)" required>
                     <button type="button" id="emoji-picker-btn">😀</button>
-                    <div class="emoji-picker-container">
-                        <emoji-picker class="light"></emoji-picker>
-                    </div>
+                    <div class="emoji-picker-container"><emoji-picker class="light"></emoji-picker></div>
                 </div>
                 <input type="text" id="item-title" placeholder="Título" required>
                 <input type="text" id="item-url" placeholder="URL do Link" required>
@@ -291,44 +301,15 @@
     </div>
 
     <footer class="page-controls">
-        <div class="control-group">
-            <label>Tema</label>
-            <div class="button-container">
-                <button id="light-theme-btn">Claro</button>
-                <button id="dark-theme-btn">Escuro</button>
-            </div>
-        </div>
-        <div class="control-group">
-            <label>Plano de Fundo</label>
-            <div class="button-container">
-                <button id="bg-button">Imagem</button>
-                <input type="file" id="bg-input" accept="image/*">
-                <button id="remove-bg-btn">Remover</button>
-            </div>
-        </div>
-        <div class="control-group">
-            <label for="opacity-slider">Opacidade</label>
-            <input type="range" id="opacity-slider" min="0" max="1" step="0.05" value="1">
-        </div>
-        <div class="control-group">
-            <label for="color-picker">Cor de Fundo</label>
-            <input type="color" id="color-picker" value="#f4f7f9">
-        </div>
-        <div class="control-group">
-            <label>Layout</label>
-            <div class="button-container">
-                <label for="import-layout-input" id="import-layout-label">Importar</label>
-                <input type="file" id="import-layout-input" accept=".json">
-                <button id="export-layout-btn">Salvar</button>
-            </div>
-        </div>
+        <div class="control-group"><label>Tema</label><div class="button-container"><button id="light-theme-btn">Claro</button><button id="dark-theme-btn">Escuro</button></div></div>
+        <div class="control-group"><label>Plano de Fundo</label><div class="button-container"><button id="bg-button">Imagem</button><input type="file" id="bg-input" accept="image/*"><button id="remove-bg-btn">Remover</button></div></div>
+        <div class="control-group"><label for="opacity-slider">Opacidade</label><input type="range" id="opacity-slider" min="0" max="1" step="0.05" value="1"></div>
+        <div class="control-group"><label for="color-picker">Cor de Fundo</label><input type="color" id="color-picker" value="#f4f7f9"></div>
+        <div class="control-group"><label>Layout</label><div class="button-container"><label for="import-layout-input" id="import-layout-label">Importar</label><input type="file" id="import-layout-input" accept=".json"><button id="export-layout-btn">Salvar</button></div></div>
     </footer>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // ===================================================================
-        // PASSO 1: CONFIGURAR E INICIALIZAR O FIREBASE COM AS SUAS CHAVES
-        // ===================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyC9OjBDOX9UUlCrPuhIZj5ipolRT4Gu420",
             authDomain: "gerenciadorcentral-f01e3.firebaseapp.com",
@@ -337,21 +318,17 @@
             messagingSenderId: "8874050225",
             appId: "1:8874050225:web:a536c7feb14f36af7cd890"
         };
-
-        // Inicializa o Firebase com a sua configuração
         firebase.initializeApp(firebaseConfig);
-
-        // Pega uma referência ao serviço do Firestore
         const db = firebase.firestore();
-        // Define o caminho no banco de dados. Vamos salvar tudo em: coleção 'settings' -> documento 'main-dashboard'
         const userSettingsDocRef = db.collection('settings').doc('main-dashboard');
 
-        // ===================================================================
-        // SEU CÓDIGO COM AS FUNÇÕES DE SALVAR/CARREGAR MODIFICADAS
-        // ===================================================================
-        
         const body = document.body, root = document.documentElement;
-        const managersContainer = document.getElementById('managers-container'), linksContainer = document.getElementById('links-container');
+        const managersContainer = document.getElementById('managers-container');
+        const linksContainer = document.getElementById('links-container');
+        // MUDANÇA: Referência ao novo container
+        const quickAccessContainer = document.getElementById('quick-access-container');
+        
+        // O resto das referências DOM permanece o mesmo
         const lightThemeBtn = document.getElementById('light-theme-btn'), darkThemeBtn = document.getElementById('dark-theme-btn');
         const bgButton = document.getElementById('bg-button'), bgInput = document.getElementById('bg-input'), removeBgBtn = document.getElementById('remove-bg-btn');
         const opacitySlider = document.getElementById('opacity-slider'), colorPicker = document.getElementById('color-picker');
@@ -363,67 +340,57 @@
         const emojiPickerContainer = document.querySelector('.emoji-picker-container');
         const emojiPicker = document.querySelector('emoji-picker');
         const itemIconInput = document.getElementById('item-icon');
+        const itemDescriptionInput = document.getElementById('item-description');
 
         let appData = {};
         let currentModalType = null, currentEditingId = null;
 
+        // MUDANÇA: Adicionada a nova lista ao objeto de dados padrão
         const defaultData = {
             styleData: { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' },
-            layoutData: { managers: [], usefulLinks: [] }
+            layoutData: { managers: [], usefulLinks: [], quickAccessLinks: [] }
         };
         
         const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-        // FUNÇÃO MODIFICADA PARA SALVAR NO FIREBASE
         async function saveAllData() {
             try {
-                // O método .set() sobrescreve completamente o documento com o novo estado de appData
                 await userSettingsDocRef.set(appData);
-                console.log("Dados salvos no Firebase com sucesso!");
             } catch (error) {
                 console.error("Erro ao salvar dados no Firebase: ", error);
-                if (error.code === 'invalid-argument') {
-                     alert("Erro: A imagem de fundo é muito grande para salvar (limite de 1MB). Tente uma imagem menor.");
-                } else {
-                     alert("Ocorreu um erro ao salvar os dados. Verifique o console (F12).");
-                }
+                alert("Ocorreu um erro ao salvar os dados. Verifique o console (F12).");
             }
         }
 
-        // FUNÇÃO MODIFICADA PARA CARREGAR DO FIREBASE EM TEMPO REAL
         function loadAllData() {
-            // onSnapshot "escuta" por qualquer mudança no documento no Firestore.
-            // Se você mudar algo no console do Firebase, a página vai atualizar sozinha!
             userSettingsDocRef.onSnapshot(doc => {
                 if (doc.exists) {
-                    console.log("Dados carregados do Firebase.");
                     appData = doc.data();
-                    // Garante que a estrutura de dados local seja válida
                     appData.styleData = appData.styleData || defaultData.styleData;
                     appData.layoutData = appData.layoutData || defaultData.layoutData;
                     appData.layoutData.managers = appData.layoutData.managers || [];
                     appData.layoutData.usefulLinks = appData.layoutData.usefulLinks || [];
+                    // MUDANÇA: Garantir que a nova lista exista ao carregar
+                    appData.layoutData.quickAccessLinks = appData.layoutData.quickAccessLinks || [];
                 } else {
-                    console.log("Documento não encontrado. Criando com dados padrão.");
                     appData = JSON.parse(JSON.stringify(defaultData));
-                    saveAllData(); // Cria o documento inicial no Firestore
+                    saveAllData();
                 }
-                // Após carregar os dados (ou usar os padrão), atualiza a tela
                 applyStyles();
                 renderCards();
             }, error => {
                 console.error("Erro ao carregar dados do Firebase: ", error);
-                alert("Não foi possível conectar ao banco de dados. Verifique suas chaves do Firebase e as regras de segurança no console.");
             });
         }
         
-        // As funções abaixo não precisam de modificação. Elas vão funcionar com as novas saveAllData e loadAllData.
         function createCard(item, classList, type) {
             const a = document.createElement('a');
             a.className = classList;
             a.href = item.url;
-            a.target = "_blank"; a.rel = "noopener noreferrer";
             a.dataset.id = item.id;
+            
+            // MUDANÇA: Removido o target="_blank" para abrir na mesma aba.
+            // A descrição agora é condicional para não criar uma tag <p> vazia.
             a.innerHTML = `
                 <div class="card-actions">
                     <button class="card-action-btn edit-btn" title="Editar">✎</button>
@@ -431,22 +398,22 @@
                 </div>
                 <div class="card-icon">${item.icon}</div>
                 <h3>${item.title}</h3>
-                <p>${item.description}</p>`;
+                ${item.description ? `<p>${item.description}</p>` : ''}
+            `;
             
-            a.querySelector('.edit-btn').addEventListener('click', (e) => {
-                e.preventDefault(); e.stopPropagation();
-                openModal(type, item);
-            });
-            
+            const getArrayByType = (t) => {
+                if (t === 'manager') return appData.layoutData.managers;
+                if (t === 'usefulLink') return appData.layoutData.usefulLinks;
+                if (t === 'quickAccess') return appData.layoutData.quickAccessLinks;
+            };
+
+            a.querySelector('.edit-btn').addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); openModal(type, item); });
             a.querySelector('.delete-btn').addEventListener('click', (e) => {
                 e.preventDefault(); e.stopPropagation();
                 if(confirm(`Tem certeza que deseja excluir "${item.title}"?`)) {
-                    const dataArray = type === 'manager' ? appData.layoutData.managers : appData.layoutData.usefulLinks;
+                    const dataArray = getArrayByType(type);
                     const itemIndex = dataArray.findIndex(i => i.id === item.id);
-                    if (itemIndex > -1) {
-                        dataArray.splice(itemIndex, 1);
-                        saveAllData(); // Salva o estado após a remoção
-                    }
+                    if (itemIndex > -1) { dataArray.splice(itemIndex, 1); saveAllData(); }
                 }
             });
             return a;
@@ -455,61 +422,89 @@
         function renderCards() {
             managersContainer.innerHTML = '';
             linksContainer.innerHTML = '';
+            // MUDANÇA: Limpar o novo container
+            quickAccessContainer.innerHTML = '';
+
             if (appData.layoutData) {
                 appData.layoutData.managers.forEach(item => managersContainer.appendChild(createCard(item, 'card', 'manager')));
                 appData.layoutData.usefulLinks.forEach(item => linksContainer.appendChild(createCard(item, 'card card-small', 'usefulLink')));
+                // MUDANÇA: Renderizar os novos cards de acesso rápido
+                appData.layoutData.quickAccessLinks.forEach(item => quickAccessContainer.appendChild(createCard(item, 'card card-tiny', 'quickAccess')));
             }
+
             managersContainer.appendChild(createAddPlaceholder('manager'));
             linksContainer.appendChild(createAddPlaceholder('usefulLink'));
+            // MUDANÇA: Adicionar o placeholder para a nova seção
+            quickAccessContainer.appendChild(createAddPlaceholder('quickAccess'));
+            
             initSortable(managersContainer, 'managers');
             initSortable(linksContainer, 'usefulLinks');
+            // MUDANÇA: Ativar a ordenação para a nova seção
+            initSortable(quickAccessContainer, 'quickAccessLinks');
         }
 
         function createAddPlaceholder(type) {
             const p = document.createElement('div');
-            p.className = `add-card-placeholder ${type === 'manager' ? 'manager-add-placeholder' : 'link-add-placeholder'}`;
+            let className, title;
+            if (type === 'manager') {
+                className = 'manager-add-placeholder'; title = 'Adicionar Gerenciador';
+            } else if (type === 'usefulLink') {
+                className = 'link-add-placeholder'; title = 'Adicionar Link Útil';
+            } else { // quickAccess
+                className = 'quick-access-add-placeholder'; title = 'Adicionar Acesso Rápido';
+            }
+            p.className = `add-card-placeholder ${className}`;
             p.textContent = '+';
-            p.title = type === 'manager' ? 'Adicionar Gerenciador' : 'Adicionar Link Útil';
+            p.title = title;
             p.addEventListener('click', () => openModal(type));
             return p;
         }
 
         function applyStyles() {
             if (!appData.styleData) return;
-            body.className = '';
-            body.classList.add(appData.styleData.theme);
+            body.className = ''; body.classList.add(appData.styleData.theme);
             body.style.backgroundColor = appData.styleData.bgColor;
             colorPicker.value = appData.styleData.bgColor;
             root.style.setProperty('--bg-opacity', appData.styleData.bgOpacity);
             opacitySlider.value = appData.styleData.bgOpacity;
             root.style.setProperty('--bg-image', appData.styleData.bgImage ? `url('${appData.styleData.bgImage}')` : 'none');
-            const currentTheme = appData.styleData.theme || 'light-theme';
-            emojiPicker.className = currentTheme === 'dark-theme' ? 'dark' : 'light';
+            emojiPicker.className = (appData.styleData.theme || 'light-theme') === 'dark-theme' ? 'dark' : 'light';
         }
         
         function openModal(type, itemToEdit = null) {
             currentModalType = type;
             currentEditingId = itemToEdit ? itemToEdit.id : null;
-            modalTitle.textContent = itemToEdit ? 'Editar Item' : (type === 'manager' ? 'Adicionar Gerenciador' : 'Adicionar Link Útil');
+            
+            let titleText = 'Adicionar Novo Item';
+            if (itemToEdit) titleText = 'Editar Item';
+            else if (type === 'manager') titleText = 'Adicionar Gerenciador';
+            else if (type === 'usefulLink') titleText = 'Adicionar Link Útil';
+            else if (type === 'quickAccess') titleText = 'Adicionar Acesso Rápido';
+            modalTitle.textContent = titleText;
+            
             modalForm.reset();
+            
+            // MUDANÇA: Esconder ou mostrar o campo de descrição
+            if (type === 'quickAccess') {
+                itemDescriptionInput.style.display = 'none';
+                itemDescriptionInput.required = false;
+            } else {
+                itemDescriptionInput.style.display = 'block';
+                itemDescriptionInput.required = true;
+            }
+
             if (itemToEdit) {
                 document.getElementById('item-icon').value = itemToEdit.icon;
                 document.getElementById('item-title').value = itemToEdit.title;
                 document.getElementById('item-url').value = itemToEdit.url;
-                document.getElementById('item-description').value = itemToEdit.description;
+                itemDescriptionInput.value = itemToEdit.description || '';
             }
+            
             modalBackdrop.style.display = 'block';
             modal.style.display = 'block';
         }
         
-        function closeModal() {
-            modalForm.reset();
-            currentEditingId = null;
-            currentModalType = null;
-            modalBackdrop.style.display = 'none';
-            modal.style.display = 'none';
-            emojiPickerContainer.style.display = 'none';
-        }
+        function closeModal() { modalBackdrop.style.display = 'none'; modal.style.display = 'none'; emojiPickerContainer.style.display = 'none'; }
         
         lightThemeBtn.addEventListener('click', () => { appData.styleData.theme = 'light-theme'; saveAllData(); });
         darkThemeBtn.addEventListener('click', () => { appData.styleData.theme = 'dark-theme'; saveAllData(); });
@@ -518,44 +513,10 @@
         bgButton.addEventListener('click', () => bgInput.click());
         removeBgBtn.addEventListener('click', () => { appData.styleData.bgImage = null; saveAllData(); });
         
-        bgInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (re) => { appData.styleData.bgImage = re.target.result; saveAllData(); };
-                reader.readAsDataURL(file);
-            }
-        });
+        bgInput.addEventListener('change', (e) => { const file = e.target.files[0]; if(file) { const reader = new FileReader(); reader.onload = (re) => { appData.styleData.bgImage = re.target.result; saveAllData(); }; reader.readAsDataURL(file); } });
+        exportLayoutBtn.addEventListener('click', () => { const jsonString = JSON.stringify(appData, null, 2); const blob = new Blob([jsonString], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `gerenciador_backup.json`; a.click(); URL.revokeObjectURL(a.href); });
         
-        exportLayoutBtn.addEventListener('click', () => {
-            const jsonString = JSON.stringify(appData, null, 2);
-            const blob = new Blob([jsonString], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `gerenciador_central_backup.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-        
-        importLayoutInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (re) => {
-                    try {
-                        const loadedData = JSON.parse(re.target.result);
-                        if (loadedData.styleData && loadedData.layoutData) {
-                            appData = loadedData;
-                            saveAllData(); // Salva os dados importados no Firebase
-                        } else { alert('Arquivo JSON inválido.'); }
-                    } catch (err) { alert('Erro ao ler o arquivo JSON.'); }
-                };
-                reader.readAsText(file);
-                importLayoutInput.value = "";
-            }
-        });
-
+        importLayoutInput.addEventListener('change', (e) => { const file = e.target.files[0]; if(file) { const reader = new FileReader(); reader.onload = (re) => { try { const loadedData = JSON.parse(re.target.result); if (loadedData.styleData && loadedData.layoutData) { appData = loadedData; saveAllData(); } else { alert('Arquivo JSON inválido.'); } } catch (err) { alert('Erro ao ler o arquivo JSON.'); } }; reader.readAsText(file); importLayoutInput.value = ""; } });
         cancelModalBtn.addEventListener('click', closeModal);
         modalBackdrop.addEventListener('click', (e) => { if(e.target === modalBackdrop) closeModal(); });
         
@@ -568,15 +529,25 @@
                 url: formElements['item-url'].value,
                 description: formElements['item-description'].value,
             };
+            if (currentModalType === 'quickAccess') {
+                delete updatedItemData.description; // Remove a chave de descrição para este tipo
+            }
+
+            const getArrayByType = (t) => {
+                if (t === 'manager') return appData.layoutData.managers;
+                if (t === 'usefulLink') return appData.layoutData.usefulLinks;
+                if (t === 'quickAccess') return appData.layoutData.quickAccessLinks;
+                return [];
+            };
+
+            const dataArray = getArrayByType(currentModalType);
 
             if (currentEditingId) {
-                const dataArray = currentModalType === 'manager' ? appData.layoutData.managers : appData.layoutData.usefulLinks;
                 const itemIndex = dataArray.findIndex(i => i.id === currentEditingId);
                 if (itemIndex > -1) { dataArray[itemIndex] = { ...dataArray[itemIndex], ...updatedItemData }; }
             } else {
                 const newItem = { id: generateId(), ...updatedItemData };
-                if (currentModalType === 'manager') appData.layoutData.managers.push(newItem);
-                else appData.layoutData.usefulLinks.push(newItem);
+                dataArray.push(newItem);
             }
             saveAllData();
             closeModal();
@@ -587,6 +558,7 @@
                 animation: 150, filter: '.add-card-placeholder',
                 onEnd: (evt) => {
                     const dataArray = appData.layoutData[dataArrayName];
+                    if (!dataArray) return;
                     const [movedItem] = dataArray.splice(evt.oldIndex, 1);
                     dataArray.splice(evt.newIndex, 0, movedItem);
                     saveAllData();
@@ -595,17 +567,9 @@
         }
         
         emojiPickerBtn.addEventListener('click', () => { emojiPickerContainer.style.display = emojiPickerContainer.style.display === 'block' ? 'none' : 'block'; });
-        emojiPicker.addEventListener('emoji-click', event => {
-            itemIconInput.value = event.detail.unicode;
-            emojiPickerContainer.style.display = 'none';
-        });
-        modal.addEventListener('click', (e) => {
-            if (!emojiPickerContainer.contains(e.target) && e.target !== emojiPickerBtn) {
-                emojiPickerContainer.style.display = 'none';
-            }
-        });
+        emojiPicker.addEventListener('emoji-click', event => { itemIconInput.value = event.detail.unicode; emojiPickerContainer.style.display = 'none'; });
+        modal.addEventListener('click', (e) => { if (!emojiPickerContainer.contains(e.target) && e.target !== emojiPickerBtn) { emojiPickerContainer.style.display = 'none'; } });
         
-        // INICIALIZA O CARREGAMENTO DOS DADOS A PARTIR DO FIREBASE
         loadAllData();
     });
     </script>
