@@ -240,7 +240,6 @@
         </div>
     </div>
 
-    <!-- MUDANÇA: Scripts do Firebase. Trocamos 'database' por 'firestore' -->
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
     
@@ -264,21 +263,21 @@
     const db = firebase.firestore();
 
     // Referências aos documentos no Firestore
-    const tasksDocRef = db.collection('settings').doc('tasks-data'); // Documento para os dados desta página
-    const styleDocRef = db.collection('settings').doc('main-dashboard'); // Documento para os estilos (o mesmo do index.html)
+    const tasksDocRef = db.collection('settings').doc('tasks-data');
+    const styleDocRef = db.collection('settings').doc('main-dashboard');
 
     // Variáveis globais de estado
     let tasksData = [], progressData = {}, collapsedGroups = new Set(), projectName = 'Novo Projeto', selectedItems = new Set();
-    let initialDataState = ''; // Para checar alterações não salvas
+    let initialDataState = '';
+    let deliveryDate = null; // MUDANÇA: Variável para a data de entrega
 
     document.addEventListener('DOMContentLoaded', () => {
         buildPageHTML(); 
-        loadAndApplyGlobalStyle(); // Carrega estilos do Firebase
-        loadDataFromFirebase();   // Carrega dados das tarefas do Firebase
+        loadAndApplyGlobalStyle();
+        loadDataFromFirebase();
         setupEventListeners();
     });
 
-    // MUDANÇA: Carrega dados de estilo do documento principal
     async function loadAndApplyGlobalStyle() {
         try {
             const doc = await styleDocRef.get();
@@ -298,7 +297,7 @@
         }
     }
 
-    // MUDANÇA: Carrega dados das tarefas em tempo real do Firestore
+    // MUDANÇA: Carrega dados (incluindo data de entrega) do Firestore
     function loadDataFromFirebase() {
         tasksDocRef.onSnapshot(doc => {
             if (doc.exists) {
@@ -307,6 +306,7 @@
                 progressData = data.progress || {};
                 collapsedGroups = new Set(data.collapsed || []);
                 projectName = data.name || 'Novo Projeto';
+                deliveryDate = data.deliveryDate || '2025-08-27'; // Carrega a data salva ou usa um padrão
                 console.log("Dados das tarefas carregados do Firebase!");
             } else {
                 console.log("Nenhum dado de tarefas no Firebase, começando do zero.");
@@ -314,6 +314,7 @@
                 progressData = {};
                 collapsedGroups = new Set();
                 projectName = 'Novo Projeto';
+                deliveryDate = '2025-08-27'; // Define um padrão se não houver dados
             }
             renderAndCalculate(false);
             initialDataState = getCanonicalState(); 
@@ -323,22 +324,21 @@
         });
     }
 
-    // MUDANÇA: Salva o estado atual das tarefas no Firestore
     function saveDataToFirebase() {
         const currentState = JSON.parse(getCanonicalState());
         tasksDocRef.set(currentState)
             .then(() => {
                 console.log("Dados das tarefas salvos no Firebase.");
-                initialDataState = getCanonicalState(); // Atualiza o estado "salvo"
+                initialDataState = getCanonicalState();
             })
             .catch((error) => {
                 console.error("Erro ao salvar dados no Firebase: ", error);
             });
     }
 
-    // Função auxiliar para criar um objeto "limpo" para salvar
+    // MUDANÇA: Inclui 'deliveryDate' no objeto a ser salvo
     const getCanonicalState = () => {
-        const state = { tasks: tasksData, progress: progressData, collapsed: Array.from(collapsedGroups).sort(), name: projectName };
+        const state = { tasks: tasksData, progress: progressData, collapsed: Array.from(collapsedGroups).sort(), name: projectName, deliveryDate: deliveryDate };
         const cleanTasks = JSON.parse(JSON.stringify(state.tasks));
         const cleanRecursive = (tasks) => {
             tasks.forEach(task => {
@@ -350,12 +350,11 @@
         };
         cleanRecursive(cleanTasks);
         state.tasks = cleanTasks;
-        return JSON.stringify(state, null, 2); // Adicionado formatação para facilitar a leitura no Firebase
+        return JSON.stringify(state, null, 2);
     };
     
     const hasUnsavedChanges = () => getCanonicalState() !== initialDataState;
 
-    // Função que chama o salvamento
     function renderAndCalculate(doSave = true) {
         calculateAllTotals();
         renderTable();
@@ -365,14 +364,15 @@
         updateTitle();
         updateBulkActionsBar();
         if (doSave) {
-            saveDataToFirebase(); // A chamada para salvar agora usa a função do Firebase
+            saveDataToFirebase();
         }
     }
     
     // ===================================================================
-    //  FIM DO BLOCO FIREBASE. O RESTO DO CÓDIGO PERMANECE IGUAL.
+    //  FIM DO BLOCO FIREBASE
     // ===================================================================
     
+    // MUDANÇA: Adicionado listener para o summary card para alterar a data
     function setupEventListeners() {
         document.getElementById('add-task-form').addEventListener('submit', handleAddTask);
         document.getElementById('add-group-form').addEventListener('submit', handleAddGroup);
@@ -390,7 +390,14 @@
         document.getElementById('bulk-done-btn').addEventListener('click', () => handleBulkProgress(1));
         document.getElementById('bulk-redo-btn').addEventListener('click', () => handleBulkProgress(0));
         document.getElementById('bulk-move-btn').addEventListener('click', openMoveModal);
-        document.getElementById('move-items-form').addEventListener('submit', handleBulkMove);
+        
+        // MUDANÇA: Listener de evento para clicar no countdown
+        document.getElementById('summary').addEventListener('click', (e) => {
+            if (e.target.closest('.summary-item')?.querySelector('#countdown-days')) {
+                handleChangeDeliveryDate();
+            }
+        });
+
         document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges() && !confirm("Você tem alterações não salvas. Deseja voltar e perder as alterações?")) e.preventDefault(); });
         window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; return ''; } });
     }
@@ -565,6 +572,7 @@
         renderAndCalculate(true);
     }
     
+    // MUDANÇA: Atualiza o summary com a data de entrega dinâmica
     function updateSummary() {
         const totalProjectDias = tasksData.reduce((sum, task) => sum + (task._totalDias || 0), 0);
         const totalProjectCompletedDias = tasksData.reduce((sum, task) => sum + (task._completedDias || 0), 0);
@@ -575,12 +583,38 @@
         const progressBar = document.getElementById('progress-bar');
         progressBar.style.width = `${progressoGeral}%`;
         progressBar.textContent = `${progressoGeral.toFixed(1)}%`;
-        const diffDays = Math.ceil((new Date('2025-08-27T23:59:59') - new Date()) / 86400000);
+        
         const countdownEl = document.getElementById('countdown-days');
-        countdownEl.textContent = diffDays >= 0 ? diffDays : 'Atrasado!';
-        countdownEl.style.color = diffDays < 0 ? '#dc3545' : '';
+        countdownEl.parentElement.style.cursor = 'pointer'; // Adiciona o cursor de clique
+        countdownEl.parentElement.title = 'Clique para alterar a data de entrega'; // Adiciona uma dica
+
+        if (deliveryDate) {
+            // Usamos T23:59:59 para garantir que o dia de entrega seja incluído na contagem.
+            const targetDate = new Date(deliveryDate + 'T23:59:59');
+            const diffDays = Math.ceil((targetDate - new Date()) / 86400000);
+            countdownEl.textContent = diffDays >= 0 ? diffDays : 'Atrasado!';
+            countdownEl.style.color = diffDays < 0 ? '#dc3545' : '';
+        } else {
+            countdownEl.textContent = 'N/D';
+            countdownEl.style.color = '';
+        }
     }
     
+    // NOVA FUNÇÃO: Manipula a alteração da data de entrega
+    function handleChangeDeliveryDate() {
+        const currentDate = deliveryDate || new Date().toISOString().slice(0, 10);
+        const newDateStr = prompt("Digite a nova data de entrega (formato AAAA-MM-DD):", currentDate);
+
+        // Valida se o usuário inseriu algo e se o formato está correto (YYYY-MM-DD)
+        if (newDateStr && /^\d{4}-\d{2}-\d{2}$/.test(newDateStr)) {
+            deliveryDate = newDateStr;
+            renderAndCalculate(true); // Recalcula a UI e o mais importante: salva no Firebase.
+        } else if (newDateStr !== null) {
+            // Avisa o usuário se o formato for inválido mas ele não clicou em "Cancelar"
+            alert("Formato de data inválido. Por favor, use o formato AAAA-MM-DD.");
+        }
+    }
+
     function handleTableClick(e) {
         const row = e.target.closest('.task-row');
         if (!row) return;
@@ -701,6 +735,7 @@
                 progressData = data.progress || {};
                 collapsedGroups = new Set(data.collapsed || []);
                 projectName = data.name || file.name.replace(/\.json$/i, '').replace(/_/g, ' ');
+                deliveryDate = data.deliveryDate || null; // Importa a data de entrega
                 
                 renderAndCalculate(true); 
                 alert(`Projeto "${projectName}" importado e salvo com sucesso!`);
