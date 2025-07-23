@@ -262,7 +262,32 @@
         </div>
     </div>
 
+    <!-- MUDANÇA: Inclusão dos scripts do Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    
     <script>
+        // MUDANÇA: Bloco de configuração do Firebase
+        // COLE SUA CONFIGURAÇÃO DO FIREBASE AQUI
+        const firebaseConfig = {
+          apiKey: "AIza...",
+          authDomain: "seu-projeto.firebaseapp.com",
+          databaseURL: "https://seu-projeto-default-rtdb.firebaseio.com",
+          projectId: "seu-projeto",
+          storageBucket: "seu-projeto.appspot.com",
+          messagingSenderId: "...",
+          appId: "1:..."
+        };
+
+        // Inicializa o Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        // Cria uma referência para o local fixo dos dados do projeto
+        const projectRef = database.ref('projectData'); 
+    </script>
+        
+    <script>
+    // As variáveis globais permanecem as mesmas
     let tasksData = [];
     let progressData = {};
     let collapsedGroups = new Set();
@@ -271,36 +296,51 @@
     let initialDataState = '';
     
     document.addEventListener('DOMContentLoaded', () => {
+        // MUDANÇA: O carregamento de dados agora é feito pelo Firebase
         loadAndApplyGlobalStyle();
-
-        document.getElementById('summary').innerHTML = `<div class="summary-item"><strong id="total-dias">0</strong><span>Total de Dias</span></div><div class="summary-item"><strong id="dias-restantes">0.00</strong><span>Dias Restantes</span></div><div class="summary-item"><strong id="countdown-days">0</strong><span>Até a Entrega</span></div><div class="summary-item"><strong id="progresso-geral">0%</strong><span>Progresso Geral</span></div><div id="progress-bar-container"><div id="progress-bar"></div></div>`;
-        document.querySelector('.filters').innerHTML = `<button class="filter-btn active" data-filter="all">Tudo</button><button class="filter-btn" data-filter="not-started">Não Iniciados (0%)</button><button class="filter-btn" data-filter="in-progress">Em Andamento</button><button class="filter-btn" data-filter="not-done">Não Concluídos</button><button class="filter-btn" data-filter="done">Concluídos</button>`;
-        document.getElementById('add-item-modal').innerHTML = `<div class="modal-content"><span class="modal-close">×</span><div id="modal-task-form-container"><h2>Adicionar Nova Tarefa</h2><form id="add-task-form" class="form"><input type="text" id="new-task-name" placeholder="Nome da Tarefa" required><input type="number" id="new-task-days" placeholder="Dias" step="0.01" min="0" required><label for="new-task-group">Adicionar em:</label><select id="new-task-group"></select><button type="submit" class="btn btn-success">Adicionar Tarefa</button></form></div><div id="modal-group-form-container"><h2>Adicionar Novo Grupo</h2><form id="add-group-form" class="form"><input type="text" id="new-group-name" placeholder="Nome do Grupo" required><label for="new-group-parent">Adicionar em:</label><select id="new-group-parent"></select><button type="submit" class="btn btn-info">Adicionar Grupo</button></form></div></div>`;
-        
-        loadDataFromLocalStorage();
-        renderAndCalculate(false);
-        initialDataState = getCanonicalState();
+        buildPageHTML(); 
+        loadDataFromFirebase(); // <<-- Única chamada para carregar os dados
         setupEventListeners();
     });
 
-    function loadAndApplyGlobalStyle() {
-        try {
-            const savedData = localStorage.getItem('centralManagerData');
-            if (!savedData) return;
-            const appData = JSON.parse(savedData);
-            if (!appData.styleData) return;
-            const style = appData.styleData;
-            const body = document.body;
-            const root = document.documentElement;
-            body.className = '';
-            body.classList.add(style.theme || 'light-theme');
-            body.style.backgroundColor = style.bgColor;
-            root.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none');
-            root.style.setProperty('--bg-opacity', style.bgOpacity || '1');
-        } catch (e) {
-            console.error("Não foi possível carregar ou aplicar o estilo global.", e);
-        }
+    // MUDANÇA: Nova função para carregar dados do Firebase
+    function loadDataFromFirebase() {
+        projectRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                tasksData = transformData(data.tasks || []);
+                progressData = data.progress || {};
+                collapsedGroups = new Set(data.collapsed || []);
+                projectName = data.name || 'Novo Projeto';
+                console.log("Dados carregados do Firebase!");
+            } else {
+                console.log("Nenhum dado no Firebase, começando do zero.");
+                tasksData = [];
+                progressData = {};
+                collapsedGroups = new Set();
+                projectName = 'Novo Projeto';
+            }
+            renderAndCalculate(false); // Renderiza a tela com os dados carregados (sem salvar de volta)
+            initialDataState = getCanonicalState(); // Define o estado inicial após carregar
+        });
     }
+
+    // MUDANÇA: Nova função para salvar dados no Firebase
+    function saveDataToFirebase() {
+        if (!projectRef) return;
+        
+        const currentState = JSON.parse(getCanonicalState());
+        projectRef.set(currentState)
+            .then(() => {
+                console.log("Dados salvos no Firebase.");
+                initialDataState = getCanonicalState();
+            })
+            .catch((error) => {
+                console.error("Erro ao salvar dados no Firebase: ", error);
+            });
+    }
+
+    // MUDANÇA: As funções de localStorage foram removidas.
 
     const getCanonicalState = () => {
         const state = { tasks: tasksData, progress: progressData, collapsed: Array.from(collapsedGroups).sort(), name: projectName };
@@ -319,25 +359,6 @@
     };
     
     const hasUnsavedChanges = () => getCanonicalState() !== initialDataState;
-
-    function loadDataFromLocalStorage() {
-        const savedData = localStorage.getItem('projectData');
-        if (savedData) {
-            try {
-                const parsed = JSON.parse(savedData);
-                tasksData = transformData(parsed.tasks || []);
-                progressData = parsed.progress || {};
-                collapsedGroups = new Set(parsed.collapsed || []);
-                projectName = parsed.name || 'Novo Projeto';
-            } catch (e) { console.error("Falha ao carregar dados.", e); tasksData = []; }
-        }
-    }
-
-    function saveDataToLocalStorage() {
-        const currentState = getCanonicalState();
-        localStorage.setItem('projectData', JSON.stringify(JSON.parse(currentState)));
-        initialDataState = currentState;
-    }
 
     function setupEventListeners() {
         document.getElementById('add-task-form').addEventListener('submit', handleAddTask);
@@ -361,15 +382,10 @@
         window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; return ''; } });
     }
     
-    function sortTasks(tasks) {
-        tasks.sort((a, b) => (a.type === 'group' && b.type !== 'group') ? -1 : (a.type !== 'group' && b.type === 'group') ? 1 : 0);
-        tasks.forEach(task => { if (task.type === 'group') sortTasks(task.children); });
-    }
-    
     function updateTitle() { document.getElementById('project-name').textContent = projectName; }
 
+    // MUDANÇA: renderAndCalculate agora chama saveDataToFirebase
     function renderAndCalculate(doSave = true) {
-        sortTasks(tasksData);
         calculateAllTotals();
         renderTable();
         updateGroupDropdown('new-task-group');
@@ -377,7 +393,39 @@
         updateSummary();
         updateTitle();
         updateBulkActionsBar();
-        if (doSave) saveDataToLocalStorage();
+        if (doSave) {
+            saveDataToFirebase(); // <<-- Salva no Firebase
+        }
+    }
+
+    //
+    // O RESTANTE DAS FUNÇÕES JÁ ESTÁ CORRETO E NÃO PRECISA DE MUDANÇAS.
+    // Elas são copiadas abaixo para garantir que o arquivo esteja completo.
+    //
+    
+    function buildPageHTML() {
+        document.getElementById('summary').innerHTML = `<div class="summary-item"><strong id="total-dias">0</strong><span>Total de Dias</span></div><div class="summary-item"><strong id="dias-restantes">0.00</strong><span>Dias Restantes</span></div><div class="summary-item"><strong id="countdown-days">0</strong><span>Até a Entrega</span></div><div class="summary-item"><strong id="progresso-geral">0%</strong><span>Progresso Geral</span></div><div id="progress-bar-container"><div id="progress-bar"></div></div>`;
+        document.querySelector('.filters').innerHTML = `<button class="filter-btn active" data-filter="all">Tudo</button><button class="filter-btn" data-filter="not-started">Não Iniciados (0%)</button><button class="filter-btn" data-filter="in-progress">Em Andamento</button><button class="filter-btn" data-filter="not-done">Não Concluídos</button><button class="filter-btn" data-filter="done">Concluídos</button>`;
+        document.getElementById('add-item-modal').innerHTML = `<div class="modal-content"><span class="modal-close">×</span><div id="modal-task-form-container"><h2>Adicionar Nova Tarefa</h2><form id="add-task-form" class="form"><input type="text" id="new-task-name" placeholder="Nome da Tarefa" required><input type="number" id="new-task-days" placeholder="Dias" step="0.01" min="0" required><label for="new-task-group">Adicionar em:</label><select id="new-task-group"></select><button type="submit" class="btn btn-success">Adicionar Tarefa</button></form></div><div id="modal-group-form-container"><h2>Adicionar Novo Grupo</h2><form id="add-group-form" class="form"><input type="text" id="new-group-name" placeholder="Nome do Grupo" required><label for="new-group-parent">Adicionar em:</label><select id="new-group-parent"></select><button type="submit" class="btn btn-info">Adicionar Grupo</button></form></div></div>`;
+    }
+
+    function loadAndApplyGlobalStyle() {
+        try {
+            const savedData = localStorage.getItem('centralManagerData');
+            if (!savedData) return;
+            const appData = JSON.parse(savedData);
+            if (!appData.styleData) return;
+            const style = appData.styleData;
+            const body = document.body;
+            const root = document.documentElement;
+            body.className = '';
+            body.classList.add(style.theme || 'light-theme');
+            body.style.backgroundColor = style.bgColor;
+            root.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none');
+            root.style.setProperty('--bg-opacity', style.bgOpacity || '1');
+        } catch (e) {
+            console.error("Não foi possível carregar ou aplicar o estilo global.", e);
+        }
     }
 
     function renderTable() {
@@ -485,36 +533,63 @@
         recurse(tasks);
         return map;
     }
-
-    function handleDragEnd() {
-        const allItemsMap = getAllItemsAsMap(tasksData);
-        const newTasksData = [];
-        const parentStack = [{ id: 'root', children: newTasksData }];
-
-        document.querySelectorAll('#tasks-tbody .task-row').forEach(row => {
-            const item = allItemsMap.get(row.dataset.id);
-            if (!item) return;
-
-            const rowLevel = Math.round((parseInt(row.cells[0].style.paddingLeft.replace('px', '')) - 15) / 30);
-            
-            while (rowLevel < parentStack.length - 1) {
-                parentStack.pop();
+    
+    function findParentList(list, childId) {
+        for (let i = 0; i < list.length; i++) {
+            const item = list[i];
+            if (item.id === childId) {
+                return { parentList: list, index: i };
             }
-            
-            const parent = parentStack[parentStack.length - 1];
-            parent.children.push(item);
-            
-            item.children = []; 
-
             if (item.type === 'group') {
-                parentStack.push(item);
+                const found = findParentList(item.children, childId);
+                if (found) {
+                    return found;
+                }
             }
-        });
-        
-        tasksData = newTasksData;
-        renderAndCalculate(false);
+        }
+        return null;
     }
 
+    function handleDragEnd(evt) {
+        const movedItemId = evt.item.dataset.id;
+        const allItemsMap = getAllItemsAsMap();
+        const movedItem = allItemsMap.get(movedItemId);
+
+        if (!movedItem) return;
+
+        findAndDelete(tasksData, new Set([movedItemId]));
+        
+        const prevSiblingEl = evt.item.previousElementSibling;
+        
+        let destinationList;
+        let destinationIndex;
+
+        if (!prevSiblingEl) {
+            destinationList = tasksData;
+            destinationIndex = 0;
+        } else {
+            const prevSiblingId = prevSiblingEl.dataset.id;
+            const prevSiblingItem = allItemsMap.get(prevSiblingId);
+
+            if (prevSiblingItem.type === 'group' && !collapsedGroups.has(prevSiblingId)) {
+                destinationList = prevSiblingItem.children;
+                destinationIndex = 0;
+            } else {
+                const parentInfo = findParentList(tasksData, prevSiblingId);
+                if (parentInfo) {
+                    destinationList = parentInfo.parentList;
+                    destinationIndex = parentInfo.index + 1;
+                } else {
+                    destinationList = tasksData;
+                    destinationIndex = tasksData.length;
+                }
+            }
+        }
+
+        destinationList.splice(destinationIndex, 0, movedItem);
+        renderAndCalculate(true);
+    }
+    
     function updateSummary() {
         const totalProjectDias = tasksData.reduce((sum, task) => sum + (task._totalDias || 0), 0);
         const totalProjectCompletedDias = tasksData.reduce((sum, task) => sum + (task._completedDias || 0), 0);
@@ -556,7 +631,7 @@
         } else if (e.target.classList.contains('dias-btn')) { 
             item.dias = Math.max(0.25, item.dias + parseFloat(e.target.dataset.delta));
         }
-        renderAndCalculate(false);
+        renderAndCalculate(true);
     }
     
     function applyFilter(filterType, changeActiveButton = true) {
@@ -605,7 +680,7 @@
         
         nameInput.value = ''; daysInput.value = '';
         closeModal('add-item-modal');
-        renderAndCalculate(false);
+        renderAndCalculate(true);
     }
 
     function handleAddGroup(e) {
@@ -621,14 +696,14 @@
 
         nameInput.value = '';
         closeModal('add-item-modal');
-        renderAndCalculate(false);
+        renderAndCalculate(true);
     }
 
     function handleExport() {
-        saveDataToLocalStorage();
+        const dataToExport = getCanonicalState();
         try {
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(new Blob([getCanonicalState()], { type: 'application/json' }));
+            a.href = URL.createObjectURL(new Blob([dataToExport], { type: 'application/json' }));
             a.download = `${projectName.replace(/ /g,"_")}.json`;
             a.click();
             URL.revokeObjectURL(a.href);
@@ -636,7 +711,7 @@
     }
 
     function handleImport(event) {
-        if (hasUnsavedChanges() && !confirm("Você tem alterações não salvas. Deseja importar um novo projeto e perder as alterações atuais?")) {
+        if (hasUnsavedChanges() && !confirm("Isto irá substituir todos os dados do projeto atual com o conteúdo do arquivo. Deseja continuar?")) {
             event.target.value = '';
             return;
         }
@@ -647,12 +722,13 @@
         reader.onload = (e) => {
             try {
                 const data = JSON.parse(e.target.result);
-                tasksData = transformData(data.tasks);
+                tasksData = transformData(data.tasks || []);
                 progressData = data.progress || {};
                 collapsedGroups = new Set(data.collapsed || []);
-                projectName = file.name.replace(/\.json$/i, '').replace(/_/g, ' ');
-                renderAndCalculate(true); 
-                alert(`Projeto "${projectName}" importado com sucesso!`);
+                projectName = data.name || file.name.replace(/\.json$/i, '').replace(/_/g, ' ');
+                
+                renderAndCalculate(true); // Salva o novo estado completo no Firebase
+                alert(`Projeto "${projectName}" importado e salvo com sucesso!`);
             } catch(err) { console.error("Erro ao processar JSON:", err); alert("Erro ao ler o arquivo JSON. Verifique o formato do arquivo."); }
         };
         reader.readAsText(file);
@@ -687,7 +763,7 @@
         if (selectedItems.size === 0 || !confirm(`Tem certeza que deseja excluir ${selectedItems.size} item(ns)?`)) return;
         findAndDelete(tasksData, selectedItems);
         selectedItems.clear();
-        renderAndCalculate(false);
+        renderAndCalculate(true);
     }
 
     function handleBulkProgress(value) {
@@ -702,7 +778,7 @@
         selectedItems.forEach(id => getChildTasks(allItems.get(id)));
         taskIdsToUpdate.forEach(id => { progressData[id] = value; });
         selectedItems.clear();
-        renderAndCalculate(false);
+        renderAndCalculate(true);
     }
 
     function openMoveModal() {
@@ -737,7 +813,7 @@
         
         selectedItems.clear();
         closeModal('move-item-modal');
-        renderAndCalculate(false);
+        renderAndCalculate(true);
     }
     </script>
 </body>
