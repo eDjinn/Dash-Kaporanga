@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador Central</title>
-    <!-- Importa a biblioteca para Drag-and-Drop -->
+    <title>Gerenciador Central - Conectado</title>
+    
+    <!-- =================================================================== -->
+    <!-- SCRIPTS DO FIREBASE (VERSÃO DE COMPATIBILIDADE PARA SEU CÓDIGO) -->
+    <!-- =================================================================== -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+
+    <!-- Seus outros scripts e styles... -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <!-- Importa a biblioteca do Seletor de Emojis -->
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
     <style>
         :root {
@@ -219,45 +225,16 @@
         #emoji-picker-btn { padding: 8px 12px; font-size: 1.2em; border: 1px solid var(--accent-color); background-color: transparent; color: var(--accent-color); border-radius: 5px; cursor: pointer; }
         .emoji-picker-container { position: absolute; top: 110%; right: 0; z-index: 12; display: none; }
 
-        /* ===== INÍCIO: Responsividade para Dispositivos Móveis ===== */
         @media (max-width: 768px) {
-            body {
-                padding: 15px 10px;
-            }
-
-            .main-container {
-                margin-top: 15px;
-            }
-
-            .google-apps-header {
-                gap: 10px;
-            }
-
-            .card {
-                padding: 20px;
-            }
-            .card-small {
-                width: 150px; /* Reduz um pouco o tamanho */
-                padding: 15px 10px;
-            }
-             .manager-add-placeholder { 
-                width: 100%; 
-                max-width: 300px;
-                height: 150px;
-            }
-            .link-add-placeholder { 
-                width: 150px; 
-                height: 150px;
-            }
-
-            .page-controls {
-                flex-direction: column; /* Empilha os grupos de controle */
-                align-items: center;
-                gap: 25px;
-                padding: 20px 15px;
-            }
+            body { padding: 15px 10px; }
+            .main-container { margin-top: 15px; }
+            .google-apps-header { gap: 10px; }
+            .card { padding: 20px; }
+            .card-small { width: 150px; padding: 15px 10px; }
+            .manager-add-placeholder { width: 100%; max-width: 300px; height: 150px; }
+            .link-add-placeholder { width: 150px; height: 150px; }
+            .page-controls { flex-direction: column; align-items: center; gap: 25px; padding: 20px 15px; }
         }
-        /* ===== FIM: Responsividade para Dispositivos Móveis ===== */
     </style>
 </head>
 <body class="light-theme">
@@ -349,6 +326,30 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // ===================================================================
+        // PASSO 1: CONFIGURAR E INICIALIZAR O FIREBASE COM AS SUAS CHAVES
+        // ===================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9OjBDOX9UUlCrPuhIZj5ipolRT4Gu420",
+            authDomain: "gerenciadorcentral-f01e3.firebaseapp.com",
+            projectId: "gerenciadorcentral-f01e3",
+            storageBucket: "gerenciadorcentral-f01e3.appspot.com",
+            messagingSenderId: "8874050225",
+            appId: "1:8874050225:web:a536c7feb14f36af7cd890"
+        };
+
+        // Inicializa o Firebase com a sua configuração
+        firebase.initializeApp(firebaseConfig);
+
+        // Pega uma referência ao serviço do Firestore
+        const db = firebase.firestore();
+        // Define o caminho no banco de dados. Vamos salvar tudo em: coleção 'settings' -> documento 'main-dashboard'
+        const userSettingsDocRef = db.collection('settings').doc('main-dashboard');
+
+        // ===================================================================
+        // SEU CÓDIGO COM AS FUNÇÕES DE SALVAR/CARREGAR MODIFICADAS
+        // ===================================================================
+        
         const body = document.body, root = document.documentElement;
         const managersContainer = document.getElementById('managers-container'), linksContainer = document.getElementById('links-container');
         const lightThemeBtn = document.getElementById('light-theme-btn'), darkThemeBtn = document.getElementById('dark-theme-btn');
@@ -358,7 +359,6 @@
         const modalBackdrop = document.getElementById('modal-backdrop'), modal = document.getElementById('add-item-modal');
         const modalForm = document.getElementById('add-item-form'), modalTitle = document.getElementById('modal-title');
         const cancelModalBtn = document.getElementById('cancel-modal-btn');
-        
         const emojiPickerBtn = document.getElementById('emoji-picker-btn');
         const emojiPickerContainer = document.querySelector('.emoji-picker-container');
         const emojiPicker = document.querySelector('emoji-picker');
@@ -369,18 +369,60 @@
 
         const defaultData = {
             styleData: { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' },
-            layoutData: {
-                managers: [],
-                usefulLinks: []
-            }
+            layoutData: { managers: [], usefulLinks: [] }
         };
         
         const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
+        // FUNÇÃO MODIFICADA PARA SALVAR NO FIREBASE
+        async function saveAllData() {
+            try {
+                // O método .set() sobrescreve completamente o documento com o novo estado de appData
+                await userSettingsDocRef.set(appData);
+                console.log("Dados salvos no Firebase com sucesso!");
+            } catch (error) {
+                console.error("Erro ao salvar dados no Firebase: ", error);
+                if (error.code === 'invalid-argument') {
+                     alert("Erro: A imagem de fundo é muito grande para salvar (limite de 1MB). Tente uma imagem menor.");
+                } else {
+                     alert("Ocorreu um erro ao salvar os dados. Verifique o console (F12).");
+                }
+            }
+        }
+
+        // FUNÇÃO MODIFICADA PARA CARREGAR DO FIREBASE EM TEMPO REAL
+        function loadAllData() {
+            // onSnapshot "escuta" por qualquer mudança no documento no Firestore.
+            // Se você mudar algo no console do Firebase, a página vai atualizar sozinha!
+            userSettingsDocRef.onSnapshot(doc => {
+                if (doc.exists) {
+                    console.log("Dados carregados do Firebase.");
+                    appData = doc.data();
+                    // Garante que a estrutura de dados local seja válida
+                    appData.styleData = appData.styleData || defaultData.styleData;
+                    appData.layoutData = appData.layoutData || defaultData.layoutData;
+                    appData.layoutData.managers = appData.layoutData.managers || [];
+                    appData.layoutData.usefulLinks = appData.layoutData.usefulLinks || [];
+                } else {
+                    console.log("Documento não encontrado. Criando com dados padrão.");
+                    appData = JSON.parse(JSON.stringify(defaultData));
+                    saveAllData(); // Cria o documento inicial no Firestore
+                }
+                // Após carregar os dados (ou usar os padrão), atualiza a tela
+                applyStyles();
+                renderCards();
+            }, error => {
+                console.error("Erro ao carregar dados do Firebase: ", error);
+                alert("Não foi possível conectar ao banco de dados. Verifique suas chaves do Firebase e as regras de segurança no console.");
+            });
+        }
+        
+        // As funções abaixo não precisam de modificação. Elas vão funcionar com as novas saveAllData e loadAllData.
         function createCard(item, classList, type) {
             const a = document.createElement('a');
             a.className = classList;
             a.href = item.url;
+            a.target = "_blank"; a.rel = "noopener noreferrer";
             a.dataset.id = item.id;
             a.innerHTML = `
                 <div class="card-actions">
@@ -403,12 +445,10 @@
                     const itemIndex = dataArray.findIndex(i => i.id === item.id);
                     if (itemIndex > -1) {
                         dataArray.splice(itemIndex, 1);
-                        renderCards();
-                        saveAllData();
+                        saveAllData(); // Salva o estado após a remoção
                     }
                 }
             });
-
             return a;
         }
         
@@ -421,6 +461,8 @@
             }
             managersContainer.appendChild(createAddPlaceholder('manager'));
             linksContainer.appendChild(createAddPlaceholder('usefulLink'));
+            initSortable(managersContainer, 'managers');
+            initSortable(linksContainer, 'usefulLinks');
         }
 
         function createAddPlaceholder(type) {
@@ -441,38 +483,17 @@
             root.style.setProperty('--bg-opacity', appData.styleData.bgOpacity);
             opacitySlider.value = appData.styleData.bgOpacity;
             root.style.setProperty('--bg-image', appData.styleData.bgImage ? `url('${appData.styleData.bgImage}')` : 'none');
-
-            if (appData.styleData.theme === 'dark-theme') {
-                emojiPicker.classList.add('dark');
-                emojiPicker.classList.remove('light');
-            } else {
-                emojiPicker.classList.add('light');
-                emojiPicker.classList.remove('dark');
-            }
-        }
-
-        function saveAllData() {
-            try {
-                localStorage.setItem('centralManagerData', JSON.stringify(appData));
-            } catch(e) {
-                console.error("Erro ao salvar no localStorage.", e);
-                alert("A imagem de fundo pode ser muito grande e não pôde ser salva localmente.");
-            }
-        }
-
-        function loadAllData() {
-            const savedData = localStorage.getItem('centralManagerData');
-            appData = savedData ? JSON.parse(savedData) : JSON.parse(JSON.stringify(defaultData)); 
-            applyStyles();
-            renderCards();
+            const currentTheme = appData.styleData.theme || 'light-theme';
+            emojiPicker.className = currentTheme === 'dark-theme' ? 'dark' : 'light';
         }
         
         function openModal(type, itemToEdit = null) {
             currentModalType = type;
             currentEditingId = itemToEdit ? itemToEdit.id : null;
             modalTitle.textContent = itemToEdit ? 'Editar Item' : (type === 'manager' ? 'Adicionar Gerenciador' : 'Adicionar Link Útil');
+            modalForm.reset();
             if (itemToEdit) {
-                itemIconInput.value = itemToEdit.icon;
+                document.getElementById('item-icon').value = itemToEdit.icon;
                 document.getElementById('item-title').value = itemToEdit.title;
                 document.getElementById('item-url').value = itemToEdit.url;
                 document.getElementById('item-description').value = itemToEdit.description;
@@ -490,35 +511,29 @@
             emojiPickerContainer.style.display = 'none';
         }
         
-        lightThemeBtn.addEventListener('click', () => { appData.styleData.theme = 'light-theme'; applyStyles(); saveAllData(); });
-        darkThemeBtn.addEventListener('click', () => { appData.styleData.theme = 'dark-theme'; applyStyles(); saveAllData(); });
-        colorPicker.addEventListener('input', (e) => { appData.styleData.bgColor = e.target.value; applyStyles(); saveAllData(); });
-        opacitySlider.addEventListener('input', (e) => { appData.styleData.bgOpacity = e.target.value; applyStyles(); saveAllData(); });
+        lightThemeBtn.addEventListener('click', () => { appData.styleData.theme = 'light-theme'; saveAllData(); });
+        darkThemeBtn.addEventListener('click', () => { appData.styleData.theme = 'dark-theme'; saveAllData(); });
+        colorPicker.addEventListener('input', (e) => { appData.styleData.bgColor = e.target.value; saveAllData(); });
+        opacitySlider.addEventListener('input', (e) => { appData.styleData.bgOpacity = e.target.value; saveAllData(); });
         bgButton.addEventListener('click', () => bgInput.click());
-        
-        removeBgBtn.addEventListener('click', () => {
-            appData.styleData.bgImage = null;
-            applyStyles();
-            saveAllData();
-        });
+        removeBgBtn.addEventListener('click', () => { appData.styleData.bgImage = null; saveAllData(); });
         
         bgInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(file) {
                 const reader = new FileReader();
-                reader.onload = (re) => { appData.styleData.bgImage = re.target.result; applyStyles(); saveAllData(); };
+                reader.onload = (re) => { appData.styleData.bgImage = re.target.result; saveAllData(); };
                 reader.readAsDataURL(file);
             }
         });
-
+        
         exportLayoutBtn.addEventListener('click', () => {
             const jsonString = JSON.stringify(appData, null, 2);
             const blob = new Blob([jsonString], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            const fileName = document.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-            a.download = `${fileName}_layout.json`;
+            a.download = `gerenciador_central_backup.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
@@ -532,15 +547,9 @@
                         const loadedData = JSON.parse(re.target.result);
                         if (loadedData.styleData && loadedData.layoutData) {
                             appData = loadedData;
-                            applyStyles();
-                            renderCards();
-                            saveAllData();
-                        } else { 
-                            alert('Arquivo JSON inválido.'); 
-                        }
-                    } catch (err) { 
-                        alert('Erro ao ler o arquivo JSON.'); 
-                    }
+                            saveAllData(); // Salva os dados importados no Firebase
+                        } else { alert('Arquivo JSON inválido.'); }
+                    } catch (err) { alert('Erro ao ler o arquivo JSON.'); }
                 };
                 reader.readAsText(file);
                 importLayoutInput.value = "";
@@ -563,16 +572,12 @@
             if (currentEditingId) {
                 const dataArray = currentModalType === 'manager' ? appData.layoutData.managers : appData.layoutData.usefulLinks;
                 const itemIndex = dataArray.findIndex(i => i.id === currentEditingId);
-                if (itemIndex > -1) {
-                    dataArray[itemIndex] = { ...dataArray[itemIndex], ...updatedItemData };
-                }
+                if (itemIndex > -1) { dataArray[itemIndex] = { ...dataArray[itemIndex], ...updatedItemData }; }
             } else {
                 const newItem = { id: generateId(), ...updatedItemData };
                 if (currentModalType === 'manager') appData.layoutData.managers.push(newItem);
                 else appData.layoutData.usefulLinks.push(newItem);
             }
-            
-            renderCards();
             saveAllData();
             closeModal();
         });
@@ -589,24 +594,19 @@
             });
         }
         
-        loadAllData();
-        initSortable(managersContainer, 'managers');
-        initSortable(linksContainer, 'usefulLinks');
-
-        emojiPickerBtn.addEventListener('click', () => {
-            emojiPickerContainer.style.display = emojiPickerContainer.style.display === 'block' ? 'none' : 'block';
-        });
-        
+        emojiPickerBtn.addEventListener('click', () => { emojiPickerContainer.style.display = emojiPickerContainer.style.display === 'block' ? 'none' : 'block'; });
         emojiPicker.addEventListener('emoji-click', event => {
             itemIconInput.value = event.detail.unicode;
             emojiPickerContainer.style.display = 'none';
         });
-
         modal.addEventListener('click', (e) => {
             if (!emojiPickerContainer.contains(e.target) && e.target !== emojiPickerBtn) {
                 emojiPickerContainer.style.display = 'none';
             }
         });
+        
+        // INICIALIZA O CARREGAMENTO DOS DADOS A PARTIR DO FIREBASE
+        loadAllData();
     });
     </script>
 </body>
