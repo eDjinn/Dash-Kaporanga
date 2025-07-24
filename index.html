@@ -60,15 +60,42 @@
         .card-tiny .card-icon { font-size: 2.8em; margin-bottom: 10px; }
         .card-tiny h3 { font-size: 1em; margin-bottom: 0; }
         .card-tiny p { display: none; }
+        
+        /* ESTILO CORRIGIDO FINAL */
         .add-card-placeholder {
-            border: 2px dashed var(--secondary-text-color); color: var(--secondary-text-color);
-            border-radius: 10px; display: flex; align-items: center; justify-content: center;
-            font-size: 3em; cursor: pointer; opacity: 0.6; transition: all 0.3s ease;
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background-color: #e9ecef;
+            color: #495057;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: all 0.3s ease;
+            border: none;
+            margin-left: 10px;
+            align-self: center;
+            flex-shrink: 0;
         }
-        .add-card-placeholder:hover { opacity: 1; border-color: var(--accent-color); color: var(--accent-color); transform: scale(1.05); }
-        .manager-add-placeholder { width: 300px; height: 215px; }
-        .link-add-placeholder { width: 175px; height: 180px; }
-        .quick-access-add-placeholder { width: 120px; height: 120px; }
+        .add-card-placeholder > span {
+            position: relative;
+            top: -3px; /* AJUSTE FINO MANUAL */
+        }
+        .add-card-placeholder:hover {
+            background-color: #d7dde2;
+            transform: scale(1.08);
+        }
+        body.dark-theme .add-card-placeholder {
+            background-color: #383838;
+            color: var(--primary-text-color);
+        }
+        body.dark-theme .add-card-placeholder:hover {
+            background-color: #4f4f4f;
+        }
+        /* FIM DO ESTILO */
+
         .card-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 5px; opacity: 0; transition: opacity 0.2s ease-in-out; }
         .card:hover .card-actions { opacity: 1; }
         .card-action-btn { background: rgba(0,0,0,0.4); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
@@ -111,9 +138,6 @@
             body { padding: 15px 10px; } .main-container { margin-top: 15px; } .google-apps-header { gap: 10px; }
             .card { padding: 20px; } .card-small { width: 150px; padding: 15px 10px; }
             .card-tiny { width: 100px; height: 100px; }
-            .manager-add-placeholder { width: 100%; max-width: 300px; height: 150px; }
-            .link-add-placeholder { width: 150px; height: 150px; }
-            .quick-access-add-placeholder { width: 100px; height: 100px; }
             .page-controls { flex-direction: column; align-items: center; gap: 25px; padding: 20px 15px; }
         }
     </style>
@@ -277,12 +301,13 @@
             initSortable(quickAccessContainer, 'quickAccessLinks');
         }
 
+        // FUNÇÃO JS MODIFICADA
         function createAddPlaceholder(type) {
             const p = document.createElement('div');
-            const classMap = { manager: 'manager-add-placeholder', usefulLink: 'link-add-placeholder', quickAccess: 'quick-access-add-placeholder' };
             const titleMap = { manager: 'Adicionar Gerenciador', usefulLink: 'Adicionar Link Útil', quickAccess: 'Adicionar Acesso Rápido' };
-            p.className = `add-card-placeholder ${classMap[type]}`;
-            p.textContent = '+'; p.title = titleMap[type];
+            p.className = 'add-card-placeholder';
+            p.innerHTML = '<span>+</span>'; // O '+' agora está dentro de um span
+            p.title = titleMap[type];
             p.addEventListener('click', () => openModal(type));
             return p;
         }

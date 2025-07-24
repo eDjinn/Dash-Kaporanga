@@ -9,6 +9,7 @@
     <!-- Biblioteca para criar arquivos .zip -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
+        /* ⭐️ INÍCIO DA SEÇÃO DE ESTILO HERDADA ⭐️ */
         :root {
             --primary-text-color: #1a2533;
             --secondary-text-color: #6c757d;
@@ -17,14 +18,35 @@
             --card-shadow-color: rgba(0, 0, 0, 0.1);
             --accent-color: #007bff;
             --success-color: #28a745;
+            --bg-image: none;
+            --bg-opacity: 1;
+        }
+        body.dark-theme {
+            --primary-text-color: #e0e0e0;
+            --secondary-text-color: #b0b0b0;
+            --page-bg-color: #121212;
+            --card-bg-color: rgba(40, 40, 40, 0.92);
+            --card-shadow-color: rgba(0, 0, 0, 0.4);
+            --accent-color: #4dabf7;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--page-bg-color);
             color: var(--primary-text-color);
             margin: 0;
+            padding: 0;
+            position: relative;
+            transition: background-color 0.3s ease, color 0.3s ease;
             padding-top: 80px; /* Espaço para o header fixo */
         }
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; background-image: var(--bg-image); background-size: cover;
+            background-position: center; background-repeat: no-repeat;
+            opacity: var(--bg-opacity); transition: opacity 0.3s ease, background-image 0.5s ease-in-out;
+        }
+        /* ⭐️ FIM DA SEÇÃO DE ESTILO HERDADA ⭐️ */
+
         .container {
             max-width: 900px;
             margin: 0 auto;
@@ -91,6 +113,7 @@
             cursor: pointer;
             border-radius: 8px;
             transition: background-color 0.3s, border-color 0.3s;
+            background-color: var(--card-bg-color); /* Aplicando variável de tema */
         }
         #upload-container.dragover {
             background-color: #e6f2ff;
@@ -115,10 +138,10 @@
             background-color: white;
         }
         .options-panel {
-            background-color: #fff;
+            background-color: var(--card-bg-color); /* Aplicando variável de tema */
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px var(--card-shadow-color); /* Aplicando variável de tema */
             margin-bottom: 20px;
             text-align: center;
         }
@@ -148,10 +171,10 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            background-color: #fff;
+            background-color: var(--card-bg-color); /* Aplicando variável de tema */
             padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px var(--card-shadow-color); /* Aplicando variável de tema */
             margin-bottom: 10px;
         }
         .result-thumbnail {
@@ -217,8 +240,41 @@
         </div>
     </div>
 
+    <!-- Scripts do Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // --- LÓGICA HERDADA PARA ESTILO GLOBAL ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyC9OjBDOX9UUlCrPuhIZj5ipolRT4Gu420",
+        authDomain: "gerenciadorcentral-f01e3.firebaseapp.com",
+        projectId: "gerenciadorcentral-f01e3",
+        storageBucket: "gerenciadorcentral-f01e3.appspot.com",
+        messagingSenderId: "8874050225",
+        appId: "1:8874050225:web:a536c7feb14f36af7cd890"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const styleDocRef = db.collection('settings').doc('main-dashboard');
+    
+    async function loadAndApplyGlobalStyle() {
+        try {
+            const doc = await styleDocRef.get();
+            if (doc.exists && doc.data().styleData) {
+                const style = doc.data().styleData;
+                const body = document.body, root = document.documentElement;
+                body.className = ''; body.classList.add(style.theme || 'light-theme');
+                body.style.backgroundColor = style.bgColor;
+                root.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none');
+                root.style.setProperty('--bg-opacity', style.bgOpacity || '1');
+            }
+        } catch (e) { console.error("Não foi possível carregar estilos do Firebase.", e); }
+    }
+    // --- FIM DA LÓGICA HERDADA ---
+
     // --- Elementos do DOM ---
     const fileInput = document.getElementById('file-input');
     const uploadContainer = document.getElementById('upload-container');
@@ -378,6 +434,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     clearResultsBtn.addEventListener('click', clearAll);
+
+    // Inicializa o carregamento do estilo global
+    loadAndApplyGlobalStyle();
 });
 </script>
 </body>
