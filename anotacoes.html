@@ -58,7 +58,7 @@
         #back-btn { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
         #back-btn svg { width: 22px; height: 22px; }
         .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; }
-        .file-input-wrapper input[type]="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
+        .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
         #search-input { width: 200px; max-width: 250px; flex-grow: 1; padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; background-color: var(--page-bg-color); color: var(--primary-text-color); }
 
         .date-filter-group { display: flex; align-items: center; gap: 8px; font-size: 14px; flex-wrap: wrap; }
@@ -79,7 +79,7 @@
         .note-card-title { font-size: 1.2em; font-weight: bold; color: var(--accent-color); margin: 0; word-break: break-all; }
         .note-card-actions button { background: none; border: none; cursor: pointer; font-size: 1.1em; opacity: 0.6; transition: opacity 0.2s; padding: 2px; color: var(--secondary-text-color); }
         .note-card-actions button:hover { opacity: 1; }
-        .note-card-content { flex-grow: 1; overflow-y: auto; white-space: pre-wrap; font-size: 0.95em; }
+        .note-card-content { flex-grow: 1; overflow-y: auto; white-space: pre-wrap; font-size: 0.95em; cursor: pointer; }
         .note-card-footer { margin-top: auto; padding-top: 8px; text-align: right; font-size: 0.8em; color: var(--secondary-text-color); border-top: 1px solid #eee; }
         body.dark-theme .note-card-footer { border-color: #444; }
         
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dataToRender.forEach(note => {
             const card = document.createElement('div');
             card.className = 'note-card'; card.dataset.id = note.id;
-            card.innerHTML = `<div class="note-card-header"><h3 class="note-card-title">${note.title}</h3><div class="note-card-actions"><button class="edit-btn" title="Editar">✏️</button><button class="delete-btn" title="Excluir">🗑️</button></div></div><div class="note-card-content">${note.content}</div><footer class="note-card-footer">${formatTimestamp(note.timestamp)}</footer>`;
+            card.innerHTML = `<div class="note-card-header"><h3 class="note-card-title">${note.title}</h3><div class="note-card-actions"><button class="delete-btn" title="Excluir">🗑️</button></div></div><div class="note-card-content">${note.content}</div><footer class="note-card-footer">${formatTimestamp(note.timestamp)}</footer>`;
             notesContainer.appendChild(card);
         });
     };
@@ -293,10 +293,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         closeModal(); saveDataToFirebase();
     });
-    notesContainer.addEventListener('click', e => { 
-        const editBtn = e.target.closest('.edit-btn'); if (editBtn) { openModal('edit', editBtn.closest('.note-card').dataset.id); return; }
-        const deleteBtn = e.target.closest('.delete-btn'); if (deleteBtn) { if (confirm('Tem certeza que deseja excluir esta anotação?')) { notesData = notesData.filter(n => n.id !== deleteBtn.closest('.note-card').dataset.id); saveDataToFirebase(); } }
+
+    notesContainer.addEventListener('click', e => {
+        const card = e.target.closest('.note-card');
+        if (!card) return;
+
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (deleteBtn) {
+            e.stopPropagation();
+            if (confirm('Tem certeza que deseja excluir esta anotação?')) {
+                notesData = notesData.filter(n => n.id !== card.dataset.id);
+                saveDataToFirebase();
+            }
+        } else {
+            openModal('edit', card.dataset.id);
+        }
     });
+
     document.getElementById('export-json-btn').addEventListener('click', () => { 
         if(notesData.length === 0){ alert("Não há anotações para exportar."); return; } 
         const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({ notes: notesData }, null, 2)], { type: 'application/json' })); 
@@ -320,6 +333,17 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', updateContainerPadding);
     window.addEventListener('scroll', handleHeaderScroll);
     
+    document.addEventListener('keydown', (e) => {
+        if (noteModal.classList.contains('visible')) {
+            if (e.key === 'Escape') {
+                closeModal();
+            } else if (e.key === 'Enter' && e.ctrlKey) {
+                e.preventDefault();
+                noteForm.requestSubmit();
+            }
+        }
+    });
+
     loadAndApplyGlobalStyle();
     loadDataFromFirebase();
     initSortable();

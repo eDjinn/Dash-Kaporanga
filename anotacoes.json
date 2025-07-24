@@ -1,14 +1,46 @@
-[
-  {
-    "id": "note_1753204632199_718fokpbh",
-    "title": "Arrumar Site",
-    "content": "Logo antigo, imagens velhas, informações faltando...",
-    "timestamp": "2025-07-22T17:17:12.199Z"
-  },
-  {
-    "id": "note_1753136350021_x9pe3nstt",
-    "title": "Mudança nos mapas",
-    "content": "Mudar o Sol de posição no mesmo minigame em vezes diferentes que se acessa o mapa.",
-    "timestamp": "2025-07-21T22:19:10.021Z"
-  }
-]
+{
+  "notes": [
+    {
+      "title": "Mudanças aqui",
+      "timestamp": "2025-07-24T14:40:07.395Z",
+      "id": "note_1753327486442_ubf5e4yqm",
+      "content": "No anotacoes.html, mudar o importar. Tem um \"escolher ficheiro\" do nada ali. Quero um botão de Importar apenas, igual o da minigames.html. Ao clicar em uma anotação, abrir em um popup. Como o editar. Pode remover o lápis, visto que agora é só clicar no card.\n\nNa tarefas.html, diminuir o tamanho da coluna de nome de tarefa e grupos para mobile, pq n consigo ler nada pra direita, só se arrastar.\n\nNo index, já abrir direto com o texto pra escrever na barra de endereços, ou omnibox. Se eu abrir essa página em uma nova guia, já posso chegar digitando uma URL pra ir pra outro site.\n\nNa minigames.html, remova completamente a coluna de ver mais. Para ver mais agora, basta clicar em cima do item. Algumas colunas estão sendo escondidas quando o site fica pequeno horizontalmente, mas ainda não é o suficiente. Esconda também a coluna de Local.\n\nEm todas as páginas que tiverem popups para salvar alguma informação, adicionar o atalho ctrl+Enter para Salvar e ESC para fechar/cancelar.\n"
+    },
+    {
+      "content": "https://www.instagram.com/p/C2ARtyTr6Xf/",
+      "id": "note_1753314164453_9vi02f0rf",
+      "title": "Datas SECEC",
+      "timestamp": "2025-07-23T23:42:44.453Z"
+    },
+    {
+      "title": "Collider da Lapa",
+      "id": "note_1753311195823_wonywunwi",
+      "content": "Lembrar de arrumar o collider dos Arcos da Lapa",
+      "timestamp": "2025-07-23T22:53:15.823Z"
+    },
+    {
+      "timestamp": "2025-07-23T19:48:57.692Z",
+      "title": "[GameSelection] Sequencers",
+      "content": "Ajustar a camera dos sequencers, e botar pra tocar na BP do GameState. Tem que ajustar a camera normal também, com base na imagem de referência.",
+      "id": "note_1753300087580_up41ho8pi"
+    },
+    {
+      "timestamp": "2025-07-23T19:48:34.468Z",
+      "id": "note_1753300060252_lc82bjm4k",
+      "content": "precisa da música do pião da casa própria",
+      "title": "[GameSelection] Música"
+    },
+    {
+      "title": "Arrumar Site",
+      "timestamp": "2025-07-22T17:17:12.199Z",
+      "id": "note_1753204632199_718fokpbh",
+      "content": "Logo antigo, imagens velhas, informações faltando..."
+    },
+    {
+      "title": "Mudança nos mapas",
+      "timestamp": "2025-07-21T22:19:10.021Z",
+      "content": "Mudar o Sol de posição no mesmo minigame em vezes diferentes que se acessa o mapa.",
+      "id": "note_1753136350021_x9pe3nstt"
+    }
+  ]
+}

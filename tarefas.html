@@ -127,6 +127,7 @@
         th, td { padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left; vertical-align: middle; transition: background-color 0.2s; }
         
         th { background-color: var(--accent-color); color: white; font-weight: bold; }
+        th:first-child { width: 50%; }
         .task-row { background-color: transparent; cursor: grab; user-select: none; }
         .task-row.selected > td { background-color: #fff3cd; }
         .task-row.sortable-ghost { background-color: #cce5ff; opacity: 0.7; }
@@ -154,7 +155,7 @@
             .summary-item { flex-basis: 40%; }
             .control-group { flex-wrap: wrap; }
             th, td { padding: 10px 8px; }
-            .task-row td:first-child { word-break: break-all; }
+            th:first-child, .task-row td:first-child { width: 40%; word-break: break-all; }
         }
     </style>
 </head>
@@ -195,7 +196,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 50%;">Tarefa</th>
+                        <th>Tarefa</th>
                         <th style="text-align: center;">Dias</th>
                         <th style="text-align: center;">Progresso</th>
                         <th style="width: 20px;"><input type="checkbox" id="select-all-checkbox"></th>
@@ -385,6 +386,32 @@
         
         window.addEventListener('resize', updateContainerPadding);
         window.addEventListener('scroll', handleHeaderScroll);
+
+        document.addEventListener('keydown', (e) => {
+            const choiceModal = document.getElementById('add-choice-modal');
+            const itemModal = document.getElementById('add-item-modal');
+            const moveModal = document.getElementById('move-item-modal');
+
+            if (e.key === 'Escape') {
+                if (choiceModal.classList.contains('visible')) closeModal('add-choice-modal');
+                if (itemModal.classList.contains('visible')) closeModal('add-item-modal');
+                if (moveModal.classList.contains('visible')) closeModal('move-item-modal');
+            }
+
+            if (e.key === 'Enter' && e.ctrlKey) {
+                e.preventDefault();
+                if (itemModal.classList.contains('visible')) {
+                    const taskFormContainer = document.getElementById('modal-task-form-container');
+                    if (taskFormContainer.classList.contains('visible')) {
+                        document.getElementById('add-task-form').requestSubmit();
+                    } else {
+                        document.getElementById('add-group-form').requestSubmit();
+                    }
+                } else if (moveModal.classList.contains('visible')) {
+                    document.getElementById('move-items-form').requestSubmit();
+                }
+            }
+        });
     }
     
     function buildPageHTML() {

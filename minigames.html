@@ -85,6 +85,7 @@
         th[data-column].sorted-asc::after { content: ' \2191'; opacity: 1; }
         th[data-column].sorted-desc::after { content: ' \2193'; opacity: 1; }
         th.no-sort { cursor: default; }
+        tbody tr { cursor: pointer; }
         tr.selected-row > td { background-color: #fff3cd !important; }
         tr:hover > td { background-color: rgba(128, 128, 128, 0.1); }
         .table-thumb { max-width: 80px; max-height: 45px; border-radius: 4px; object-fit: cover; background-color: #eee; }
@@ -107,6 +108,7 @@
             .curiosity-image-area { margin-top: 10px; }
             table { min-width: 0; }
             thead th:nth-child(4), tbody td:nth-child(4),
+            thead th:nth-child(5), tbody td:nth-child(5),
             thead th:nth-child(6), tbody td:nth-child(6) {
                 display: none;
             }
@@ -137,11 +139,10 @@
                     <tr>
                         <th style="width: 5%;" data-column="#">#</th>
                         <th style="width: 10%;" class="no-sort">Thumb</th>
-                        <th style="width: 20%;" data-column="Nome">Nome</th>
-                        <th style="width: 20%;" data-column="Inspiração">Inspiração</th>
+                        <th style="width: 25%;" data-column="Nome">Nome</th>
+                        <th style="width: 25%;" data-column="Inspiração">Inspiração</th>
                         <th style="width: 15%;" data-column="Local">Local</th>
                         <th style="width: 15%;" class="no-sort">Referências</th>
-                        <th style="width: 10%;" class="no-sort">Ver Mais</th>
                         <th style="width: 5%; text-align: center;" class="no-sort"><input type="checkbox" id="select-all-checkbox" title="Selecionar Todos"></th>
                     </tr>
                 </thead>
@@ -241,9 +242,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const originalIndex = minigameData.findIndex(originalItem => originalItem === item);
             if (originalIndex === -1) return;
             const row = tableBody.insertRow();
+            row.dataset.index = originalIndex;
             if (selectedItems.has(originalIndex)) row.classList.add('selected-row');
             const referencesHTML = (item['Referências'] || []).map(ref => `<div><a href="${ref.url || '#'}" target="_blank">${ref.nome || 'Link'}</a></div>`).join('');
-            row.innerHTML = `<td>${item['#'] || ''}</td><td><img src="${item.Thumb || placeholderThumb}" alt="Thumb" class="table-thumb"></td><td>${item['Nome'] || ''}</td><td>${item['Inspiração'] || ''}</td><td>${item['Local'] || ''}</td><td>${referencesHTML || 'N/A'}</td><td style="text-align: center;"><button class="btn btn-primary open-details-btn" data-index="${originalIndex}">Ver Mais</button></td><td style="text-align: center;"><input type="checkbox" class="select-checkbox" data-index="${originalIndex}" ${selectedItems.has(originalIndex) ? 'checked' : ''}></td>`;
+            row.innerHTML = `<td>${item['#'] || ''}</td><td><img src="${item.Thumb || placeholderThumb}" alt="Thumb" class="table-thumb"></td><td>${item['Nome'] || ''}</td><td>${item['Inspiração'] || ''}</td><td>${item['Local'] || ''}</td><td>${referencesHTML || 'N/A'}</td><td style="text-align: center;"><input type="checkbox" class="select-checkbox" data-index="${originalIndex}" ${selectedItems.has(originalIndex) ? 'checked' : ''}></td>`;
         });
     };
     
@@ -311,15 +313,29 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('details-modal').addEventListener('click', (e) => { if (e.target.id === 'details-modal') e.currentTarget.classList.remove('visible'); });
         document.getElementById('add-curiosity-btn').addEventListener('click', () => addCuriosityRow(document.getElementById('curiosities-container')));
         document.querySelectorAll('.remove-file-btn').forEach(btn => btn.addEventListener('click', (e) => { document.getElementById(e.currentTarget.dataset.inputId).value = ''; document.getElementById(e.currentTarget.dataset.filenameId).textContent = e.currentTarget.dataset.defaultText; }));
+        
         document.getElementById('table-container').addEventListener('click', (e) => {
-            if (e.target.classList.contains('open-details-btn')) openDetailsModal('edit', e.target.dataset.index);
+            const row = e.target.closest('tbody tr');
+            if (!row) return;
+
             if (e.target.classList.contains('select-checkbox')) {
                 const index = parseInt(e.target.dataset.index, 10);
                 if (e.target.checked) selectedItems.add(index); else selectedItems.delete(index);
-                e.target.closest('tr').classList.toggle('selected-row', e.target.checked);
+                row.classList.toggle('selected-row', e.target.checked);
                 updateBulkActionsVisibility();
+                return;
+            }
+
+            if (e.target.closest('a')) {
+                return;
+            }
+
+            const index = row.dataset.index;
+            if (index !== undefined) {
+                openDetailsModal('edit', index);
             }
         });
+
         document.getElementById('export-json-btn').addEventListener('click', () => {
             if(minigameData.length === 0){ alert("Não há dados para exportar."); return; }
             const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({ projectName, games: minigameData }, null, 2)], { type: 'application/json' }));
@@ -358,6 +374,18 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; } });
         window.addEventListener('resize', updateContainerPadding);
         window.addEventListener('scroll', handleHeaderScroll);
+
+        document.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('details-modal');
+            if (modal.classList.contains('visible')) {
+                if (e.key === 'Escape') {
+                    modal.classList.remove('visible');
+                } else if (e.key === 'Enter' && e.ctrlKey) {
+                    e.preventDefault();
+                    document.getElementById('details-form').requestSubmit();
+                }
+            }
+        });
     }
     loadAndApplyGlobalStyle();
     loadDataFromFirebase();
