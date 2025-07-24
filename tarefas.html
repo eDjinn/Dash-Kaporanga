@@ -78,13 +78,6 @@
 
         #primary-actions-container { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; transition: max-height 0.4s ease-out, opacity 0.3s ease; }
         
-        .header-scrolled #primary-actions-container,
-        #bulk-actions-container.visible ~ #primary-actions-container {
-            overflow: hidden;
-            opacity: 0;
-            max-height: 0;
-        }
-
         .modal-overlay { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
         .modal-overlay.visible { display: flex; }
         
@@ -156,6 +149,12 @@
             .control-group { flex-wrap: wrap; }
             th, td { padding: 10px 8px; }
             th:first-child, .task-row td:first-child { width: 40%; word-break: break-all; }
+            .header-scrolled #primary-actions-container,
+            #bulk-actions-container.visible ~ #primary-actions-container {
+                overflow: hidden;
+                opacity: 0;
+                max-height: 0;
+            }
         }
     </style>
 </head>
@@ -279,11 +278,13 @@
     }
 
     function handleHeaderScroll() {
-        const header = document.querySelector('.main-header');
-        if (window.scrollY > 10) {
-            header.classList.add('header-scrolled');
-        } else {
-            header.classList.remove('header-scrolled');
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            const header = document.querySelector('.main-header');
+            if (window.scrollY > 10) {
+                header.classList.add('header-scrolled');
+            } else {
+                header.classList.remove('header-scrolled');
+            }
         }
         updateContainerPadding();
     }
@@ -716,7 +717,9 @@
         container.classList.toggle('visible', selectedItems.size > 0);
         const visibleRows = document.querySelectorAll('#tasks-tbody .task-row:not([style*="display: none"])');
         document.getElementById('select-all-checkbox').checked = (visibleRows.length > 0 && selectedItems.size === visibleRows.length);
-        updateContainerPadding(); 
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            updateContainerPadding(); 
+        }
     }
 
     function handleSelectAll(e) {
