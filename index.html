@@ -5,220 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciador Central - Conectado</title>
     
-    <!-- =================================================================== -->
-    <!-- SCRIPTS DO FIREBASE (VERSÃO DE COMPATIBILIDADE PARA SEU CÓDIGO) -->
-    <!-- =================================================================== -->
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
 
-    <!-- Seus outros scripts e styles... -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
     <style>
         :root {
-            /* Váriaveis de Tema */
-            --primary-text-color: #1a2533;
-            --secondary-text-color: #6c757d;
-            --page-bg-color: #f4f7f9;
-            --card-bg-color: rgba(255, 255, 255, 0.92);
-            --card-shadow-color: rgba(0, 0, 0, 0.1);
-            --accent-color: #007bff;
-            
-            /* Variaveis do Background */
-            --bg-image: none;
-            --bg-opacity: 1;
+            --primary-text-color: #1a2533; --secondary-text-color: #6c757d;
+            --page-bg-color: #f4f7f9; --card-bg-color: rgba(255, 255, 255, 0.92);
+            --card-shadow-color: rgba(0, 0, 0, 0.1); --accent-color: #007bff;
+            --bg-image: none; --bg-opacity: 1;
         }
-
         body.dark-theme {
-            --primary-text-color: #e0e0e0;
-            --secondary-text-color: #b0b0b0;
-            --page-bg-color: #121212;
-            --card-bg-color: rgba(40, 40, 40, 0.92);
-            --card-shadow-color: rgba(0, 0, 0, 0.4);
-            --accent-color: #4dabf7;
+            --primary-text-color: #e0e0e0; --secondary-text-color: #b0b0b0;
+            --page-bg-color: #121212; --card-bg-color: rgba(40, 40, 40, 0.92);
+            --card-shadow-color: rgba(0, 0, 0, 0.4); --accent-color: #4dabf7;
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--page-bg-color);
-            color: var(--primary-text-color);
-            margin: 0;
-            padding: 20px 15px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            position: relative;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            box-sizing: border-box;
+            background-color: var(--page-bg-color); color: var(--primary-text-color);
+            margin: 0; padding: 20px 15px 20px; display: flex; flex-direction: column;
+            align-items: center; min-height: 100vh; position: relative;
+            transition: background-color 0.3s ease, color 0.3s ease; box-sizing: border-box;
         }
-        
         body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            background-image: var(--bg-image);
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: var(--bg-opacity);
-            transition: opacity 0.3s ease, background-image 0.5s ease-in-out;
+            content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; background-image: var(--bg-image); background-size: cover;
+            background-position: center; background-repeat: no-repeat;
+            opacity: var(--bg-opacity); transition: opacity 0.3s ease, background-image 0.5s ease-in-out;
         }
-
-        .main-container { 
-            width: 100%; 
-            max-width: 1200px;
-            margin-top: 20px; 
-        }
-        
-        .card-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            min-height: 100px; 
-        }
-
-        .section-divider {
-            width: 100%;
-            border: none;
-            border-top: 1px solid var(--secondary-text-color);
-            margin: 25px 0;
-            opacity: 0.3;
-        }
-        
+        .main-container { width: 100%; max-width: 1200px; margin-top: 20px; }
+        .card-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; min-height: 100px; }
+        .section-divider { width: 100%; border: none; border-top: 1px solid var(--secondary-text-color); margin: 25px 0; opacity: 0.3; }
         .card {
-            background-color: var(--card-bg-color);
-            border-radius: 10px;
-            box-shadow: 0 4px 8px var(--card-shadow-color);
-            padding: 25px;
-            text-decoration: none;
-            color: inherit;
+            background-color: var(--card-bg-color); border-radius: 10px;
+            box-shadow: 0 4px 8px var(--card-shadow-color); padding: 25px;
+            text-decoration: none; color: inherit;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-sizing: border-box;
-            text-align: center;
-            cursor: grab;
-            position: relative;
+            display: flex; flex-direction: column; align-items: center;
+            box-sizing: border-box; text-align: center; cursor: grab; position: relative;
         }
         .card.sortable-ghost { opacity: 0.4; }
         .card.sortable-chosen { cursor: grabbing; }
-
         .card:hover { transform: translateY(-8px); box-shadow: 0 12px 20px var(--card-shadow-color); }
         .card-icon { font-size: 3.5em; margin-bottom: 15px; }
         .card h3 { margin: 0 0 10px 0; color: var(--accent-color); font-size: 1.4em; }
         .card p { margin: 0; font-size: 0.95em; color: var(--secondary-text-color); }
-
         .card-small { width: 175px; padding: 15px; }
         .card-small .card-icon { font-size: 2.5em; }
         .card-small h3 { font-size: 1.1em; }
         .card-small p { font-size: 0.85em; }
-
-        /* MUDANÇA: Adicionado estilo para os novos cards menores */
         .card-tiny { width: 120px; height: 120px; padding: 15px 10px; justify-content: center; }
         .card-tiny .card-icon { font-size: 2.8em; margin-bottom: 10px; }
         .card-tiny h3 { font-size: 1em; margin-bottom: 0; }
-        .card-tiny p { display: none; } /* Garante que a descrição não apareça */
-
+        .card-tiny p { display: none; }
         .add-card-placeholder {
-            border: 2px dashed var(--secondary-text-color);
-            color: var(--secondary-text-color);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3em;
-            cursor: pointer;
-            opacity: 0.6;
-            transition: all 0.3s ease;
+            border: 2px dashed var(--secondary-text-color); color: var(--secondary-text-color);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-size: 3em; cursor: pointer; opacity: 0.6; transition: all 0.3s ease;
         }
         .add-card-placeholder:hover { opacity: 1; border-color: var(--accent-color); color: var(--accent-color); transform: scale(1.05); }
         .manager-add-placeholder { width: 300px; height: 215px; }
         .link-add-placeholder { width: 175px; height: 180px; }
-        /* MUDANÇA: Adicionado estilo para o placeholder dos novos cards */
         .quick-access-add-placeholder { width: 120px; height: 120px; }
-
-
-        .card-actions {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            display: flex;
-            gap: 5px;
-            opacity: 0;
-            transition: opacity 0.2s ease-in-out;
-        }
+        .card-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 5px; opacity: 0; transition: opacity 0.2s ease-in-out; }
         .card:hover .card-actions { opacity: 1; }
-        .card-action-btn {
-            background: rgba(0,0,0,0.4); color: white; border: none; border-radius: 50%;
-            width: 24px; height: 24px; display: flex; align-items: center;
-            justify-content: center; cursor: pointer; font-size: 14px;
-        }
+        .card-action-btn { background: rgba(0,0,0,0.4); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
         .card-action-btn:hover { background: rgba(0,0,0,0.7); }
-        
-        .header-container {
-            width: 100%;
-            max-width: 800px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 0;
-        }
+        .header-container { width: 100%; max-width: 800px; display: flex; flex-direction: column; align-items: center; margin-bottom: 0; }
         .google-apps-header { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
         .app-link-header img { width: 32px; height: 32px; transition: transform 0.2s ease; }
         .app-link-header:hover img { transform: scale(1.15); }
-
         .google-search-form { display: inline-flex; align-items: center; border: 1px solid #dfe1e5; border-radius: 24px; padding: 5px 15px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
         .google-search-form:hover { box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .google-search-form input[type="text"] { border: none; outline: none; padding: 10px; font-size: 16px; width: 100%; background: transparent; }
         .google-search-form button { background: none; border: none; cursor: pointer; font-size: 18px; color: #4285F4; padding-right: 5px; }
-
-        .page-controls {
-            margin-top: 40px; padding: 20px; background-color: var(--card-bg-color);
-            border-radius: 10px; box-shadow: 0 4px 8px var(--card-shadow-color);
-            display: flex; flex-wrap: wrap; align-items: flex-end;
-            justify-content: center; gap: 20px; width: 100%;
-        }
-
+        .page-controls { margin-top: 40px; padding: 20px; background-color: var(--card-bg-color); border-radius: 10px; box-shadow: 0 4px 8px var(--card-shadow-color); display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center; gap: 20px; width: 100%; }
         .control-group { display: flex; flex-direction: column; align-items: center; }
         .control-group > label { font-weight: 500; font-size: 0.9em; color: var(--primary-text-color); margin-bottom: 8px; }
         .control-group .button-container { display: inline-flex; gap: 10px; }
-        
-        #bg-button, #export-layout-btn, #import-layout-label, #remove-bg-btn {
-            display: inline-flex; align-items: center; justify-content: center;
-            height: 38px; padding: 0 16px; font-size: 14px; font-weight: 500;
-            color: #fff;
-            border-radius: 5px; box-sizing: border-box; cursor: pointer; transition: opacity 0.2s ease;
-        }
-        
-        #bg-button, #export-layout-btn, #import-layout-label {
-            background-color: var(--accent-color); border: 1px solid var(--accent-color);
-        }
-        
-        #remove-bg-btn {
-             background-color: #dc3545; border: 1px solid #dc3545;
-        }
-
-        #light-theme-btn, #dark-theme-btn {
-            display: inline-flex; align-items: center; justify-content: center;
-            height: 38px; padding: 0 16px; font-size: 14px; font-weight: 500;
-            color: var(--primary-text-color); background-color: transparent; border: 1px solid var(--secondary-text-color);
-            border-radius: 5px; box-sizing: border-box; cursor: pointer; transition: all 0.2s ease;
-        }
-
+        #bg-button, #export-layout-btn, #import-layout-label, #remove-bg-btn { display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 16px; font-size: 14px; font-weight: 500; color: #fff; border-radius: 5px; box-sizing: border-box; cursor: pointer; transition: opacity 0.2s ease; }
+        #bg-button, #export-layout-btn, #import-layout-label { background-color: var(--accent-color); border: 1px solid var(--accent-color); }
+        #remove-bg-btn { background-color: #dc3545; border: 1px solid #dc3545; }
+        #light-theme-btn, #dark-theme-btn { display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 16px; font-size: 14px; font-weight: 500; color: var(--primary-text-color); background-color: transparent; border: 1px solid var(--secondary-text-color); border-radius: 5px; box-sizing: border-box; cursor: pointer; transition: all 0.2s ease; }
         #bg-button:hover, #export-layout-btn:hover, #import-layout-label:hover, #remove-bg-btn:hover { opacity: 0.85; }
         #light-theme-btn:hover, #dark-theme-btn:hover { color: #fff; background-color: var(--accent-color); border-color: var(--accent-color); }
         #bg-input, #import-layout-input { display: none; }
-
         input[type="range"] { cursor: pointer; max-width: 120px; height: 38px; margin: 0; box-sizing: border-box; }
         input[type="color"] { width: 50px; height: 38px; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; padding: 2px; box-sizing: border-box; background-color: transparent; }
-
         #modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10; display: none; }
         #add-item-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--page-bg-color); padding: 25px; border-radius: 10px; z-index: 11; width: 90%; max-width: 400px; display: none; }
         #add-item-modal h3 { margin-top: 0; color: var(--primary-text-color); }
@@ -228,19 +103,14 @@
         .modal-buttons .button-like { padding: 8px 16px; border-radius: 5px; cursor: pointer; }
         #cancel-modal-btn { border: 1px solid var(--secondary-text-color); }
         #save-item-btn { color: #fff; background-color: var(--accent-color); border: none; }
-        
         .icon-picker-container { position: relative; display: flex; align-items: center; gap: 10px; }
         .icon-picker-container input { flex-grow: 1; }
         #emoji-picker-btn { padding: 8px 12px; font-size: 1.2em; border: 1px solid var(--accent-color); background-color: transparent; color: var(--accent-color); border-radius: 5px; cursor: pointer; }
         .emoji-picker-container { position: absolute; top: 110%; right: 0; z-index: 12; display: none; }
-
         @media (max-width: 768px) {
-            body { padding: 15px 10px; }
-            .main-container { margin-top: 15px; }
-            .google-apps-header { gap: 10px; }
-            .card { padding: 20px; }
-            .card-small { width: 150px; padding: 15px 10px; }
-            .card-tiny { width: 100px; height: 100px; } /* Ajuste responsivo para cards menores */
+            body { padding: 15px 10px; } .main-container { margin-top: 15px; } .google-apps-header { gap: 10px; }
+            .card { padding: 20px; } .card-small { width: 150px; padding: 15px 10px; }
+            .card-tiny { width: 100px; height: 100px; }
             .manager-add-placeholder { width: 100%; max-width: 300px; height: 150px; }
             .link-add-placeholder { width: 150px; height: 150px; }
             .quick-access-add-placeholder { width: 100px; height: 100px; }
@@ -274,7 +144,6 @@
             <div id="managers-container" class="card-container"></div>
             <hr class="section-divider">
             <div id="links-container" class="card-container"></div>
-            <!-- MUDANÇA: Adicionada nova seção para Acesso Rápido -->
             <hr class="section-divider">
             <div id="quick-access-container" class="card-container"></div>
         </div>
@@ -321,14 +190,10 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const userSettingsDocRef = db.collection('settings').doc('main-dashboard');
-
         const body = document.body, root = document.documentElement;
         const managersContainer = document.getElementById('managers-container');
         const linksContainer = document.getElementById('links-container');
-        // MUDANÇA: Referência ao novo container
         const quickAccessContainer = document.getElementById('quick-access-container');
-        
-        // O resto das referências DOM permanece o mesmo
         const lightThemeBtn = document.getElementById('light-theme-btn'), darkThemeBtn = document.getElementById('dark-theme-btn');
         const bgButton = document.getElementById('bg-button'), bgInput = document.getElementById('bg-input'), removeBgBtn = document.getElementById('remove-bg-btn');
         const opacitySlider = document.getElementById('opacity-slider'), colorPicker = document.getElementById('color-picker');
@@ -336,16 +201,14 @@
         const modalBackdrop = document.getElementById('modal-backdrop'), modal = document.getElementById('add-item-modal');
         const modalForm = document.getElementById('add-item-form'), modalTitle = document.getElementById('modal-title');
         const cancelModalBtn = document.getElementById('cancel-modal-btn');
-        const emojiPickerBtn = document.getElementById('emoji-picker-btn');
-        const emojiPickerContainer = document.querySelector('.emoji-picker-container');
-        const emojiPicker = document.querySelector('emoji-picker');
-        const itemIconInput = document.getElementById('item-icon');
-        const itemDescriptionInput = document.getElementById('item-description');
+        const emojiPickerBtn = document.getElementById('emoji-picker-btn'), emojiPickerContainer = document.querySelector('.emoji-picker-container'), emojiPicker = document.querySelector('emoji-picker');
+        const itemIconInput = document.getElementById('item-icon'), itemDescriptionInput = document.getElementById('item-description');
 
         let appData = {};
-        let currentModalType = null, currentEditingId = null;
+        let currentModalType = null;
+        let currentEditingId = null;
+        let sortableInstances = {}; // Objeto para guardar as instâncias do Sortable
 
-        // MUDANÇA: Adicionada a nova lista ao objeto de dados padrão
         const defaultData = {
             styleData: { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' },
             layoutData: { managers: [], usefulLinks: [], quickAccessLinks: [] }
@@ -354,59 +217,31 @@
         const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
         async function saveAllData() {
-            try {
-                await userSettingsDocRef.set(appData);
-            } catch (error) {
-                console.error("Erro ao salvar dados no Firebase: ", error);
-                alert("Ocorreu um erro ao salvar os dados. Verifique o console (F12).");
-            }
+            try { await userSettingsDocRef.set(appData); } 
+            catch (error) { console.error("Erro ao salvar dados no Firebase: ", error); }
         }
 
         function loadAllData() {
             userSettingsDocRef.onSnapshot(doc => {
                 if (doc.exists) {
                     appData = doc.data();
-                    appData.styleData = appData.styleData || defaultData.styleData;
-                    appData.layoutData = appData.layoutData || defaultData.layoutData;
-                    appData.layoutData.managers = appData.layoutData.managers || [];
-                    appData.layoutData.usefulLinks = appData.layoutData.usefulLinks || [];
-                    // MUDANÇA: Garantir que a nova lista exista ao carregar
-                    appData.layoutData.quickAccessLinks = appData.layoutData.quickAccessLinks || [];
+                    appData.styleData = { ...defaultData.styleData, ...appData.styleData };
+                    appData.layoutData = { ...defaultData.layoutData, ...appData.layoutData };
                 } else {
                     appData = JSON.parse(JSON.stringify(defaultData));
                     saveAllData();
                 }
                 applyStyles();
                 renderCards();
-            }, error => {
-                console.error("Erro ao carregar dados do Firebase: ", error);
-            });
+            }, error => console.error("Erro ao carregar dados do Firebase: ", error));
         }
         
+        const getArrayByType = (t) => ({ manager: appData.layoutData.managers, usefulLink: appData.layoutData.usefulLinks, quickAccess: appData.layoutData.quickAccessLinks }[t] || []);
+
         function createCard(item, classList, type) {
             const a = document.createElement('a');
-            a.className = classList;
-            a.href = item.url;
-            a.dataset.id = item.id;
-            
-            // MUDANÇA: Removido o target="_blank" para abrir na mesma aba.
-            // A descrição agora é condicional para não criar uma tag <p> vazia.
-            a.innerHTML = `
-                <div class="card-actions">
-                    <button class="card-action-btn edit-btn" title="Editar">✎</button>
-                    <button class="card-action-btn delete-btn" title="Excluir">❌</button>
-                </div>
-                <div class="card-icon">${item.icon}</div>
-                <h3>${item.title}</h3>
-                ${item.description ? `<p>${item.description}</p>` : ''}
-            `;
-            
-            const getArrayByType = (t) => {
-                if (t === 'manager') return appData.layoutData.managers;
-                if (t === 'usefulLink') return appData.layoutData.usefulLinks;
-                if (t === 'quickAccess') return appData.layoutData.quickAccessLinks;
-            };
-
+            a.className = classList; a.href = item.url; a.dataset.id = item.id;
+            a.innerHTML = `<div class="card-actions"><button class="card-action-btn edit-btn" title="Editar">✎</button><button class="card-action-btn delete-btn" title="Excluir">❌</button></div><div class="card-icon">${item.icon}</div><h3>${item.title}</h3>${item.description ? `<p>${item.description}</p>` : ''}`;
             a.querySelector('.edit-btn').addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); openModal(type, item); });
             a.querySelector('.delete-btn').addEventListener('click', (e) => {
                 e.preventDefault(); e.stopPropagation();
@@ -420,42 +255,34 @@
         }
         
         function renderCards() {
-            managersContainer.innerHTML = '';
-            linksContainer.innerHTML = '';
-            // MUDANÇA: Limpar o novo container
+            // Destrói as instâncias Sortable existentes antes de limpar o HTML
+            Object.values(sortableInstances).forEach(instance => instance.destroy());
+            sortableInstances = {};
+
+            managersContainer.innerHTML = ''; 
+            linksContainer.innerHTML = ''; 
             quickAccessContainer.innerHTML = '';
-
-            if (appData.layoutData) {
-                appData.layoutData.managers.forEach(item => managersContainer.appendChild(createCard(item, 'card', 'manager')));
-                appData.layoutData.usefulLinks.forEach(item => linksContainer.appendChild(createCard(item, 'card card-small', 'usefulLink')));
-                // MUDANÇA: Renderizar os novos cards de acesso rápido
-                appData.layoutData.quickAccessLinks.forEach(item => quickAccessContainer.appendChild(createCard(item, 'card card-tiny', 'quickAccess')));
-            }
-
+            
+            appData.layoutData.managers.forEach(item => managersContainer.appendChild(createCard(item, 'card', 'manager')));
+            appData.layoutData.usefulLinks.forEach(item => linksContainer.appendChild(createCard(item, 'card card-small', 'usefulLink')));
+            appData.layoutData.quickAccessLinks.forEach(item => quickAccessContainer.appendChild(createCard(item, 'card card-tiny', 'quickAccess')));
+            
             managersContainer.appendChild(createAddPlaceholder('manager'));
             linksContainer.appendChild(createAddPlaceholder('usefulLink'));
-            // MUDANÇA: Adicionar o placeholder para a nova seção
             quickAccessContainer.appendChild(createAddPlaceholder('quickAccess'));
             
+            // Recria as instâncias Sortable no novo HTML
             initSortable(managersContainer, 'managers');
             initSortable(linksContainer, 'usefulLinks');
-            // MUDANÇA: Ativar a ordenação para a nova seção
             initSortable(quickAccessContainer, 'quickAccessLinks');
         }
 
         function createAddPlaceholder(type) {
             const p = document.createElement('div');
-            let className, title;
-            if (type === 'manager') {
-                className = 'manager-add-placeholder'; title = 'Adicionar Gerenciador';
-            } else if (type === 'usefulLink') {
-                className = 'link-add-placeholder'; title = 'Adicionar Link Útil';
-            } else { // quickAccess
-                className = 'quick-access-add-placeholder'; title = 'Adicionar Acesso Rápido';
-            }
-            p.className = `add-card-placeholder ${className}`;
-            p.textContent = '+';
-            p.title = title;
+            const classMap = { manager: 'manager-add-placeholder', usefulLink: 'link-add-placeholder', quickAccess: 'quick-access-add-placeholder' };
+            const titleMap = { manager: 'Adicionar Gerenciador', usefulLink: 'Adicionar Link Útil', quickAccess: 'Adicionar Acesso Rápido' };
+            p.className = `add-card-placeholder ${classMap[type]}`;
+            p.textContent = '+'; p.title = titleMap[type];
             p.addEventListener('click', () => openModal(type));
             return p;
         }
@@ -463,45 +290,26 @@
         function applyStyles() {
             if (!appData.styleData) return;
             body.className = ''; body.classList.add(appData.styleData.theme);
-            body.style.backgroundColor = appData.styleData.bgColor;
-            colorPicker.value = appData.styleData.bgColor;
-            root.style.setProperty('--bg-opacity', appData.styleData.bgOpacity);
-            opacitySlider.value = appData.styleData.bgOpacity;
+            body.style.backgroundColor = appData.styleData.bgColor; colorPicker.value = appData.styleData.bgColor;
+            root.style.setProperty('--bg-opacity', appData.styleData.bgOpacity); opacitySlider.value = appData.styleData.bgOpacity;
             root.style.setProperty('--bg-image', appData.styleData.bgImage ? `url('${appData.styleData.bgImage}')` : 'none');
             emojiPicker.className = (appData.styleData.theme || 'light-theme') === 'dark-theme' ? 'dark' : 'light';
         }
         
         function openModal(type, itemToEdit = null) {
-            currentModalType = type;
-            currentEditingId = itemToEdit ? itemToEdit.id : null;
-            
-            let titleText = 'Adicionar Novo Item';
-            if (itemToEdit) titleText = 'Editar Item';
-            else if (type === 'manager') titleText = 'Adicionar Gerenciador';
-            else if (type === 'usefulLink') titleText = 'Adicionar Link Útil';
-            else if (type === 'quickAccess') titleText = 'Adicionar Acesso Rápido';
-            modalTitle.textContent = titleText;
-            
+            currentModalType = type; currentEditingId = itemToEdit ? itemToEdit.id : null;
+            const titleMap = { manager: 'Adicionar Gerenciador', usefulLink: 'Adicionar Link Útil', quickAccess: 'Adicionar Acesso Rápido' };
+            modalTitle.textContent = itemToEdit ? 'Editar Item' : titleMap[type];
             modalForm.reset();
-            
-            // MUDANÇA: Esconder ou mostrar o campo de descrição
-            if (type === 'quickAccess') {
-                itemDescriptionInput.style.display = 'none';
-                itemDescriptionInput.required = false;
-            } else {
-                itemDescriptionInput.style.display = 'block';
-                itemDescriptionInput.required = true;
-            }
-
+            itemDescriptionInput.style.display = (type === 'quickAccess') ? 'none' : 'block';
+            itemDescriptionInput.required = (type !== 'quickAccess');
             if (itemToEdit) {
                 document.getElementById('item-icon').value = itemToEdit.icon;
                 document.getElementById('item-title').value = itemToEdit.title;
                 document.getElementById('item-url').value = itemToEdit.url;
                 itemDescriptionInput.value = itemToEdit.description || '';
             }
-            
-            modalBackdrop.style.display = 'block';
-            modal.style.display = 'block';
+            modalBackdrop.style.display = 'block'; modal.style.display = 'block';
         }
         
         function closeModal() { modalBackdrop.style.display = 'none'; modal.style.display = 'none'; emojiPickerContainer.style.display = 'none'; }
@@ -512,55 +320,38 @@
         opacitySlider.addEventListener('input', (e) => { appData.styleData.bgOpacity = e.target.value; saveAllData(); });
         bgButton.addEventListener('click', () => bgInput.click());
         removeBgBtn.addEventListener('click', () => { appData.styleData.bgImage = null; saveAllData(); });
-        
         bgInput.addEventListener('change', (e) => { const file = e.target.files[0]; if(file) { const reader = new FileReader(); reader.onload = (re) => { appData.styleData.bgImage = re.target.result; saveAllData(); }; reader.readAsDataURL(file); } });
-        exportLayoutBtn.addEventListener('click', () => { const jsonString = JSON.stringify(appData, null, 2); const blob = new Blob([jsonString], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `gerenciador_backup.json`; a.click(); URL.revokeObjectURL(a.href); });
-        
-        importLayoutInput.addEventListener('change', (e) => { const file = e.target.files[0]; if(file) { const reader = new FileReader(); reader.onload = (re) => { try { const loadedData = JSON.parse(re.target.result); if (loadedData.styleData && loadedData.layoutData) { appData = loadedData; saveAllData(); } else { alert('Arquivo JSON inválido.'); } } catch (err) { alert('Erro ao ler o arquivo JSON.'); } }; reader.readAsText(file); importLayoutInput.value = ""; } });
-        cancelModalBtn.addEventListener('click', closeModal);
-        modalBackdrop.addEventListener('click', (e) => { if(e.target === modalBackdrop) closeModal(); });
+        exportLayoutBtn.addEventListener('click', () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(appData, null, 2)], {type: 'application/json'})); a.download = `gerenciador_backup.json`; a.click(); URL.revokeObjectURL(a.href); });
+        importLayoutInput.addEventListener('change', (e) => { const file = e.target.files[0]; if(file) { const reader = new FileReader(); reader.onload = (re) => { try { const data = JSON.parse(re.target.result); if (data.styleData && data.layoutData) { appData = data; saveAllData(); } else { alert('Arquivo JSON inválido.'); } } catch (err) { alert('Erro ao ler o arquivo JSON.'); } }; reader.readAsText(file); importLayoutInput.value = ""; } });
+        cancelModalBtn.addEventListener('click', closeModal); modalBackdrop.addEventListener('click', (e) => { if(e.target === modalBackdrop) closeModal(); });
         
         modalForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const formElements = e.target.elements;
-            const updatedItemData = {
-                icon: formElements['item-icon'].value,
-                title: formElements['item-title'].value,
-                url: formElements['item-url'].value,
-                description: formElements['item-description'].value,
-            };
-            if (currentModalType === 'quickAccess') {
-                delete updatedItemData.description; // Remove a chave de descrição para este tipo
-            }
-
-            const getArrayByType = (t) => {
-                if (t === 'manager') return appData.layoutData.managers;
-                if (t === 'usefulLink') return appData.layoutData.usefulLinks;
-                if (t === 'quickAccess') return appData.layoutData.quickAccessLinks;
-                return [];
-            };
-
+            const data = { id: currentEditingId || generateId(), icon: e.target.elements['item-icon'].value, title: e.target.elements['item-title'].value, url: e.target.elements['item-url'].value, description: e.target.elements['item-description'].value };
+            if (currentModalType === 'quickAccess') delete data.description;
             const dataArray = getArrayByType(currentModalType);
-
             if (currentEditingId) {
-                const itemIndex = dataArray.findIndex(i => i.id === currentEditingId);
-                if (itemIndex > -1) { dataArray[itemIndex] = { ...dataArray[itemIndex], ...updatedItemData }; }
-            } else {
-                const newItem = { id: generateId(), ...updatedItemData };
-                dataArray.push(newItem);
-            }
-            saveAllData();
-            closeModal();
+                const index = dataArray.findIndex(i => i.id === currentEditingId);
+                if (index > -1) dataArray[index] = data;
+            } else { dataArray.push(data); }
+            saveAllData(); closeModal();
         });
 
         function initSortable(container, dataArrayName) {
-            new Sortable(container, {
-                animation: 150, filter: '.add-card-placeholder',
+            sortableInstances[dataArrayName] = new Sortable(container, {
+                animation: 150,
+                filter: '.add-card-placeholder',
+                delay: 200, 
+                delayOnTouchOnly: true,
                 onEnd: (evt) => {
                     const dataArray = appData.layoutData[dataArrayName];
                     if (!dataArray) return;
+                    
                     const [movedItem] = dataArray.splice(evt.oldIndex, 1);
                     dataArray.splice(evt.newIndex, 0, movedItem);
+                    
+                    // Apenas salva a nova ordem. O onSnapshot cuidará da renderização.
+                    // Isso evita o loop de renderização que estava quebrando a funcionalidade.
                     saveAllData();
                 }
             });

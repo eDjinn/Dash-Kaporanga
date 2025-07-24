@@ -40,42 +40,40 @@
         }
         /* ⭐️ FIM DA SEÇÃO DE ESTILO HERDADA ⭐️ */
 
-        .container { max-width: 1600px; margin: 0 auto; padding: 20px; padding-top: 90px; }
+        .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+
         .main-header { 
             display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; 
             background-color: var(--card-bg-color); 
             box-shadow: 0 2px 4px var(--card-shadow-color);
             position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-            flex-wrap: wrap; gap: 10px;
+            flex-wrap: wrap; gap: 15px;
         }
         .header-left-group, .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .main-header h1 { margin: 0; font-size: 1.5em; }
-        .separator { color: #ccc; font-size: 1.5em; }
-        .btn { padding: 8px 15px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s; color: white; text-align: center; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; }
+        .btn { padding: 8px 15px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s; color: white; text-align: center; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; flex-shrink: 0; }
         .btn-success { background-color: #28a745; }
         .btn-primary { background-color: var(--accent-color); }
         .btn-secondary { background-color: #6c757d; }
         #back-btn { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
         #back-btn svg { width: 22px; height: 22px; }
         .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; }
-        .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
-        #search-input { width: 220px; padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; background-color: var(--page-bg-color); color: var(--primary-text-color); }
+        .file-input-wrapper input[type]="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
+        #search-input { width: 200px; max-width: 250px; flex-grow: 1; padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; background-color: var(--page-bg-color); color: var(--primary-text-color); }
 
         .date-filter-group { display: flex; align-items: center; gap: 8px; font-size: 14px; flex-wrap: wrap; }
         .date-filter-group label { color: var(--secondary-text-color); }
         .date-filter-group input[type="datetime-local"] { padding: 7px; border-radius: 4px; border: 1px solid #ccc; background-color: var(--page-bg-color); color: var(--primary-text-color); }
         #clear-date-filter-btn { background: none; border: none; color: var(--accent-color); cursor: pointer; font-weight: bold; font-size: 14px; }
+        
+        #primary-actions-container { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; transition: max-height 0.4s ease-out, opacity 0.3s ease; }
+        .header-scrolled #primary-actions-container { overflow: hidden; opacity: 0; max-height: 0; }
 
         #notes-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .note-card {
-            background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 4px 8px var(--card-shadow-color);
-            padding: 15px; display: flex; flex-direction: column; gap: 10px; word-wrap: break-word;
-            height: 250px; position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: grab;
-        }
+        .note-card { background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 4px 8px var(--card-shadow-color); padding: 15px; display: flex; flex-direction: column; gap: 10px; word-wrap: break-word; height: 250px; position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: grab; }
         .note-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px var(--card-shadow-color); }
         .note-card.sortable-ghost { opacity: 0.4; background: var(--accent-color); }
         .note-card.sortable-chosen { cursor: grabbing; }
-
         .note-card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 5px; }
         body.dark-theme .note-card-header { border-color: #444; }
         .note-card-title { font-size: 1.2em; font-weight: bold; color: var(--accent-color); margin: 0; word-break: break-all; }
@@ -87,11 +85,7 @@
         
         .modal-overlay { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
         .modal-overlay.visible { display: flex; }
-        .modal-content { 
-            background-color: var(--card-bg-color); color: var(--primary-text-color);
-            padding: 25px; border-radius: 8px; box-shadow: 0 5px 15px var(--card-shadow-color); 
-            width: 90%; max-width: 500px; position: relative; max-height: 90vh; display: flex; flex-direction: column;
-        }
+        .modal-content { background-color: var(--card-bg-color); color: var(--primary-text-color); padding: 25px; border-radius: 8px; box-shadow: 0 5px 15px var(--card-shadow-color); width: 90%; max-width: 500px; position: relative; max-height: 90vh; display: flex; flex-direction: column; }
         .modal-close { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; }
         .form { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
         .form label { font-weight: bold; margin-top: 5px; }
@@ -99,20 +93,10 @@
         .form textarea { flex-grow: 1; resize: vertical; min-height: 150px; }
         .modal-footer { display: flex; justify-content: flex-end; margin-top: 15px; }
         
-        @media (max-width: 1024px) {
-            .main-header { flex-direction: column; align-items: stretch; }
-            .header-left-group, .header-actions { justify-content: center; }
-            .header-actions { border-top: 1px solid #ddd; padding-top: 10px; }
-            .separator { display: none; }
-            .container { padding-top: 180px; }
-        }
         @media (max-width: 768px) {
-            .container { padding: 10px; padding-top: 250px; }
-            .header-left-group, .header-actions { flex-direction: column; align-items: stretch; }
-            #search-input, .date-filter-group { width: 100%; }
-            .date-filter-group { flex-direction: column; align-items: stretch; }
-            .btn, #back-btn { width: 100%; }
-            #back-btn { width: 40px; height: 40px; align-self: flex-start; }
+            .container { padding: 10px; }
+            .header-left-group { flex-grow: 1; }
+            .date-filter-group { flex-direction: column; align-items: stretch; width: 100%; }
             .note-card { height: 220px; }
         }
     </style>
@@ -121,22 +105,20 @@
     <header class="main-header">
         <div class="header-left-group">
             <a href="index.html" id="back-btn" class="btn btn-secondary" title="Voltar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></a>
-            <span class="separator">|</span>
             <h1>Anotações</h1>
-            <span class="separator">|</span>
             <input type="text" id="search-input" placeholder="Pesquisar por texto...">
-            <span class="separator">|</span>
-            <div class="date-filter-group">
-                <label for="start-date-filter">De:</label><input type="datetime-local" id="start-date-filter">
-                <label for="end-date-filter">Até:</label><input type="datetime-local" id="end-date-filter">
-                <button id="clear-date-filter-btn">Limpar</button>
-            </div>
         </div>
         <div class="header-actions">
-            <button id="add-note-btn" class="btn btn-success">Adicionar Anotação</button>
-            <span class="separator">|</span>
-            <div class="file-input-wrapper"><button class="btn btn-secondary">Importar</button><input type="file" id="import-json-input" accept=".json"></div>
-            <button id="export-json-btn" class="btn btn-primary">Salvar</button>
+            <button id="add-note-btn" class="btn btn-success">Adicionar</button>
+            <div id="primary-actions-container">
+                <div class="date-filter-group">
+                    <label for="start-date-filter">De:</label><input type="datetime-local" id="start-date-filter">
+                    <label for="end-date-filter">Até:</label><input type="datetime-local" id="end-date-filter">
+                    <button id="clear-date-filter-btn">Limpar</button>
+                </div>
+                <div class="file-input-wrapper"><button class="btn btn-secondary">Importar</button><input type="file" id="import-json-input" accept=".json"></div>
+                <button id="export-json-btn" class="btn btn-primary">Exportar</button>
+            </div>
         </div>
     </header>
 
@@ -157,16 +139,12 @@
         </div>
     </div>
 
-    <!-- MUDANÇA: Scripts do Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
-    // ===================================================================
-    //  BLOCO DE CONFIGURAÇÃO E LÓGICA DO FIREBASE
-    // ===================================================================
     const firebaseConfig = {
         apiKey: "AIzaSyC9OjBDOX9UUlCrPuhIZj5ipolRT4Gu420",
         authDomain: "gerenciadorcentral-f01e3.firebaseapp.com",
@@ -184,53 +162,33 @@ document.addEventListener('DOMContentLoaded', () => {
     let notesData = [];
     let initialDataState = '[]';
 
-    // MUDANÇA: Salva dados no Firestore
     const saveDataToFirebase = () => {
-        const dataToSave = { notes: notesData };
-        notesDocRef.set(dataToSave)
-            .then(() => {
-                initialDataState = JSON.stringify(notesData);
-            })
+        notesDocRef.set({ notes: notesData })
+            .then(() => { initialDataState = JSON.stringify(notesData); })
             .catch(error => console.error("Erro ao salvar no Firebase:", error));
     };
 
-    // MUDANÇA: Carrega dados do Firestore
     const loadDataFromFirebase = () => {
         notesDocRef.onSnapshot(doc => {
-            if (doc.exists) {
-                notesData = doc.data().notes || [];
-            } else {
-                notesData = [];
-            }
+            notesData = (doc.exists && doc.data().notes) ? doc.data().notes : [];
             initialDataState = JSON.stringify(notesData);
             filterAndRender();
-        }, error => {
-            console.error("Erro ao carregar dados do Firebase:", error);
-        });
+        }, error => console.error("Erro ao carregar dados do Firebase:", error));
     };
-
-    // MUDANÇA: Carrega estilos do Firestore
+    
     async function loadAndApplyGlobalStyle() {
         try {
             const doc = await styleDocRef.get();
             if (doc.exists && doc.data().styleData) {
                 const style = doc.data().styleData;
-                const body = document.body;
-                const root = document.documentElement;
-                body.className = '';
-                body.classList.add(style.theme || 'light-theme');
+                const body = document.body, root = document.documentElement;
+                body.className = ''; body.classList.add(style.theme || 'light-theme');
                 body.style.backgroundColor = style.bgColor;
                 root.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none');
                 root.style.setProperty('--bg-opacity', style.bgOpacity || '1');
             }
-        } catch (e) {
-            console.error("Não foi possível carregar estilos do Firebase.", e);
-        }
+        } catch (e) { console.error("Não foi possível carregar estilos do Firebase.", e); }
     }
-
-    // ===================================================================
-    //  FUNÇÕES DO APLICATIVO (O restante do código)
-    // ===================================================================
     
     const notesContainer = document.getElementById('notes-container');
     const searchInput = document.getElementById('search-input');
@@ -242,34 +200,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearDateFilterBtn = document.getElementById('clear-date-filter-btn');
     
     const generateId = () => `note_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-    const formatTimestamp = (isoString) => {
-        if (!isoString) return '';
-        const date = new Date(isoString);
-        return date.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+    const formatTimestamp = (isoString) => isoString ? new Date(isoString).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '';
+    const hasUnsavedChanges = () => JSON.stringify(notesData) !== initialDataState;
+    
+    const updateContainerPadding = () => {
+        const header = document.querySelector('.main-header');
+        const container = document.querySelector('.container');
+        if (header && container) container.style.paddingTop = `${header.offsetHeight + 20}px`;
     };
 
-    const hasUnsavedChanges = () => JSON.stringify(notesData) !== initialDataState;
+    const handleHeaderScroll = () => {
+        document.querySelector('.main-header').classList.toggle('header-scrolled', window.scrollY > 10);
+        updateContainerPadding();
+    };
 
     const renderNotes = (dataToRender = notesData) => {
-        notesContainer.innerHTML = '';
-        if (dataToRender.length === 0) {
-            notesContainer.innerHTML = `<p style="color: var(--secondary-text-color); padding: 20px; text-align: center;">Nenhuma anotação encontrada.</p>`;
-            return;
-        }
+        notesContainer.innerHTML = (dataToRender.length === 0) ? `<p style="color: var(--secondary-text-color); padding: 20px; text-align: center;">Nenhuma anotação encontrada.</p>` : '';
         dataToRender.forEach(note => {
             const card = document.createElement('div');
             card.className = 'note-card'; card.dataset.id = note.id;
-            card.innerHTML = `
-                <div class="note-card-header">
-                    <h3 class="note-card-title">${note.title}</h3>
-                    <div class="note-card-actions">
-                        <button class="edit-btn" title="Editar">✏️</button>
-                        <button class="delete-btn" title="Excluir">🗑️</button>
-                    </div>
-                </div>
-                <div class="note-card-content">${note.content}</div>
-                <footer class="note-card-footer">${formatTimestamp(note.timestamp)}</footer>`;
+            card.innerHTML = `<div class="note-card-header"><h3 class="note-card-title">${note.title}</h3><div class="note-card-actions"><button class="edit-btn" title="Editar">✏️</button><button class="delete-btn" title="Excluir">🗑️</button></div></div><div class="note-card-content">${note.content}</div><footer class="note-card-footer">${formatTimestamp(note.timestamp)}</footer>`;
             notesContainer.appendChild(card);
         });
     };
@@ -278,26 +228,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const filterText = searchInput.value.toLowerCase();
         const startDate = startDateFilter.value ? new Date(startDateFilter.value).getTime() : null;
         const endDate = endDateFilter.value ? new Date(endDateFilter.value).getTime() : null;
-
         let filteredData = notesData.filter(note => {
-            if (!filterText) return true;
-            return (note.title || '').toLowerCase().includes(filterText) || (note.content || '').toLowerCase().includes(filterText);
+            const textMatch = (note.title || '').toLowerCase().includes(filterText) || (note.content || '').toLowerCase().includes(filterText);
+            if (!startDate && !endDate) return textMatch;
+            if (!note.timestamp) return false;
+            const noteTime = new Date(note.timestamp).getTime();
+            const dateMatch = (!startDate || noteTime >= startDate) && (!endDate || noteTime <= endDate);
+            return textMatch && dateMatch;
         });
-
-        if (startDate || endDate) {
-            filteredData = filteredData.filter(note => {
-                if (!note.timestamp) return false;
-                const noteTime = new Date(note.timestamp).getTime();
-                const afterStart = startDate ? noteTime >= startDate : true;
-                const beforeEnd = endDate ? noteTime <= endDate : true;
-                return afterStart && beforeEnd;
-            });
-        }
         renderNotes(filteredData);
     };
 
     const openModal = (mode, noteId = null) => { 
         noteForm.reset(); 
+        document.getElementById('note-id').value = '';
+        modalTitle.textContent = 'Adicionar Anotação';
         if (mode === 'edit' && noteId) { 
             const note = notesData.find(n => n.id === noteId); 
             if (note) { 
@@ -306,10 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('note-title').value = note.title; 
                 document.getElementById('note-content').value = note.content; 
             } 
-        } else { 
-            modalTitle.textContent = 'Adicionar Anotação'; 
-            document.getElementById('note-id').value = ''; 
-        } 
+        }
         noteModal.classList.add('visible');
     };
 
@@ -317,7 +259,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const initSortable = () => {
         new Sortable(notesContainer, {
-            animation: 150, ghostClass: 'sortable-ghost',
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            delay: 200,
+            delayOnTouchOnly: true,
             onEnd: (evt) => {
                 if (searchInput.value || startDateFilter.value || endDateFilter.value) {
                     alert("Limpe todos os filtros para poder reordenar as anotações.");
@@ -330,76 +275,55 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // --- Listeners de Eventos ---
     searchInput.addEventListener('input', filterAndRender);
     startDateFilter.addEventListener('input', filterAndRender);
     endDateFilter.addEventListener('input', filterAndRender);
     clearDateFilterBtn.addEventListener('click', () => { startDateFilter.value = ''; endDateFilter.value = ''; filterAndRender(); });
-
     document.getElementById('add-note-btn').addEventListener('click', () => openModal('add'));
     noteModal.querySelector('.modal-close').addEventListener('click', closeModal);
     noteModal.addEventListener('click', e => { if (e.target === noteModal) closeModal(); });
-
     noteForm.addEventListener('submit', e => {
         e.preventDefault();
-        const id = document.getElementById('note-id').value;
-        const title = document.getElementById('note-title').value;
-        const content = document.getElementById('note-content').value;
-
+        const id = document.getElementById('note-id').value, title = document.getElementById('note-title').value, content = document.getElementById('note-content').value;
         if (id) {
             const noteIndex = notesData.findIndex(n => n.id === id);
-            if (noteIndex > -1) { notesData[noteIndex] = { ...notesData[noteIndex], title, content, timestamp: new Date().toISOString() }; }
+            if (noteIndex > -1) notesData[noteIndex] = { ...notesData[noteIndex], title, content, timestamp: new Date().toISOString() };
         } else {
             notesData.unshift({ id: generateId(), title, content, timestamp: new Date().toISOString() });
         }
-        closeModal();
-        saveDataToFirebase(); // A chamada para renderizar virá do listener do Firebase
+        closeModal(); saveDataToFirebase();
     });
-
     notesContainer.addEventListener('click', e => { 
         const editBtn = e.target.closest('.edit-btn'); if (editBtn) { openModal('edit', editBtn.closest('.note-card').dataset.id); return; }
         const deleteBtn = e.target.closest('.delete-btn'); if (deleteBtn) { if (confirm('Tem certeza que deseja excluir esta anotação?')) { notesData = notesData.filter(n => n.id !== deleteBtn.closest('.note-card').dataset.id); saveDataToFirebase(); } }
     });
-
     document.getElementById('export-json-btn').addEventListener('click', () => { 
-        if(notesData.length === 0){ alert("Não há anotações para salvar."); return; } 
-        const dataToExport = { notes: notesData }; // MUDANÇA: Exporta no formato de objeto
-        const dataStr = JSON.stringify(dataToExport, null, 2); 
-        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([dataStr], { type: 'application/json' })); 
+        if(notesData.length === 0){ alert("Não há anotações para exportar."); return; } 
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({ notes: notesData }, null, 2)], { type: 'application/json' })); 
         a.download = `anotacoes_backup.json`; a.click(); URL.revokeObjectURL(a.href); 
     });
-
     document.getElementById('import-json-input').addEventListener('change', (e) => { 
         if (hasUnsavedChanges() && !confirm("Isto substituirá suas anotações. Deseja continuar?")) { e.target.value = ''; return; } 
         const file = e.target.files[0]; if (!file) return; 
         const reader = new FileReader(); 
         reader.onload = (event) => { 
             try { 
-                const importedData = JSON.parse(event.target.result); 
-                // MUDANÇA: Aceita tanto o formato antigo (array) quanto o novo (objeto)
-                let importedNotes = [];
-                if (Array.isArray(importedData)) {
-                    importedNotes = importedData;
-                } else if (importedData && Array.isArray(importedData.notes)) {
-                    importedNotes = importedData.notes;
-                } else {
-                    alert('Erro: Formato de arquivo JSON inválido.'); return;
-                }
-                notesData = importedNotes; 
-                saveDataToFirebase();
-                alert(`Anotações importadas com sucesso!`); 
+                const data = JSON.parse(event.target.result); 
+                notesData = (Array.isArray(data)) ? data : (data && Array.isArray(data.notes)) ? data.notes : [];
+                saveDataToFirebase(); alert(`Anotações importadas com sucesso!`); 
             } catch (err) { alert('Falha ao importar: Arquivo JSON inválido.'); } 
         }; 
         reader.readAsText(file); e.target.value = ''; 
     });
-
     document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges() && !confirm("Sair e perder alterações não salvas?")) e.preventDefault(); });
     window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; } });
+    window.addEventListener('resize', updateContainerPadding);
+    window.addEventListener('scroll', handleHeaderScroll);
     
-    // --- INICIALIZAÇÃO ---
     loadAndApplyGlobalStyle();
     loadDataFromFirebase();
     initSortable();
+    updateContainerPadding();
 });
 </script>
 </body>
