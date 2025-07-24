@@ -72,7 +72,6 @@
             cursor: pointer;
             background-color: var(--card-theme-bg);
             color: var(--card-theme-text);
-            border-left: 5px solid var(--card-theme-border);
         }
         .note-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px var(--card-shadow-color); }
         .note-card.sortable-ghost { opacity: 0.4; background: var(--accent-color); }
@@ -81,13 +80,28 @@
         .note-card-title { font-size: 1.2em; font-weight: bold; margin: 0; word-break: break-all; color: var(--card-theme-title); }
         .note-card-actions button { background: none; border: none; cursor: pointer; font-size: 1.1em; opacity: 0.6; transition: opacity 0.2s; padding: 2px; color: inherit; }
         .note-card-actions button:hover { opacity: 1; }
-        .note-card-content { flex-grow: 1; overflow-y: auto; white-space: pre-wrap; font-size: 0.95em; cursor: text; }
+        .note-card-content { flex-grow: 1; overflow-y: auto; white-space: pre-wrap; font-size: 0.95em; }
         .note-card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 8px; font-size: 0.8em; color: inherit; opacity: 0.8; border-top: 1px solid rgba(128,128,128,0.2); }
         
-        .status-text { font-weight: bold; cursor: pointer; }
-        .status-text.status-seen { color: #17a2b8; }
-        .status-text.status-in_progress { color: #fd7e14; }
-        .status-text.status-done { color: #20c997; }
+        .status-btn {
+            padding: 3px 10px;
+            border-radius: 12px;
+            border: none;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            line-height: 1.5;
+        }
+        .status-btn:hover { transform: scale(1.05); }
+        .status-btn.status-none { background-color: #343a40; }
+        .status-btn.status-seen { background-color: #6c757d; }
+        .status-btn.status-in_progress { background-color: #fd7e14; }
+        .status-btn.status-done { background-color: #28a745; }
 
         .modal-overlay { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
         .modal-overlay.visible { display: flex; }
@@ -171,7 +185,7 @@
                     <label for="end-date-filter">Até:</label><input type="datetime-local" id="end-date-filter">
                 </fieldset>
                 <fieldset><legend>Por Status</legend><div id="filter-status-container" style="display: flex; flex-wrap: wrap; gap: 10px;"></div></fieldset>
-                <fieldset><legend>Por Cor</legend><div id="filter-color-container" style="display: flex; flex-wrap: wrap; gap: 10px;"></div></fieldset>
+                <fieldset><legend>Por Tema</legend><div id="filter-color-container" style="display: flex; flex-wrap: wrap; gap: 10px;"></div></fieldset>
                 <div class="modal-footer" style="justify-content: space-between; gap: 10px;">
                     <button type="button" id="clear-filters-btn" class="btn btn-secondary">Limpar Filtros</button>
                     <button type="submit" class="btn btn-primary">Aplicar</button>
@@ -207,26 +221,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusMap = { none: 'Nenhum', seen: 'Visto', in_progress: 'Em Progresso', done: 'Feito' };
     const statusCycle = ['none', 'seen', 'in_progress', 'done'];
     const themes = [
-        { name: 'default-light', bg: '#FFFFFF', text: '#1a2533', title: '#007bff', border: '#FFFFFF' },
-        { name: 'default-dark', bg: '#2d3436', text: '#dfe6e9', title: '#74b9ff', border: '#2d3436' },
-        { name: 'slate', bg: '#4a4a4a', text: '#f1f1f1', title: '#a4b0be', border: '#a4b0be'},
-        { name: 'solar', bg: '#fdf6e3', text: '#657b83', title: '#b58900', border: '#fdf6e3' },
-        { name: 'mint', bg: '#E0F2F1', text: '#004D40', title: '#00796B', border: '#00796B' },
-        { name: 'apricot', bg: '#FFECB3', text: '#E65100', title: '#F57C00', border: '#F57C00' },
-        { name: 'lavender', bg: '#E1BEE7', text: '#4A148C', title: '#7B1FA2', border: '#7B1FA2' },
-        { name: 'rose', bg: '#FCE4EC', text: '#880E4F', title: '#C2185B', border: '#C2185B' },
-        { name: 'ocean', bg: '#01579B', text: '#B3E5FC', title: '#E1F5FE', border: '#E1F5FE' },
-        { name: 'forest', bg: '#1B5E20', text: '#C8E6C9', title: '#A5D6A7', border: '#A5D6A7' },
-        { name: 'cherry', bg: '#880000', text: '#ffcdd2', title: '#ef9a9a', border: '#ef9a9a' },
-        { name: 'sand', bg: '#FFF8E1', text: '#795548', title: '#A1887F', border: '#FFF8E1' },
-        { name: 'sky', bg: '#E3F2FD', text: '#0D47A1', title: '#1976D2', border: '#1976D2' },
-        { name: 'graphite', bg: '#37474F', text: '#ECEFF1', title: '#90A4AE', border: '#90A4AE' },
-        { name: 'sakura', bg: '#fdeff2', text: '#5d3741', title: '#d66c83', border: '#d66c83' },
-        { name: 'matcha', bg: '#e8f5e9', text: '#2e7d32', title: '#4caf50', border: '#4caf50' },
-        { name: 'canary', bg: '#fffde7', text: '#f57f17', title: '#fbc02d', border: '#fffde7' },
-        { name: 'plum', bg: '#f3e5f5', text: '#6a1b9a', title: '#8e24aa', border: '#8e24aa' },
-        { name: 'teal', bg: '#e0f2f1', text: '#00695c', title: '#00897b', border: '#00897b' },
-        { name: 'ruby', bg: '#ffebee', text: '#c62828', title: '#e53935', border: '#e53935' }
+        { name: 'default-light', bg: '#FFFFFF', text: '#1a2533', title: '#007bff' },
+        { name: 'default-dark', bg: '#2d3436', text: '#dfe6e9', title: '#74b9ff' },
+        { name: 'slate', bg: '#4a4a4a', text: '#f1f1f1', title: '#a4b0be' },
+        { name: 'solar', bg: '#fdf6e3', text: '#657b83', title: '#b58900' },
+        { name: 'mint', bg: '#E0F2F1', text: '#004D40', title: '#00796B' },
+        { name: 'apricot', bg: '#FFECB3', text: '#E65100', title: '#F57C00' },
+        { name: 'lavender', bg: '#E1BEE7', text: '#4A148C', title: '#7B1FA2' },
+        { name: 'rose', bg: '#FCE4EC', text: '#880E4F', title: '#C2185B' },
+        { name: 'matcha', bg: '#e8f5e9', text: '#2e7d32', title: '#4caf50' },
+        { name: 'ocean', bg: '#01579B', text: '#B3E5FC', title: '#E1F5FE' },
+        { name: 'forest', bg: '#1B5E20', text: '#C8E6C9', title: '#A5D6A7' },
+        { name: 'cherry', bg: '#880000', text: '#ffcdd2', title: '#ef9a9a' }
     ];
 
     const themesStyleSheet = document.createElement('style');
@@ -236,7 +242,6 @@ document.addEventListener('DOMContentLoaded', () => {
             --card-theme-bg: ${t.bg};
             --card-theme-text: ${t.text};
             --card-theme-title: ${t.title};
-            --card-theme-border: ${t.status !== 'none' ? t.border : t.bg};
         }
     `).join('\n');
     
@@ -311,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="note-card-content">${note.content}</div>
                 <footer class="note-card-footer">
-                    <span class="status-text status-${note.status || 'none'}" title="Clique para alterar status">${statusText}</span>
+                    <button class="status-btn status-${note.status || 'none'}" title="Clique para alterar status">${statusText}</button>
                     <span>${formatTimestamp(note.timestamp)}</span>
                 </footer>`;
             notesContainer.appendChild(card);
@@ -323,15 +328,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const startDate = document.getElementById('start-date-filter').value ? new Date(document.getElementById('start-date-filter').value).getTime() : null;
         const endDate = document.getElementById('end-date-filter').value ? new Date(document.getElementById('end-date-filter').value).getTime() : null;
         const activeStatuses = Array.from(document.querySelectorAll('#filter-status-container button.active')).map(b => b.dataset.status);
-        const activeColors = Array.from(document.querySelectorAll('#filter-color-container button.active')).map(b => b.dataset.color);
+        const activeThemes = Array.from(document.querySelectorAll('#filter-color-container button.active')).map(b => b.dataset.theme);
 
         let filteredData = notesData.filter(note => {
             const textMatch = (note.title || '').toLowerCase().includes(filterText) || (note.content || '').toLowerCase().includes(filterText);
             const noteTime = note.timestamp ? new Date(note.timestamp).getTime() : null;
             const dateMatch = !noteTime || ((!startDate || noteTime >= startDate) && (!endDate || noteTime <= endDate));
             const statusMatch = activeStatuses.length === 0 || activeStatuses.includes(note.status || 'none');
-            const colorMatch = activeColors.length === 0 || activeColors.includes(note.theme || 'theme-default-light');
-            return textMatch && dateMatch && statusMatch && colorMatch;
+            const defaultTheme = document.body.classList.contains('dark-theme') ? 'theme-default-dark' : 'theme-default-light';
+            const themeMatch = activeThemes.length === 0 || activeThemes.includes(note.theme || defaultTheme);
+            return textMatch && dateMatch && statusMatch && themeMatch;
         });
         renderNotes(filteredData);
     };
@@ -382,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ).join('');
         
         colorContainer.innerHTML = themes.map(theme => 
-            `<button type="button" data-color="${theme.name}" style="background-color: ${theme.bg};" title="${theme.name}"></button>`
+            `<button type="button" data-theme="theme-${theme.name}" style="background-color: ${theme.bg}; border: 1px solid ${theme.text};" title="${theme.name}"></button>`
         ).join('');
         
         statusContainer.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => btn.classList.toggle('active')));
@@ -455,16 +461,11 @@ document.addEventListener('DOMContentLoaded', () => {
     notesContainer.addEventListener('click', e => {
         const card = e.target.closest('.note-card');
         if (!card) return;
+        const noteId = card.dataset.id;
 
-        if (e.target.classList.contains('delete-btn')) {
+        // Prioridade para os botões
+        if (e.target.closest('.status-btn')) {
             e.stopPropagation();
-            if (confirm('Tem certeza que deseja excluir esta anotação?')) {
-                notesData = notesData.filter(n => n.id !== card.dataset.id);
-                saveDataToFirebase();
-            }
-        } else if (e.target.classList.contains('status-text')) {
-            e.stopPropagation();
-            const noteId = card.dataset.id;
             const noteIndex = notesData.findIndex(n => n.id === noteId);
             if (noteIndex > -1) {
                 const currentStatus = notesData[noteIndex].status || 'none';
@@ -472,8 +473,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 notesData[noteIndex].status = statusCycle[nextIndex];
                 saveDataToFirebase();
             }
-        } else if (e.target.tagName !== 'A' && !e.target.closest('.note-card-content')) {
-             openNoteModal('edit', card.dataset.id);
+            return;
+        }
+
+        if (e.target.closest('.delete-btn')) {
+            e.stopPropagation();
+            if (confirm('Tem certeza que deseja excluir esta anotação?')) {
+                notesData = notesData.filter(n => n.id !== noteId);
+                saveDataToFirebase();
+            }
+            return;
+        }
+    });
+    
+    notesContainer.addEventListener('dblclick', e => {
+        const card = e.target.closest('.note-card');
+        if (card) {
+            openNoteModal('edit', card.dataset.id);
         }
     });
 

@@ -152,11 +152,13 @@
             }
 
             /* Melhorias Mobile */
-            th, td { padding: 10px 4px; }
-            .col-task { width: 40% !important; word-break: break-word; }
+            table { table-layout: fixed; }
+            th, td { padding: 10px 2px; }
+            .col-task { width: 45% !important; word-break: break-word; }
             .col-task span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-            .control-group { gap: 3px; }
-            .control-group .display { min-width: 35px; padding: 5px 2px; }
+            .col-progresso, .col-dias { width: 25%; }
+            .control-group { gap: 2px; }
+            .control-group .display { min-width: 35px; padding: 4px 2px; font-size: 0.85em; }
         }
     </style>
 </head>
@@ -372,7 +374,6 @@
         document.getElementById('import-json-input').addEventListener('change', handleImport);
         document.querySelector('.filters').addEventListener('click', (e) => { if (e.target.classList.contains('filter-btn')) applyFilter(e.target.dataset.filter, true); });
         document.getElementById('search-input').addEventListener('keyup', () => { const activeFilter = document.querySelector('.filters .filter-btn.active')?.dataset.filter || 'all'; applyFilter(activeFilter, false); });
-        document.getElementById('select-all-checkbox').addEventListener('change', handleSelectAll);
         document.getElementById('bulk-delete-btn').addEventListener('click', handleBulkDelete);
         document.getElementById('bulk-done-btn').addEventListener('click', () => handleBulkProgress(1));
         document.getElementById('bulk-redo-btn').addEventListener('click', () => handleBulkProgress(0));
@@ -774,13 +775,13 @@
     function updateBulkActionsBar() {
         const container = document.getElementById('bulk-actions-container');
         container.classList.toggle('visible', selectedItems.size > 0);
-        const visibleRows = document.querySelectorAll('#tasks-tbody .task-row:not([style*="display: none"])');
-        if (document.getElementById('select-all-checkbox')) {
-            document.getElementById('select-all-checkbox').checked = (visibleRows.length > 0 && selectedItems.size === visibleRows.length);
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        if (selectAllCheckbox) {
+            const visibleRows = document.querySelectorAll('#tasks-tbody .task-row:not([style*="display: none"])');
+            selectAllCheckbox.checked = (visibleRows.length > 0 && selectedItems.size === visibleRows.length);
         }
-        if (window.matchMedia('(max-width: 768px)').matches) {
-            updateContainerPadding(); 
-        }
+        // Chamada incondicional para corrigir o layout em desktop e mobile
+        updateContainerPadding(); 
     }
 
     function handleSelectAll(e) {
