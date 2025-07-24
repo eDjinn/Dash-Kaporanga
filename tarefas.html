@@ -119,8 +119,8 @@
         #tasks-table-container { background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 2px 4px var(--card-shadow-color); overflow-x: auto; }
         th, td { padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left; vertical-align: middle; transition: background-color 0.2s; }
         
-        th { background-color: var(--accent-color); color: white; font-weight: bold; }
-        th:first-child { width: 50%; }
+        th { background-color: var(--accent-color); color: white; font-weight: bold; text-align: center; }
+        th.col-task { text-align: left; width: 50%; }
         .task-row { background-color: transparent; cursor: grab; user-select: none; }
         .task-row.selected > td { background-color: #fff3cd; }
         .task-row.sortable-ghost { background-color: #cce5ff; opacity: 0.7; }
@@ -146,15 +146,17 @@
             #search-input { min-width: 150px; }
             .header-actions { justify-content: flex-end; }
             .summary-item { flex-basis: 40%; }
-            .control-group { flex-wrap: wrap; }
-            th, td { padding: 10px 8px; }
-            th:first-child, .task-row td:first-child { width: 40%; word-break: break-all; }
             .header-scrolled #primary-actions-container,
             #bulk-actions-container.visible ~ #primary-actions-container {
-                overflow: hidden;
-                opacity: 0;
-                max-height: 0;
+                overflow: hidden; opacity: 0; max-height: 0;
             }
+
+            /* Melhorias Mobile */
+            th, td { padding: 10px 4px; }
+            .col-task { width: 40% !important; word-break: break-word; }
+            .col-task span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+            .control-group { gap: 3px; }
+            .control-group .display { min-width: 35px; padding: 5px 2px; }
         }
     </style>
 </head>
@@ -194,12 +196,7 @@
         <div id="tasks-table-container">
             <table>
                 <thead>
-                    <tr>
-                        <th>Tarefa</th>
-                        <th style="text-align: center;">Dias</th>
-                        <th style="text-align: center;">Progresso</th>
-                        <th style="width: 20px;"><input type="checkbox" id="select-all-checkbox"></th>
-                    </tr>
+                    <tr id="tasks-thead-row"></tr>
                 </thead>
                 <tbody id="tasks-tbody"></tbody>
             </table>
@@ -385,7 +382,10 @@
         document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges() && !confirm("Você tem alterações não salvas. Deseja voltar e perder as alterações?")) e.preventDefault(); });
         window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; return ''; } });
         
-        window.addEventListener('resize', updateContainerPadding);
+        window.addEventListener('resize', () => {
+            updateContainerPadding();
+            renderTable(); // Re-render table on resize to swap columns correctly
+        });
         window.addEventListener('scroll', handleHeaderScroll);
 
         document.addEventListener('keydown', (e) => {
@@ -421,10 +421,49 @@
         document.getElementById('add-item-modal').innerHTML = `<div class="modal-content"><span class="modal-close">×</span><div id="modal-task-form-container"><h2>Adicionar Nova Tarefa</h2><form id="add-task-form" class="form"><input type="text" id="new-task-name" placeholder="Nome da Tarefa" required><input type="number" id="new-task-days" placeholder="Dias" step="0.01" min="0" required><label for="new-task-group">Adicionar em:</label><select id="new-task-group"></select><button type="submit" class="btn btn-success">Adicionar Tarefa</button></form></div><div id="modal-group-form-container"><h2>Adicionar Novo Grupo</h2><form id="add-group-form" class="form"><input type="text" id="new-group-name" placeholder="Nome do Grupo" required><label for="new-group-parent">Adicionar em:</label><select id="new-group-parent"></select><button type="submit" class="btn btn-info">Adicionar Grupo</button></form></div></div>`;
     }
 
+    function renderTableHeader() {
+        const headerRow = document.getElementById('tasks-thead-row');
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+        headerRow.innerHTML = ''; // Limpa o cabeçalho
+
+        const taskHeader = document.createElement('th');
+        taskHeader.className = 'col-task';
+        taskHeader.innerHTML = 'Tarefa';
+        headerRow.appendChild(taskHeader);
+
+        const progressHeader = document.createElement('th');
+        progressHeader.className = 'col-progresso';
+        progressHeader.innerHTML = 'Progresso';
+
+        const daysHeader = document.createElement('th');
+        daysHeader.className = 'col-dias';
+        daysHeader.innerHTML = 'Dias';
+
+        if (isMobile) {
+            headerRow.appendChild(progressHeader);
+            headerRow.appendChild(daysHeader);
+        } else {
+            headerRow.appendChild(daysHeader);
+            headerRow.appendChild(progressHeader);
+        }
+
+        const checkboxHeader = document.createElement('th');
+        checkboxHeader.className = 'col-checkbox';
+        checkboxHeader.style.width = '20px';
+        checkboxHeader.innerHTML = `<input type="checkbox" id="select-all-checkbox">`;
+        headerRow.appendChild(checkboxHeader);
+
+        // Re-attach event listener
+        document.getElementById('select-all-checkbox').addEventListener('change', handleSelectAll);
+    }
+
+
     function renderTable() {
+        renderTableHeader(); // Renderiza o cabeçalho de acordo com a tela
         const tableBody = document.getElementById('tasks-tbody');
         const activeFilter = document.querySelector('.filters .filter-btn.active')?.dataset.filter || 'all';
         tableBody.innerHTML = ''; 
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
         
         const createRowsRecursive = (tasks, level = 0) => {
             tasks.forEach(task => {
@@ -435,16 +474,36 @@
                 if(selectedItems.has(task.id)) row.classList.add('selected');
                 row.dataset.id = task.id;
                 
-                const servicoCell = row.insertCell(0);
-                servicoCell.style.paddingLeft = `${15 + level * 30}px`;
+                const servicoCell = row.insertCell();
+                servicoCell.className = 'col-task';
+                servicoCell.style.paddingLeft = `${5 + level * 25}px`;
                 servicoCell.innerHTML = (isGroup ? `<span class="toggle-children">${collapsedGroups.has(task.id) ? '▶' : '▼'}</span>` : '') + `<span>${task.servico}</span><span class="edit-btn">✏️</span>`;
                 
                 const diasDisplay = (task._totalDias || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 const progressPercentage = Math.round((task._progress || 0) * 100);
 
-                row.insertCell(1).innerHTML = `<div class="control-group"><button class="dias-btn" data-delta="-0.25" ${isGroup ? 'disabled' : ''}>-</button><span class="display dias-display">${diasDisplay}</span><button class="dias-btn" data-delta="0.25" ${isGroup ? 'disabled' : ''}>+</button></div>`;
-                row.insertCell(2).innerHTML = `<div class="control-group"><button class="progress-btn" data-delta="-0.25" ${isGroup ? 'disabled' : ''}>-</button><span class="display progress-display status-${progressPercentage}">${progressPercentage}%</span><button class="progress-btn" data-delta="0.25" ${isGroup ? 'disabled' : ''}>+</button></div>`;
-                row.insertCell(3).innerHTML = `<input type="checkbox" class="select-checkbox" ${selectedItems.has(task.id) ? 'checked' : ''}>`;
+                const diasHTML = `<div class="control-group"><button class="dias-btn" data-delta="-0.25" ${isGroup ? 'disabled' : ''}>-</button><span class="display dias-display">${diasDisplay}</span><button class="dias-btn" data-delta="0.25" ${isGroup ? 'disabled' : ''}>+</button></div>`;
+                const progressHTML = `<div class="control-group"><button class="progress-btn" data-delta="-0.25" ${isGroup ? 'disabled' : ''}>-</button><span class="display progress-display status-${progressPercentage}">${progressPercentage}%</span><button class="progress-btn" data-delta="0.25" ${isGroup ? 'disabled' : ''}>+</button></div>`;
+
+                if (isMobile) {
+                    const progressCell = row.insertCell();
+                    progressCell.className = 'col-progresso';
+                    progressCell.innerHTML = progressHTML;
+                    const diasCell = row.insertCell();
+                    diasCell.className = 'col-dias';
+                    diasCell.innerHTML = diasHTML;
+                } else {
+                    const diasCell = row.insertCell();
+                    diasCell.className = 'col-dias';
+                    diasCell.innerHTML = diasHTML;
+                    const progressCell = row.insertCell();
+                    progressCell.className = 'col-progresso';
+                    progressCell.innerHTML = progressHTML;
+                }
+                
+                const checkboxCell = row.insertCell();
+                checkboxCell.className = 'col-checkbox';
+                checkboxCell.innerHTML = `<input type="checkbox" class="select-checkbox" ${selectedItems.has(task.id) ? 'checked' : ''}>`;
                 
                 tableBody.appendChild(row);
 
@@ -716,7 +775,9 @@
         const container = document.getElementById('bulk-actions-container');
         container.classList.toggle('visible', selectedItems.size > 0);
         const visibleRows = document.querySelectorAll('#tasks-tbody .task-row:not([style*="display: none"])');
-        document.getElementById('select-all-checkbox').checked = (visibleRows.length > 0 && selectedItems.size === visibleRows.length);
+        if (document.getElementById('select-all-checkbox')) {
+            document.getElementById('select-all-checkbox').checked = (visibleRows.length > 0 && selectedItems.size === visibleRows.length);
+        }
         if (window.matchMedia('(max-width: 768px)').matches) {
             updateContainerPadding(); 
         }
