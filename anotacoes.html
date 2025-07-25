@@ -87,11 +87,12 @@ document.addEventListener('DOMContentLoaded', () => {
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore(), auth = firebase.auth(), functions = firebase.functions();
     const notesDocRef = db.collection('sharedData').doc('sharedNotes');
-    let userStyleDocRef;
+    let userStyleDocRef, currentUser;
     let notesData = [], initialDataState = '[]', activeFilters = { statuses: [], themes: [], startDate: null, endDate: null };
 
     auth.onAuthStateChanged(user => {
         if (user) {
+            currentUser = user;
             userStyleDocRef = db.collection('userData').doc(user.uid);
             loadAndApplyGlobalStyle(); loadDataFromFirebase(); initSortable(); updateContainerPadding(); setupEventListeners();
         } else { window.location.href = 'login.html'; }
@@ -107,7 +108,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const formatTimestamp = (isoString) => isoString ? new Date(isoString).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '';
     const hasUnsavedChanges = () => JSON.stringify(notesData) !== initialDataState;
     const saveDataToFirebase = () => notesDocRef.set({ notes: notesData }, { merge: true }).then(() => { initialDataState = JSON.stringify(notesData); }).catch(error => console.error("Erro ao salvar:", error));
-    const loadDataFromFirebase = () => { notesDocRef.onSnapshot(doc => { notesData = (doc.exists && doc.data().notes) ? doc.data().notes : []; initialDataState = JSON.stringify(notesData); applyFiltersAndRender(); }, error => { console.error("Erro ao carregar os dados compartilhados. Verifique suas permissões no Firestore.", error); notesContainer.innerHTML = `<p style='color:red;padding:20px;'>Falha ao carregar anotações. Você não tem permissão para ver este documento.</p>`; }); };
+    
+    const loadDataFromFirebase = () => {
+        notesDocRef.onSnapshot(doc => {
+            if (doc.exists) {
+                notesData = doc.data().notes || [];
+                initialDataState = JSON.stringify(notesData);
+                applyFiltersAndRender();
+            } else {
+                notesDocRef.set({
+                    allowedUsers: [currentUser.uid],
+                    notes: []
+                }).catch(error => console.error("Erro ao criar documento compartilhado:", error));
+            }
+        }, error => {
+            console.error("Erro de permissão ao carregar dados:", error);
+            notesContainer.innerHTML = `<p style='color:red;padding:20px; text-align:center;'>Falha ao carregar anotações. Você não tem permissão para ver este documento. Peça para um membro existente convidá-lo.</p>`;
+        });
+    };
+    
     async function loadAndApplyGlobalStyle() { if (!userStyleDocRef) return; try { const doc = await userStyleDocRef.get(); if (doc.exists && doc.data().styleData) { const style = doc.data().styleData; document.body.className = ''; document.body.classList.add(style.theme || 'light-theme'); document.body.style.backgroundColor = style.bgColor; document.documentElement.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none'); document.documentElement.style.setProperty('--bg-opacity', style.bgOpacity || '1'); } } catch (e) { console.error("Falha ao carregar estilos:", e); } }
     const updateContainerPadding = () => { const header = document.querySelector('.main-header'), container = document.querySelector('.container'); if (header && container) container.style.paddingTop = `${header.offsetHeight + 20}px`; };
     const handleHeaderScroll = () => { if (window.matchMedia('(max-width: 768px)').matches) { document.querySelector('.main-header').classList.toggle('header-scrolled', window.scrollY > 10); } updateContainerPadding(); };
@@ -132,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         notesContainer.addEventListener('click', e => { const card = e.target.closest('.note-card'); if (!card) return; const noteId = card.dataset.id; if (e.target.closest('.status-btn')) { e.stopPropagation(); const noteIndex = notesData.findIndex(n => n.id === noteId); if (noteIndex > -1) { const currentStatus = notesData[noteIndex].status || 'none'; const nextIndex = (statusCycle.indexOf(currentStatus) + 1) % statusCycle.length; notesData[noteIndex].status = statusCycle[nextIndex]; saveDataToFirebase(); } return; } if (e.target.closest('.delete-btn')) { e.stopPropagation(); if (confirm('Tem certeza que deseja excluir esta anotação?')) { notesData = notesData.filter(n => n.id !== noteId); saveDataToFirebase(); } return; } });
         notesContainer.addEventListener('dblclick', e => { const card = e.target.closest('.note-card'); if (card) { openNoteModal('edit', card.dataset.id); } });
         document.getElementById('export-json-btn').addEventListener('click', () => { if(notesData.length === 0){ alert("Não há anotações para exportar."); return; } const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({ notes: notesData }, null, 2)], { type: 'application/json' })); a.download = `anotacoes_backup.json`; a.click(); URL.revokeObjectURL(a.href); });
-        document.getElementById('import-json-input').addEventListener('change', (e) => { if (hasUnsavedChanges() && !confirm("Isto substituirá suas anotações. Deseja continuar?")) { e.target.value = ''; return; } const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (event) => { try { const data = JSON.parse(event.target.result); notesData = (Array.isArray(data)) ? data : (data && Array.isArray(data.notes)) ? data.notes : []; saveDataToFirebase(); alert(`Anotações importadas com sucesso!`); } catch (err) { alert('Falha ao importar: Arquivo JSON inválido.'); } }; reader.readAsText(file); e.target.value = ''; });
+        document.getElementById('import-json-input').addEventListener('change', (e) => { if (hasUnsavedChanges() && !confirm("Isto substituirá suas anotações. Deseja continuar?")) { e.target.value = ''; return; } const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (event) => { try { const data = JSON.parse(event.target.result); if (Array.isArray(data)) { notesData = data; } else if (data && Array.isArray(data.notes)) { notesData = data.notes; } else { throw new Error("Formato de JSON não reconhecido."); } saveDataToFirebase(); alert(`Anotações importadas com sucesso!`); } catch (err) { alert('Falha ao importar: Arquivo JSON inválido ou formato não reconhecido.'); } }; reader.readAsText(file); e.target.value = ''; });
         document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges() && !confirm("Sair e perder alterações não salvas?")) e.preventDefault(); });
         window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; } });
         window.addEventListener('resize', updateContainerPadding); window.addEventListener('scroll', handleHeaderScroll);
