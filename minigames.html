@@ -80,19 +80,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const db = firebase.firestore(), auth = firebase.auth();
     const functions = firebase.app().functions('us-central1'); 
     const minigamesDocRef = db.collection('sharedData').doc('sharedMinigames');
-    let userStyleDocRef, currentUser, unsubscribe;
+    let userStyleDocRef, currentUser, unsubscribeListener;
     let minigameData = [], projectName = "Carregando...", selectedItems = new Set(), currentSort = {}, initialDataState = '', isSaving = false;
 
     auth.onAuthStateChanged(user => {
         if (user) {
-            currentUser = user;
-            userStyleDocRef = db.collection('userData').doc(user.uid);
-            initializeSharedData();
-            loadAndApplyGlobalStyle();
-            setupEventListeners();
-            updateContainerPadding();
-        } else { window.location.href = 'login.html'; }
+            startApp(user);
+        } else {
+            window.location.href = 'login.html';
+        }
     });
+
+    function startApp(user) {
+        currentUser = user;
+        userStyleDocRef = db.collection('userData').doc(user.uid);
+        
+        initializeSharedData();
+        loadAndApplyGlobalStyle();
+        setupEventListeners();
+        updateContainerPadding();
+    }
     
     async function initializeSharedData() {
         try {
@@ -104,8 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     games: []
                 });
             }
-            if (unsubscribe) unsubscribe();
-            unsubscribe = minigamesDocRef.onSnapshot(snapshot => {
+            if (unsubscribeListener) unsubscribeListener();
+            unsubscribeListener = minigamesDocRef.onSnapshot(snapshot => {
+                if (!snapshot.exists) return;
                 const data = snapshot.data();
                 minigameData = data.games || [];
                 projectName = data.projectName || "Projeto";
@@ -118,11 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelector('#table-container').innerHTML = "<p style='color:red;padding:20px;text-align:center;'>Falha ao carregar dados. Você não tem permissão para ver este documento. Peça para um membro existente convidá-lo.</p>";
             });
         } catch (error) {
-             console.error("Erro ao inicializar dados compartilhados:", error);
+             console.error("Erro Crítico ao inicializar dados compartilhados:", error);
         }
     }
 
-    const saveDataToFirebase = () => { if (isSaving) return; isSaving = true; minigamesDocRef.set({ projectName, games: minigameData }, { merge: true }).then(() => { initialDataState = JSON.stringify(minigameData); }).catch(error => console.error("Erro ao salvar:", error)).finally(() => { isSaving = false; }); };
+    const saveDataToFirebase = () => { if (isSaving) return; isSaving = true; minigamesDocRef.update({ projectName, games: minigameData }).then(() => { initialDataState = JSON.stringify(minigameData); }).catch(error => console.error("Erro ao salvar:", error)).finally(() => { isSaving = false; }); };
     async function loadAndApplyGlobalStyle() { if (!userStyleDocRef) return; try { const doc = await userStyleDocRef.get(); if (doc.exists && doc.data().styleData) { const style = doc.data().styleData; document.body.className = ''; document.body.classList.add(style.theme || 'light-theme'); document.body.style.backgroundColor = style.bgColor; document.documentElement.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none'); document.documentElement.style.setProperty('--bg-opacity', style.bgOpacity || '1'); } } catch (e) { console.error("Falha ao carregar estilos:", e); } }
     const hasUnsavedChanges = () => JSON.stringify(minigameData) !== initialDataState;
     const updateAndRender = (doSave = false) => { filterAndRender(); if(doSave) saveDataToFirebase(); };
