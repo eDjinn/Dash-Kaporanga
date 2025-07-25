@@ -4,114 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minhas Anotações</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-functions-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
-        /* ⭐️ INÍCIO DA SEÇÃO DE ESTILO HERDADA ⭐️ */
-        :root {
-            --primary-text-color: #1a2533;
-            --secondary-text-color: #6c757d;
-            --page-bg-color: #f4f7f9;
-            --card-bg-color: rgba(255, 255, 255, 0.92);
-            --card-shadow-color: rgba(0, 0, 0, 0.1);
-            --accent-color: #007bff;
-            --bg-image: none;
-            --bg-opacity: 1;
-        }
-        body.dark-theme {
-            --primary-text-color: #e0e0e0;
-            --secondary-text-color: #b0b0b0;
-            --page-bg-color: #121212;
-            --card-bg-color: rgba(40, 40, 40, 0.92);
-            --card-shadow-color: rgba(0, 0, 0, 0.4);
-            --accent-color: #4dabf7;
-        }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background-color: var(--page-bg-color); 
-            color: var(--primary-text-color); 
-            margin: 0; padding: 0; position: relative;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        body::before {
-            content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1; background-image: var(--bg-image); background-size: cover;
-            background-position: center; background-repeat: no-repeat;
-            opacity: var(--bg-opacity); transition: opacity 0.3s ease, background-image 0.5s ease-in-out;
-        }
-        /* ⭐️ FIM DA SEÇÃO DE ESTILO HERDADA ⭐️ */
-
+        :root { --primary-text-color: #1a2533; --secondary-text-color: #6c757d; --page-bg-color: #f4f7f9; --card-bg-color: rgba(255, 255, 255, 0.92); --card-shadow-color: rgba(0, 0, 0, 0.1); --accent-color: #007bff; --bg-image: none; --bg-opacity: 1; }
+        body.dark-theme { --primary-text-color: #e0e0e0; --secondary-text-color: #b0b0b0; --page-bg-color: #121212; --card-bg-color: rgba(40, 40, 40, 0.92); --card-shadow-color: rgba(0, 0, 0, 0.4); --accent-color: #4dabf7; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--page-bg-color); color: var(--primary-text-color); margin: 0; padding: 0; position: relative; transition: background-color 0.3s ease, color 0.3s ease; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background-image: var(--bg-image); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: var(--bg-opacity); transition: opacity 0.3s ease, background-image 0.5s ease-in-out; }
         .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
-
-        .main-header { 
-            display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; 
-            background-color: var(--card-bg-color); 
-            box-shadow: 0 2px 4px var(--card-shadow-color);
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-            flex-wrap: wrap; gap: 15px;
-        }
+        .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: var(--card-bg-color); box-shadow: 0 2px 4px var(--card-shadow-color); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; }
         .header-left-group, .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .main-header h1 { margin: 0; font-size: 1.5em; }
         .btn { padding: 8px 15px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s; color: white; text-align: center; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; flex-shrink: 0; }
-        .btn-success { background-color: #28a745; }
-        .btn-primary { background-color: var(--accent-color); }
-        .btn-secondary { background-color: #6c757d; }
-        #back-btn { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
-        #back-btn svg { width: 22px; height: 22px; }
-        .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; }
-        .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
+        .btn-success { background-color: #28a745; } .btn-info { background-color: #17a2b8; } .btn-primary { background-color: var(--accent-color); } .btn-secondary { background-color: #6c757d; } .btn-danger { background-color: #dc3545; }
+        #back-btn { width: 40px; height: 40px; padding: 0; border-radius: 50%; } #back-btn svg { width: 22px; height: 22px; }
+        .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; } .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
         #search-input { width: 200px; max-width: 250px; flex-grow: 1; padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; background-color: var(--page-bg-color); color: var(--primary-text-color); }
-
         #primary-actions-container { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; transition: max-height 0.4s ease-out, opacity 0.3s ease; }
-        
         #notes-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .note-card { 
-            border-radius: 8px; box-shadow: 0 4px 8px var(--card-shadow-color); 
-            padding: 15px; display: flex; flex-direction: column; gap: 10px; 
-            word-wrap: break-word; height: 250px; position: relative; 
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s, color 0.3s; 
-            cursor: pointer;
-            background-color: var(--card-theme-bg);
-            color: var(--card-theme-text);
-        }
+        .note-card { border-radius: 8px; box-shadow: 0 4px 8px var(--card-shadow-color); padding: 15px; display: flex; flex-direction: column; gap: 10px; word-wrap: break-word; height: 250px; position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s, color 0.3s; cursor: pointer; background-color: var(--card-theme-bg); color: var(--card-theme-text); }
         .note-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px var(--card-shadow-color); }
-        .note-card.sortable-ghost { opacity: 0.4; background: var(--accent-color); }
-        .note-card.sortable-chosen { cursor: grabbing; }
+        .note-card.sortable-ghost { opacity: 0.4; background: var(--accent-color); } .note-card.sortable-chosen { cursor: grabbing; }
         .note-card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(128,128,128,0.2); padding-bottom: 8px; margin-bottom: 5px; }
         .note-card-title { font-size: 1.2em; font-weight: bold; margin: 0; word-break: break-all; color: var(--card-theme-title); }
         .note-card-actions button { background: none; border: none; cursor: pointer; font-size: 1.1em; opacity: 0.6; transition: opacity 0.2s; padding: 2px; color: inherit; }
         .note-card-actions button:hover { opacity: 1; }
         .note-card-content { flex-grow: 1; overflow-y: auto; white-space: pre-wrap; font-size: 0.95em; }
         .note-card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 8px; font-size: 0.8em; color: inherit; opacity: 0.8; border-top: 1px solid rgba(128,128,128,0.2); }
-        
-        .status-btn {
-            padding: 3px 10px;
-            border-radius: 12px;
-            border: none;
-            font-size: 0.9em;
-            font-weight: bold;
-            color: #ffffff;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.2s;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            line-height: 1.5;
-        }
+        .status-btn { padding: 3px 10px; border-radius: 12px; border: none; font-size: 0.9em; font-weight: bold; color: #ffffff; cursor: pointer; transition: background-color 0.2s, transform 0.2s; -webkit-appearance: none; -moz-appearance: none; appearance: none; line-height: 1.5; }
         .status-btn:hover { transform: scale(1.05); }
-        .status-btn.status-none { background-color: #343a40; }
-        .status-btn.status-seen { background-color: #6c757d; }
-        .status-btn.status-in_progress { background-color: #fd7e14; }
-        .status-btn.status-done { background-color: #28a745; }
-
+        .status-btn.status-none { background-color: #343a40; } .status-btn.status-seen { background-color: #6c757d; } .status-btn.status-in_progress { background-color: #fd7e14; } .status-btn.status-done { background-color: #28a745; }
         .modal-overlay { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
         .modal-overlay.visible { display: flex; }
-        .modal-content { 
-            background-color: var(--card-theme-bg, var(--card-bg-color)); 
-            color: var(--card-theme-text, var(--primary-text-color)); 
-            padding: 25px; border-radius: 8px; box-shadow: 0 5px 15px var(--card-shadow-color); 
-            width: 90%; max-width: 500px; position: relative; max-height: 90vh; 
-            display: flex; flex-direction: column; transition: background-color 0.3s, color 0.3s;
-        }
+        .modal-content { background-color: var(--card-theme-bg, var(--card-bg-color)); color: var(--card-theme-text, var(--primary-text-color)); padding: 25px; border-radius: 8px; box-shadow: 0 5px 15px var(--card-shadow-color); width: 90%; max-width: 500px; position: relative; max-height: 90vh; display: flex; flex-direction: column; transition: background-color 0.3s, color 0.3s; }
         .modal-content h2, .modal-content label { color: var(--card-theme-title, var(--primary-text-color)); }
         .modal-close { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: inherit; opacity: 0.6; cursor: pointer; }
         .form { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
@@ -122,7 +50,6 @@
         #note-theme-selector .theme-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(128,128,128,0.5); transition: transform 0.2s; }
         #note-theme-selector .theme-swatch:hover { transform: scale(1.1); }
         #note-theme-selector .theme-swatch.active { border-color: var(--card-theme-title, var(--accent-color)); transform: scale(1.2); }
-        
         fieldset { border: 1px solid #ccc; border-radius: 4px; padding: 10px 15px; margin-bottom: 15px; }
         legend { font-weight: bold; padding: 0 10px; color: var(--accent-color); font-size: 1.1em;}
         #filter-color-container button, #filter-status-container button { padding: 5px 10px; border: 1px solid var(--secondary-text-color); background: transparent; color: var(--primary-text-color); border-radius: 5px; cursor: pointer; transition: all 0.2s ease-in-out; }
@@ -130,15 +57,7 @@
         #filter-color-container button { width: 30px; height: 30px; border-radius: 50%; padding: 0; position: relative; }
         #filter-color-container button.active { box-shadow: 0 0 0 2px var(--accent-color); }
         #filter-color-container button.active::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; border-radius: 50%; background-color: var(--button-dot-color); border: 1px solid rgba(0, 0, 0, 0.3); }
-
-        @media (max-width: 768px) {
-            .container { padding: 10px; }
-            .header-left-group { flex-grow: 1; }
-            .note-card { height: 220px; }
-            .header-scrolled #primary-actions-container {
-                overflow: hidden; opacity: 0; max-height: 0;
-            }
-        }
+        @media (max-width: 768px) { .container { padding: 10px; } .header-left-group { flex-grow: 1; } .note-card { height: 220px; } .header-scrolled #primary-actions-container { overflow: hidden; opacity: 0; max-height: 0; } }
     </style>
 </head>
 <body>
@@ -151,403 +70,79 @@
         <div class="header-actions">
             <button id="add-note-btn" class="btn btn-success">Adicionar</button>
             <div id="primary-actions-container">
+                <button id="invite-friend-btn" class="btn btn-info">Convidar</button>
                 <button id="show-filter-modal-btn" class="btn btn-primary">Filtro</button>
                 <div class="file-input-wrapper"><button class="btn btn-secondary">Importar</button><input type="file" id="import-json-input" accept=".json"></div>
                 <button id="export-json-btn" class="btn btn-primary">Exportar</button>
+                <button id="logout-btn" class="btn btn-danger">Sair</button>
             </div>
         </div>
     </header>
-
-    <div class="container">
-        <div id="notes-container"></div>
-    </div>
-
-    <div id="note-modal" class="modal-overlay">
-        <div class="modal-content">
-            <span class="modal-close">×</span>
-            <h2 id="modal-title">Adicionar Anotação</h2>
-            <form id="note-form" class="form">
-                <input type="hidden" id="note-id">
-                <div><label for="note-title">Título:</label><input type="text" id="note-title" required></div>
-                <div><label for="note-status">Status:</label><select id="note-status"><option value="none">Nenhum</option><option value="seen">Visto</option><option value="in_progress">Em Progresso</option><option value="done">Feito</option></select></div>
-                <div><label>Tema:</label><div id="note-theme-selector"></div></div>
-                <div><label for="note-content">Conteúdo:</label><textarea id="note-content" required></textarea></div>
-                <div class="modal-footer"><button type="submit" class="btn btn-primary">Salvar Anotação</button></div>
-            </form>
-        </div>
-    </div>
-
-    <div id="filter-modal" class="modal-overlay">
-        <div class="modal-content">
-            <span class="modal-close">×</span>
-            <h2>Filtrar Anotações</h2>
-            <form id="filter-form" class="form">
-                <fieldset><legend>Por Data</legend>
-                    <label for="start-date-filter">De:</label><input type="datetime-local" id="start-date-filter">
-                    <label for="end-date-filter">Até:</label><input type="datetime-local" id="end-date-filter">
-                </fieldset>
-                <fieldset><legend>Por Status</legend><div id="filter-status-container" style="display: flex; flex-wrap: wrap; gap: 10px;"></div></fieldset>
-                <fieldset><legend>Por Tema</legend><div id="filter-color-container" style="display: flex; flex-wrap: wrap; gap: 10px;"></div></fieldset>
-                <div class="modal-footer" style="justify-content: space-between; gap: 10px;">
-                    <button type="button" id="clear-filters-btn" class="btn btn-secondary">Limpar Filtros</button>
-                    <button type="submit" class="btn btn-primary">Aplicar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
-
+    <div class="container"><div id="notes-container"></div></div>
+    <div id="note-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close">×</span><h2 id="modal-title">Adicionar Anotação</h2><form id="note-form" class="form"><input type="hidden" id="note-id"><div><label for="note-title">Título:</label><input type="text" id="note-title" required></div><div><label for="note-status">Status:</label><select id="note-status"><option value="none">Nenhum</option><option value="seen">Visto</option><option value="in_progress">Em Progresso</option><option value="done">Feito</option></select></div><div><label>Tema:</label><div id="note-theme-selector"></div></div><div><label for="note-content">Conteúdo:</label><textarea id="note-content" required></textarea></div><div class="modal-footer"><button type="submit" class="btn btn-primary">Salvar Anotação</button></div></form></div></div>
+    <div id="filter-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close">×</span><h2>Filtrar Anotações</h2><form id="filter-form" class="form"><fieldset><legend>Por Data</legend><label for="start-date-filter">De:</label><input type="datetime-local" id="start-date-filter"><label for="end-date-filter">Até:</label><input type="datetime-local" id="end-date-filter"></fieldset><fieldset><legend>Por Status</legend><div id="filter-status-container" style="display: flex; flex-wrap: wrap; gap: 10px;"></div></fieldset><fieldset><legend>Por Tema</legend><div id="filter-color-container" style="display: flex; flex-wrap: wrap; gap: 10px;"></div></fieldset><div class="modal-footer" style="justify-content: space-between; gap: 10px;"><button type="button" id="clear-filters-btn" class="btn btn-secondary">Limpar Filtros</button><button type="submit" class="btn btn-primary">Aplicar</button></div></form></div></div>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyC9OjBDOX9UUlCrPuhIZj5ipolRT4Gu420",
-        authDomain: "gerenciadorcentral-f01e3.firebaseapp.com",
-        projectId: "gerenciadorcentral-f01e3",
-        storageBucket: "gerenciadorcentral-f01e3.appspot.com",
-        messagingSenderId: "8874050225",
-        appId: "1:8874050225:web:a536c7feb14f36af7cd890"
-    };
-
+    const firebaseConfig = { apiKey: "AIzaSyC9OjBDOX9UUlCrPuhIZj5ipolRT4Gu420", authDomain: "gerenciadorcentral-f01e3.firebaseapp.com", projectId: "gerenciadorcentral-f01e3", storageBucket: "gerenciadorcentral-f01e3.appspot.com", messagingSenderId: "8874050225", appId: "1:8874050225:web:a536c7feb14f36af7cd890" };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const notesDocRef = db.collection('settings').doc('notes-data');
-    const styleDocRef = db.collection('settings').doc('main-dashboard');
-
-    let notesData = [];
-    let initialDataState = '[]';
-    let activeFilters = { statuses: [], themes: [], startDate: null, endDate: null };
-    
+    const db = firebase.firestore(), auth = firebase.auth(), functions = firebase.functions();
+    const notesDocRef = db.collection('sharedData').doc('sharedNotes');
+    let userStyleDocRef;
+    let notesData = [], initialDataState = '[]', activeFilters = { statuses: [], themes: [], startDate: null, endDate: null };
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            userStyleDocRef = db.collection('userData').doc(user.uid);
+            loadAndApplyGlobalStyle(); loadDataFromFirebase(); initSortable(); updateContainerPadding(); setupEventListeners();
+        } else { window.location.href = 'login.html'; }
+    });
     const statusMap = { none: 'Nenhum', seen: 'Visto', in_progress: 'Em Progresso', done: 'Feito' };
     const statusCycle = ['none', 'seen', 'in_progress', 'done'];
-    const themes = [
-        { name: 'default-light', bg: '#FFFFFF', text: '#1a2533', title: '#007bff' },
-        { name: 'default-dark', bg: '#2d3436', text: '#dfe6e9', title: '#74b9ff' },
-        { name: 'slate', bg: '#4a4a4a', text: '#f1f1f1', title: '#a4b0be' },
-        { name: 'solar', bg: '#fdf6e3', text: '#657b83', title: '#b58900' },
-        { name: 'mint', bg: '#E0F2F1', text: '#004D40', title: '#00796B' },
-        { name: 'apricot', bg: '#FFECB3', text: '#E65100', title: '#F57C00' },
-        { name: 'lavender', bg: '#E1BEE7', text: '#4A148C', title: '#7B1FA2' },
-        { name: 'rose', bg: '#FCE4EC', text: '#880E4F', title: '#C2185B' },
-        { name: 'matcha', bg: '#e8f5e9', text: '#2e7d32', title: '#4caf50' },
-        { name: 'ocean', bg: '#01579B', text: '#B3E5FC', title: '#E1F5FE' },
-        { name: 'forest', bg: '#1B5E20', text: '#C8E6C9', title: '#A5D6A7' },
-        { name: 'cherry', bg: '#880000', text: '#ffcdd2', title: '#ef9a9a' }
-    ];
-
-    const themesStyleSheet = document.createElement('style');
-    document.head.appendChild(themesStyleSheet);
-    themesStyleSheet.innerHTML = themes.map(t => `
-        .theme-${t.name} {
-            --card-theme-bg: ${t.bg};
-            --card-theme-text: ${t.text};
-            --card-theme-title: ${t.title};
-        }
-    `).join('\n');
-    
-    const notesContainer = document.getElementById('notes-container');
-    const searchInput = document.getElementById('search-input');
-    const noteModal = document.getElementById('note-modal');
-    const filterModal = document.getElementById('filter-modal');
-    const noteForm = document.getElementById('note-form');
-    const filterForm = document.getElementById('filter-form');
-    const modalTitle = document.getElementById('modal-title');
-
+    const themes = [ { name: 'default-light', bg: '#FFFFFF', text: '#1a2533', title: '#007bff' }, { name: 'default-dark', bg: '#2d3436', text: '#dfe6e9', title: '#74b9ff' }, { name: 'slate', bg: '#4a4a4a', text: '#f1f1f1', title: '#a4b0be' }, { name: 'solar', bg: '#fdf6e3', text: '#657b83', title: '#b58900' }, { name: 'mint', bg: '#E0F2F1', text: '#004D40', title: '#00796B' }, { name: 'apricot', bg: '#FFECB3', text: '#E65100', title: '#F57C00' }, { name: 'lavender', bg: '#E1BEE7', text: '#4A148C', title: '#7B1FA2' }, { name: 'rose', bg: '#FCE4EC', text: '#880E4F', title: '#C2185B' }, { name: 'matcha', bg: '#e8f5e9', text: '#2e7d32', title: '#4caf50' }, { name: 'ocean', bg: '#01579B', text: '#B3E5FC', title: '#E1F5FE' }, { name: 'forest', bg: '#1B5E20', text: '#C8E6C9', title: '#A5D6A7' }, { name: 'cherry', bg: '#880000', text: '#ffcdd2', title: '#ef9a9a' } ];
+    const themesStyleSheet = document.createElement('style'); document.head.appendChild(themesStyleSheet);
+    themesStyleSheet.innerHTML = themes.map(t => `.theme-${t.name} { --card-theme-bg: ${t.bg}; --card-theme-text: ${t.text}; --card-theme-title: ${t.title}; }`).join('\n');
+    const notesContainer = document.getElementById('notes-container'), searchInput = document.getElementById('search-input'), noteModal = document.getElementById('note-modal'), filterModal = document.getElementById('filter-modal'), noteForm = document.getElementById('note-form'), filterForm = document.getElementById('filter-form'), modalTitle = document.getElementById('modal-title');
     const generateId = () => `note_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const formatTimestamp = (isoString) => isoString ? new Date(isoString).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '';
     const hasUnsavedChanges = () => JSON.stringify(notesData) !== initialDataState;
-
-    const saveDataToFirebase = () => {
-        notesDocRef.set({ notes: notesData })
-            .then(() => { initialDataState = JSON.stringify(notesData); console.log("Anotações salvas."); })
-            .catch(error => console.error("Erro ao salvar no Firebase:", error));
-    };
-
-    const loadDataFromFirebase = () => {
-        notesDocRef.onSnapshot(doc => {
-            notesData = (doc.exists && doc.data().notes) ? doc.data().notes : [];
-            initialDataState = JSON.stringify(notesData);
-            applyFiltersAndRender();
-        }, error => console.error("Erro ao carregar dados do Firebase:", error));
-    };
-    
-    async function loadAndApplyGlobalStyle() {
-        try {
-            const doc = await styleDocRef.get();
-            if (doc.exists && doc.data().styleData) {
-                const style = doc.data().styleData;
-                const body = document.body, root = document.documentElement;
-                body.className = ''; body.classList.add(style.theme || 'light-theme');
-                body.style.backgroundColor = style.bgColor;
-                root.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none');
-                root.style.setProperty('--bg-opacity', style.bgOpacity || '1');
-            }
-        } catch (e) { console.error("Não foi possível carregar estilos do Firebase.", e); }
-    }
-    
-    const updateContainerPadding = () => {
-        const header = document.querySelector('.main-header');
-        const container = document.querySelector('.container');
-        if (header && container) container.style.paddingTop = `${header.offsetHeight + 20}px`;
-    };
-
-    const handleHeaderScroll = () => {
-        if (window.matchMedia('(max-width: 768px)').matches) {
-            document.querySelector('.main-header').classList.toggle('header-scrolled', window.scrollY > 10);
-        }
-        updateContainerPadding();
-    };
-
-    const renderNotes = (dataToRender) => {
-        notesContainer.innerHTML = (dataToRender.length === 0) ? `<p style="color: var(--secondary-text-color); padding: 20px; text-align: center;">Nenhuma anotação encontrada.</p>` : '';
-        dataToRender.forEach(note => {
-            const card = document.createElement('div');
-            const themeClass = note.theme || (document.body.classList.contains('dark-theme') ? 'theme-default-dark' : 'theme-default-light');
-            card.className = `note-card ${themeClass}`;
-            card.dataset.id = note.id;
-            const statusText = statusMap[note.status] || 'Nenhum';
-
-            card.innerHTML = `
-                <div class="note-card-header">
-                    <h3 class="note-card-title">${note.title}</h3>
-                    <div class="note-card-actions"><button class="delete-btn" title="Excluir">🗑️</button></div>
-                </div>
-                <div class="note-card-content">${note.content}</div>
-                <footer class="note-card-footer">
-                    <button class="status-btn status-${note.status || 'none'}" title="Clique para alterar status">${statusText}</button>
-                    <span>${formatTimestamp(note.timestamp)}</span>
-                </footer>`;
-            notesContainer.appendChild(card);
-        });
-    };
-    
-    const applyFiltersAndRender = () => {
-        const filterText = searchInput.value.toLowerCase();
-        const startDate = activeFilters.startDate ? new Date(activeFilters.startDate).getTime() : null;
-        const endDate = activeFilters.endDate ? new Date(activeFilters.endDate).getTime() : null;
-        const activeStatuses = activeFilters.statuses;
-        const activeThemes = activeFilters.themes;
-
-        let filteredData = notesData.filter(note => {
-            const textMatch = (note.title || '').toLowerCase().includes(filterText) || (note.content || '').toLowerCase().includes(filterText);
-            const noteTime = note.timestamp ? new Date(note.timestamp).getTime() : null;
-            const dateMatch = !noteTime || ((!startDate || noteTime >= startDate) && (!endDate || noteTime <= endDate));
-            const statusMatch = activeStatuses.length === 0 || activeStatuses.includes(note.status || 'none');
-            const defaultTheme = document.body.classList.contains('dark-theme') ? 'theme-default-dark' : 'theme-default-light';
-            const themeMatch = activeThemes.length === 0 || activeThemes.includes(note.theme || defaultTheme);
-            return textMatch && dateMatch && statusMatch && themeMatch;
-        });
-        renderNotes(filteredData);
-    };
-
-    const updateModalTheme = (themeName) => {
-        const modalContent = noteModal.querySelector('.modal-content');
-        modalContent.className = 'modal-content';
-        modalContent.classList.add(themeName);
-        modalContent.dataset.selectedTheme = themeName;
-        document.querySelectorAll('#note-theme-selector .theme-swatch').forEach(sw => {
-            sw.classList.toggle('active', sw.dataset.themeName === themeName);
-        });
-    };
-
-    const openNoteModal = (mode, noteId = null) => { 
-        noteForm.reset(); 
-        const modalContent = noteModal.querySelector('.modal-content');
-        modalContent.dataset.selectedTheme = '';
-        document.getElementById('note-id').value = '';
-        modalTitle.textContent = 'Adicionar Anotação';
-        
-        let noteTheme = document.body.classList.contains('dark-theme') ? 'theme-default-dark' : 'theme-default-light';
-
-        if (mode === 'edit' && noteId) { 
-            const note = notesData.find(n => n.id === noteId); 
-            if (note) { 
-                modalTitle.textContent = 'Editar Anotação'; 
-                document.getElementById('note-id').value = note.id; 
-                document.getElementById('note-title').value = note.title; 
-                document.getElementById('note-content').value = note.content;
-                document.getElementById('note-status').value = note.status || 'none';
-                noteTheme = note.theme || noteTheme;
-            } 
-        }
-        updateModalTheme(noteTheme);
-        noteModal.classList.add('visible');
-    };
-
+    const saveDataToFirebase = () => notesDocRef.set({ notes: notesData }, { merge: true }).then(() => { initialDataState = JSON.stringify(notesData); }).catch(error => console.error("Erro ao salvar:", error));
+    const loadDataFromFirebase = () => notesDocRef.onSnapshot(doc => { notesData = (doc.exists && doc.data().notes) ? doc.data().notes : []; initialDataState = JSON.stringify(notesData); applyFiltersAndRender(); }, error => console.error("Erro ao carregar:", error));
+    async function loadAndApplyGlobalStyle() { if (!userStyleDocRef) return; try { const doc = await userStyleDocRef.get(); if (doc.exists && doc.data().styleData) { const style = doc.data().styleData; document.body.className = ''; document.body.classList.add(style.theme || 'light-theme'); document.body.style.backgroundColor = style.bgColor; document.documentElement.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none'); document.documentElement.style.setProperty('--bg-opacity', style.bgOpacity || '1'); } } catch (e) { console.error("Falha ao carregar estilos:", e); } }
+    const updateContainerPadding = () => { const header = document.querySelector('.main-header'), container = document.querySelector('.container'); if (header && container) container.style.paddingTop = `${header.offsetHeight + 20}px`; };
+    const handleHeaderScroll = () => { if (window.matchMedia('(max-width: 768px)').matches) { document.querySelector('.main-header').classList.toggle('header-scrolled', window.scrollY > 10); } updateContainerPadding(); };
+    const renderNotes = (dataToRender) => { notesContainer.innerHTML = (dataToRender.length === 0) ? `<p style="color: var(--secondary-text-color); padding: 20px; text-align: center;">Nenhuma anotação encontrada.</p>` : ''; dataToRender.forEach(note => { const card = document.createElement('div'); const themeClass = note.theme || (document.body.classList.contains('dark-theme') ? 'theme-default-dark' : 'theme-default-light'); card.className = `note-card ${themeClass}`; card.dataset.id = note.id; const statusText = statusMap[note.status] || 'Nenhum'; card.innerHTML = `<div class="note-card-header"><h3 class="note-card-title">${note.title}</h3><div class="note-card-actions"><button class="delete-btn" title="Excluir">🗑️</button></div></div><div class="note-card-content">${note.content}</div><footer class="note-card-footer"><button class="status-btn status-${note.status || 'none'}" title="Clique para alterar status">${statusText}</button><span>${formatTimestamp(note.timestamp)}</span></footer>`; notesContainer.appendChild(card); }); };
+    const applyFiltersAndRender = () => { const filterText = searchInput.value.toLowerCase(), startDate = activeFilters.startDate ? new Date(activeFilters.startDate).getTime() : null, endDate = activeFilters.endDate ? new Date(activeFilters.endDate).getTime() : null, activeStatuses = activeFilters.statuses, activeThemes = activeFilters.themes; let filteredData = notesData.filter(note => { const textMatch = (note.title || '').toLowerCase().includes(filterText) || (note.content || '').toLowerCase().includes(filterText); const noteTime = note.timestamp ? new Date(note.timestamp).getTime() : null; const dateMatch = !noteTime || ((!startDate || noteTime >= startDate) && (!endDate || noteTime <= endDate)); const statusMatch = activeStatuses.length === 0 || activeStatuses.includes(note.status || 'none'); const defaultTheme = document.body.classList.contains('dark-theme') ? 'theme-default-dark' : 'theme-default-light'; const themeMatch = activeThemes.length === 0 || activeThemes.includes(note.theme || defaultTheme); return textMatch && dateMatch && statusMatch && themeMatch; }); renderNotes(filteredData); };
+    const updateModalTheme = (themeName) => { const modalContent = noteModal.querySelector('.modal-content'); modalContent.className = 'modal-content'; modalContent.classList.add(themeName); modalContent.dataset.selectedTheme = themeName; document.querySelectorAll('#note-theme-selector .theme-swatch').forEach(sw => { sw.classList.toggle('active', sw.dataset.themeName === themeName); }); };
+    const openNoteModal = (mode, noteId = null) => { noteForm.reset(); const modalContent = noteModal.querySelector('.modal-content'); modalContent.dataset.selectedTheme = ''; document.getElementById('note-id').value = ''; modalTitle.textContent = 'Adicionar Anotação'; let noteTheme = document.body.classList.contains('dark-theme') ? 'theme-default-dark' : 'theme-default-light'; if (mode === 'edit' && noteId) { const note = notesData.find(n => n.id === noteId); if (note) { modalTitle.textContent = 'Editar Anotação'; document.getElementById('note-id').value = note.id; document.getElementById('note-title').value = note.title; document.getElementById('note-content').value = note.content; document.getElementById('note-status').value = note.status || 'none'; noteTheme = note.theme || noteTheme; } } updateModalTheme(noteTheme); noteModal.classList.add('visible'); };
     const closeNoteModal = () => noteModal.classList.remove('visible');
-
-    const openFilterModal = () => {
-        const statusContainer = document.getElementById('filter-status-container');
-        const colorContainer = document.getElementById('filter-color-container');
-        
-        document.getElementById('start-date-filter').value = activeFilters.startDate || '';
-        document.getElementById('end-date-filter').value = activeFilters.endDate || '';
-        
-        statusContainer.innerHTML = Object.keys(statusMap).map(key => 
-            `<button type="button" data-status="${key}" class="${activeFilters.statuses.includes(key) ? 'active' : ''}">${statusMap[key]}</button>`
-        ).join('');
-        
-        colorContainer.innerHTML = themes.map(theme => 
-            `<button type="button" data-theme="theme-${theme.name}" class="${activeFilters.themes.includes(`theme-${theme.name}`) ? 'active' : ''}" style="background-color: ${theme.bg}; border: 1px solid ${theme.text}; --button-dot-color: ${theme.text};" title="${theme.name}"></button>`
-        ).join('');
-        
-        statusContainer.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => btn.classList.toggle('active')));
-        colorContainer.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => btn.classList.toggle('active')));
-        
-        filterModal.classList.add('visible');
-    };
-
+    const openFilterModal = () => { const statusContainer = document.getElementById('filter-status-container'), colorContainer = document.getElementById('filter-color-container'); document.getElementById('start-date-filter').value = activeFilters.startDate || ''; document.getElementById('end-date-filter').value = activeFilters.endDate || ''; statusContainer.innerHTML = Object.keys(statusMap).map(key => `<button type="button" data-status="${key}" class="${activeFilters.statuses.includes(key) ? 'active' : ''}">${statusMap[key]}</button>`).join(''); colorContainer.innerHTML = themes.map(theme => `<button type="button" data-theme="theme-${theme.name}" class="${activeFilters.themes.includes(`theme-${theme.name}`) ? 'active' : ''}" style="background-color: ${theme.bg}; border: 1px solid ${theme.text}; --button-dot-color: ${theme.text};" title="${theme.name}"></button>`).join(''); statusContainer.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => btn.classList.toggle('active'))); colorContainer.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => btn.classList.toggle('active'))); filterModal.classList.add('visible'); };
     const closeFilterModal = () => filterModal.classList.remove('visible');
-
-    const initSortable = () => {
-        new Sortable(notesContainer, {
-            animation: 150,
-            ghostClass: 'sortable-ghost',
-            delay: 200,
-            delayOnTouchOnly: true,
-            onEnd: (evt) => {
-                const hasFilters = searchInput.value || activeFilters.startDate || activeFilters.endDate || activeFilters.statuses.length > 0 || activeFilters.themes.length > 0;
-                if (hasFilters) {
-                    alert("Limpe todos os filtros para poder reordenar as anotações.");
-                    applyFiltersAndRender(); return;
-                }
-                const [movedItem] = notesData.splice(evt.oldIndex, 1);
-                notesData.splice(evt.newIndex, 0, movedItem);
-                saveDataToFirebase();
-            }
+    const initSortable = () => new Sortable(notesContainer, { animation: 150, ghostClass: 'sortable-ghost', delay: 200, delayOnTouchOnly: true, onEnd: (evt) => { const hasFilters = searchInput.value || activeFilters.startDate || activeFilters.endDate || activeFilters.statuses.length > 0 || activeFilters.themes.length > 0; if (hasFilters) { alert("Limpe todos os filtros para poder reordenar as anotações."); applyFiltersAndRender(); return; } const [movedItem] = notesData.splice(evt.oldIndex, 1); notesData.splice(evt.newIndex, 0, movedItem); saveDataToFirebase(); } });
+    const themeSelector = document.getElementById('note-theme-selector'); themeSelector.innerHTML = themes.map(theme => `<div class="theme-swatch" data-theme-name="theme-${theme.name}" style="background-color: ${theme.bg};" title="${theme.name}"></div>`).join('');
+    function setupEventListeners() {
+        themeSelector.addEventListener('click', e => { if (e.target.classList.contains('theme-swatch')) { updateModalTheme(e.target.dataset.themeName); } });
+        searchInput.addEventListener('input', applyFiltersAndRender); document.getElementById('add-note-btn').addEventListener('click', () => openNoteModal('add')); noteModal.querySelector('.modal-close').addEventListener('click', closeNoteModal);
+        document.getElementById('show-filter-modal-btn').addEventListener('click', openFilterModal); filterModal.querySelector('.modal-close').addEventListener('click', closeFilterModal);
+        document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
+        document.getElementById('invite-friend-btn').addEventListener('click', () => {
+            const email = prompt("Digite o e-mail do amigo que você quer convidar:");
+            if (!email) return;
+            const inviteFunction = functions.httpsCallable('inviteUserToDocument');
+            inviteFunction({ targetEmail: email, docPath: 'sharedData/sharedNotes' })
+                .then(result => alert(result.data.result))
+                .catch(error => alert(`Erro: ${error.message}`));
         });
-    };
-
-    const themeSelector = document.getElementById('note-theme-selector');
-    themeSelector.innerHTML = themes.map(theme => 
-        `<div class="theme-swatch" data-theme-name="theme-${theme.name}" style="background-color: ${theme.bg};" title="${theme.name}"></div>`
-    ).join('');
-
-    themeSelector.addEventListener('click', e => {
-        if (e.target.classList.contains('theme-swatch')) {
-            updateModalTheme(e.target.dataset.themeName);
-        }
-    });
-
-    searchInput.addEventListener('input', applyFiltersAndRender);
-    document.getElementById('add-note-btn').addEventListener('click', () => openNoteModal('add'));
-    noteModal.querySelector('.modal-close').addEventListener('click', closeNoteModal);
-    
-    document.getElementById('show-filter-modal-btn').addEventListener('click', openFilterModal);
-    filterModal.querySelector('.modal-close').addEventListener('click', closeFilterModal);
-    
-    document.getElementById('clear-filters-btn').addEventListener('click', () => {
-        activeFilters = { statuses: [], themes: [], startDate: null, endDate: null };
-        applyFiltersAndRender();
-        closeFilterModal();
-    });
-
-    filterForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        activeFilters.startDate = document.getElementById('start-date-filter').value || null;
-        activeFilters.endDate = document.getElementById('end-date-filter').value || null;
-        activeFilters.statuses = Array.from(document.querySelectorAll('#filter-status-container button.active')).map(b => b.dataset.status);
-        activeFilters.themes = Array.from(document.querySelectorAll('#filter-color-container button.active')).map(b => b.dataset.theme);
-        applyFiltersAndRender();
-        closeFilterModal();
-    });
-
-    noteForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const id = document.getElementById('note-id').value;
-        const noteData = {
-            title: document.getElementById('note-title').value,
-            content: document.getElementById('note-content').value,
-            status: document.getElementById('note-status').value,
-            theme: noteModal.querySelector('.modal-content').dataset.selectedTheme,
-            timestamp: new Date().toISOString()
-        };
-        if (id) {
-            const noteIndex = notesData.findIndex(n => n.id === id);
-            if (noteIndex > -1) notesData[noteIndex] = { ...notesData[noteIndex], ...noteData };
-        } else {
-            notesData.unshift({ id: generateId(), ...noteData });
-        }
-        closeNoteModal(); saveDataToFirebase();
-    });
-
-    notesContainer.addEventListener('click', e => {
-        const card = e.target.closest('.note-card');
-        if (!card) return;
-        const noteId = card.dataset.id;
-
-        if (e.target.closest('.status-btn')) {
-            e.stopPropagation();
-            const noteIndex = notesData.findIndex(n => n.id === noteId);
-            if (noteIndex > -1) {
-                const currentStatus = notesData[noteIndex].status || 'none';
-                const nextIndex = (statusCycle.indexOf(currentStatus) + 1) % statusCycle.length;
-                notesData[noteIndex].status = statusCycle[nextIndex];
-                saveDataToFirebase();
-            }
-            return;
-        }
-
-        if (e.target.closest('.delete-btn')) {
-            e.stopPropagation();
-            if (confirm('Tem certeza que deseja excluir esta anotação?')) {
-                notesData = notesData.filter(n => n.id !== noteId);
-                saveDataToFirebase();
-            }
-            return;
-        }
-    });
-    
-    notesContainer.addEventListener('dblclick', e => {
-        const card = e.target.closest('.note-card');
-        if (card) {
-            openNoteModal('edit', card.dataset.id);
-        }
-    });
-
-    document.getElementById('export-json-btn').addEventListener('click', () => { 
-        if(notesData.length === 0){ alert("Não há anotações para exportar."); return; } 
-        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({ notes: notesData }, null, 2)], { type: 'application/json' })); 
-        a.download = `anotacoes_backup.json`; a.click(); URL.revokeObjectURL(a.href); 
-    });
-    document.getElementById('import-json-input').addEventListener('change', (e) => { 
-        if (hasUnsavedChanges() && !confirm("Isto substituirá suas anotações. Deseja continuar?")) { e.target.value = ''; return; } 
-        const file = e.target.files[0]; if (!file) return; 
-        const reader = new FileReader(); 
-        reader.onload = (event) => { 
-            try { 
-                const data = JSON.parse(event.target.result); 
-                notesData = (Array.isArray(data)) ? data : (data && Array.isArray(data.notes)) ? data.notes : [];
-                saveDataToFirebase(); alert(`Anotações importadas com sucesso!`); 
-            } catch (err) { alert('Falha ao importar: Arquivo JSON inválido.'); } 
-        }; 
-        reader.readAsText(file); e.target.value = ''; 
-    });
-    document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges() && !confirm("Sair e perder alterações não salvas?")) e.preventDefault(); });
-    window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; } });
-    window.addEventListener('resize', updateContainerPadding);
-    window.addEventListener('scroll', handleHeaderScroll);
-    
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            if (noteModal.classList.contains('visible')) closeNoteModal();
-            if (filterModal.classList.contains('visible')) closeFilterModal();
-        } else if (e.key === 'Enter' && e.ctrlKey) {
-            e.preventDefault();
-            if (noteModal.classList.contains('visible')) {
-                noteForm.requestSubmit();
-            } else if (filterModal.classList.contains('visible')) {
-                filterForm.requestSubmit();
-            }
-        }
-    });
-
-    loadAndApplyGlobalStyle();
-    loadDataFromFirebase();
-    initSortable();
-    updateContainerPadding();
+        document.getElementById('clear-filters-btn').addEventListener('click', () => { activeFilters = { statuses: [], themes: [], startDate: null, endDate: null }; applyFiltersAndRender(); closeFilterModal(); });
+        filterForm.addEventListener('submit', (e) => { e.preventDefault(); activeFilters.startDate = document.getElementById('start-date-filter').value || null; activeFilters.endDate = document.getElementById('end-date-filter').value || null; activeFilters.statuses = Array.from(document.querySelectorAll('#filter-status-container button.active')).map(b => b.dataset.status); activeFilters.themes = Array.from(document.querySelectorAll('#filter-color-container button.active')).map(b => b.dataset.theme); applyFiltersAndRender(); closeFilterModal(); });
+        noteForm.addEventListener('submit', e => { e.preventDefault(); const id = document.getElementById('note-id').value; const noteData = { title: document.getElementById('note-title').value, content: document.getElementById('note-content').value, status: document.getElementById('note-status').value, theme: noteModal.querySelector('.modal-content').dataset.selectedTheme, timestamp: new Date().toISOString() }; if (id) { const noteIndex = notesData.findIndex(n => n.id === id); if (noteIndex > -1) notesData[noteIndex] = { ...notesData[noteIndex], ...noteData }; } else { notesData.unshift({ id: generateId(), ...noteData }); } closeNoteModal(); saveDataToFirebase(); });
+        notesContainer.addEventListener('click', e => { const card = e.target.closest('.note-card'); if (!card) return; const noteId = card.dataset.id; if (e.target.closest('.status-btn')) { e.stopPropagation(); const noteIndex = notesData.findIndex(n => n.id === noteId); if (noteIndex > -1) { const currentStatus = notesData[noteIndex].status || 'none'; const nextIndex = (statusCycle.indexOf(currentStatus) + 1) % statusCycle.length; notesData[noteIndex].status = statusCycle[nextIndex]; saveDataToFirebase(); } return; } if (e.target.closest('.delete-btn')) { e.stopPropagation(); if (confirm('Tem certeza que deseja excluir esta anotação?')) { notesData = notesData.filter(n => n.id !== noteId); saveDataToFirebase(); } return; } });
+        notesContainer.addEventListener('dblclick', e => { const card = e.target.closest('.note-card'); if (card) { openNoteModal('edit', card.dataset.id); } });
+        document.getElementById('export-json-btn').addEventListener('click', () => { if(notesData.length === 0){ alert("Não há anotações para exportar."); return; } const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({ notes: notesData }, null, 2)], { type: 'application/json' })); a.download = `anotacoes_backup.json`; a.click(); URL.revokeObjectURL(a.href); });
+        document.getElementById('import-json-input').addEventListener('change', (e) => { if (hasUnsavedChanges() && !confirm("Isto substituirá suas anotações. Deseja continuar?")) { e.target.value = ''; return; } const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (event) => { try { const data = JSON.parse(event.target.result); notesData = (Array.isArray(data)) ? data : (data && Array.isArray(data.notes)) ? data.notes : []; saveDataToFirebase(); alert(`Anotações importadas com sucesso!`); } catch (err) { alert('Falha ao importar: Arquivo JSON inválido.'); } }; reader.readAsText(file); e.target.value = ''; });
+        document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges() && !confirm("Sair e perder alterações não salvas?")) e.preventDefault(); });
+        window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; } });
+        window.addEventListener('resize', updateContainerPadding); window.addEventListener('scroll', handleHeaderScroll);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (noteModal.classList.contains('visible')) closeNoteModal(); if (filterModal.classList.contains('visible')) closeFilterModal(); } else if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); if (noteModal.classList.contains('visible')) { noteForm.requestSubmit(); } else if (filterModal.classList.contains('visible')) { filterForm.requestSubmit(); } } });
+    }
 });
 </script>
 </body>
