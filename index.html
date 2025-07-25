@@ -30,6 +30,7 @@
             margin: 0; padding: 20px 15px 20px; display: flex; flex-direction: column;
             align-items: center; min-height: 100vh; position: relative;
             transition: background-color 0.3s ease, color 0.3s ease; box-sizing: border-box;
+            justify-content: center;
         }
         body::before {
             content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -72,14 +73,10 @@
         .card:hover .card-actions { opacity: 1; }
         .card-action-btn { background: rgba(0,0,0,0.4); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
         .card-action-btn:hover { background: rgba(0,0,0,0.7); }
-        .header-container { width: 100%; max-width: 1200px; display: flex; flex-direction: row; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 0; position: relative; }
-        .google-apps-header { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; flex-grow: 1; justify-content: flex-start; }
+        .header-container { width: 100%; max-width: 1200px; display: flex; flex-direction: row; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 0; position: relative; z-index: 10; }
+        .google-apps-header { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; flex-grow: 1; justify-content: center; }
         .app-link-header img { width: 32px; height: 32px; transition: transform 0.2s ease; }
         .app-link-header:hover img { transform: scale(1.15); }
-        .google-search-form { display: inline-flex; align-items: center; border: 1px solid #dfe1e5; border-radius: 24px; padding: 5px 15px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%; max-width: 600px; margin: 0 auto; }
-        .google-search-form:hover { box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .google-search-form input[type="text"] { border: none; outline: none; padding: 10px; font-size: 16px; width: 100%; background: transparent; }
-        .google-search-form button { background: none; border: none; cursor: pointer; font-size: 18px; color: #4285F4; padding-right: 5px; }
         
         #modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10; display: none; }
         #add-item-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--page-bg-color); padding: 25px; border-radius: 10px; z-index: 11; width: 90%; max-width: 400px; display: none; }
@@ -145,10 +142,6 @@
              <a href="https://photos.google.com/" class="app-link-header" title="Google Fotos"><img src="https://ssl.gstatic.com/images/branding/product/2x/photos_48dp.png" alt="Google Fotos"></a>
              <a href="https://translate.google.com/" class="app-link-header" title="Google Tradutor"><img src="https://www.gstatic.com/images/branding/product/1x/translate_48dp.png" alt="Google Tradutor"></a>
         </div>
-        <form action="https://www.google.com/search" method="get" target="_blank" class="google-search-form" id="search-form">
-            <button type="submit">🔍</button>
-            <input type="text" name="q" placeholder="Pesquisar ou digitar um endereço" autofocus id="search-input">
-        </form>
         <div id="user-profile-menu-container"></div>
     </header>
 
@@ -445,18 +438,6 @@
             if (modal.style.display === 'block') {
                 if (e.key === 'Escape') closeModal();
                 else if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); modalForm.requestSubmit(); }
-            }
-        });
-
-        const searchForm = document.getElementById('search-form');
-        const searchInput = document.getElementById('search-input');
-        searchForm.addEventListener('submit', (e) => {
-            const query = searchInput.value.trim();
-            const urlPattern = new RegExp('^(https?://)?'+'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+'((\\d{1,3}\\.){3}\\d{1,3}))'+'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+'(\\?[;&a-z\\d%_.~+=-]*)?'+'(\\#[-a-z\\d_]*)?$','i');
-            if (urlPattern.test(query)) {
-                e.preventDefault();
-                let url = query; if (!/^https?:\/\//i.test(url)) { url = 'https://' + url; }
-                window.open(url, '_blank');
             }
         });
 

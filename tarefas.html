@@ -65,7 +65,7 @@
         .btn { padding: 10px 20px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s; color: white; text-align: center; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; }
         .btn-success { background-color: #28a745; }
         .btn-info { background-color: #17a2b8; }
-        .btn-primary { background-color: #007bff; }
+        .btn-primary { background-color: var(--accent-color); }
         .btn-secondary { background-color: #6c757d; }
         .btn-danger { background-color: #dc3545; }
         .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; }
@@ -120,7 +120,7 @@
         .profile-menu-body .btn-sm.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
         .profile-menu-footer { padding: 15px; border-top: 1px solid rgba(128,128,128,0.1); display: flex; justify-content: center; }
         #logout-from-menu-btn { width: 100%; background-color: #dc3545; color: white; border: none; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold;}
-        
+
         @media (max-width: 768px) {
             .container { padding: 10px; }
             .header-left-group { flex-grow: 1; }
@@ -138,7 +138,6 @@
             .col-progresso, .col-dias { width: 25%; }
             .control-group { gap: 2px; }
             .control-group .display { min-width: 35px; padding: 4px 2px; font-size: 0.85em; }
-            .profile-menu-dropdown { left: 10px; right: 10px; width: auto; }
         }
     </style>
 </head>
@@ -226,7 +225,8 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    let userDocRef;
+    let userDocRef; 
+    
     let tasksData = [], progressData = {}, collapsedGroups = new Set(), projectName = 'Novo Projeto', selectedItems = new Set();
     let initialDataState = '';
     let deliveryDate = null; 
@@ -235,9 +235,10 @@
         auth.onAuthStateChanged(user => {
             if (user) {
                 userDocRef = db.collection('userData').doc(user.uid);
-                buildPageHTML();
                 const menuContainer = document.getElementById('user-profile-menu-container');
                 menuContainer.innerHTML = createProfileMenuHTML(user);
+                
+                buildPageHTML();
                 loadAndApplyGlobalStyle(user);
                 loadDataFromFirebase();
                 setupEventListeners();
@@ -299,18 +300,17 @@
     }
     // --- FIM DO COMPONENTE DE MENU DE PERFIL REUTILIZÁVEL ---
 
-    async function loadAndApplyGlobalStyle(user) {
-        if (!userDocRef) return;
-        try {
+    async function loadAndApplyGlobalStyle(user) { 
+        if (!userDocRef) return; 
+        try { 
             const doc = await userDocRef.get();
             let styleData;
-            if (doc.exists && doc.data().styleData) {
-                styleData = doc.data().styleData;
+            if (doc.exists && doc.data().styleData) { 
+                styleData = doc.data().styleData; 
             } else {
-                styleData = { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' };
+                 styleData = { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' };
             }
-            document.body.className = '';
-            document.body.classList.add(styleData.theme || 'light-theme');
+            document.body.className = ''; document.body.classList.add(styleData.theme || 'light-theme');
             document.body.style.backgroundColor = styleData.bgColor;
             document.documentElement.style.setProperty('--bg-image', styleData.bgImage ? `url('${styleData.bgImage}')` : 'none');
             document.documentElement.style.setProperty('--bg-opacity', styleData.bgOpacity || '1');
@@ -319,7 +319,7 @@
                 await userDocRef.set({ styleData }, { merge: true });
                 loadAndApplyGlobalStyle(user);
             });
-        } catch (e) { console.error("Não foi possível carregar os estilos do Firebase.", e); }
+        } catch (e) { console.error("Falha ao carregar estilos:", e); } 
     }
     
     function loadDataFromFirebase() {
@@ -356,9 +356,533 @@
             .catch((error) => { console.error("Erro ao salvar dados no Firebase: ", error); });
     }
     
-    // O restante do código JS (getCanonicalState, renderAndCalculate, etc.) permanece o mesmo.
-    // Cole o restante do seu script de tarefas.html aqui, da linha 'const getCanonicalState' em diante.
-    const getCanonicalState=()=>{const e={tasks:tasksData,progress:progressData,collapsed:Array.from(collapsedGroups).sort(),name:projectName,deliveryDate:deliveryDate},t=JSON.parse(JSON.stringify(e.tasks));return function a(e){e.forEach(e=>{delete e._totalDias,delete e._completedDias,delete e._progress,e.children&&a(e.children)})}(t),e.tasks=t,JSON.stringify(e,null,2)},hasUnsavedChanges=()=>getCanonicalState()!==initialDataState;function renderAndCalculate(e=!0){calculateAllTotals(),renderTable(),updateGroupDropdown("new-task-group"),updateGroupDropdown("new-group-parent"),updateSummary(),updateBulkActionsBar(),e&&saveDataToFirebase()}function setupEventListeners(){document.getElementById("add-task-form").addEventListener("submit",handleAddTask),document.getElementById("add-group-form").addEventListener("submit",handleAddGroup),document.getElementById("show-add-choice-modal-btn").addEventListener("click",()=>openModal("add-choice-modal")),document.getElementById("choice-add-task-btn").addEventListener("click",()=>{closeModal("add-choice-modal"),openModal("add-item-modal","task")}),document.getElementById("choice-add-group-btn").addEventListener("click",()=>{closeModal("add-choice-modal"),openModal("add-item-modal","group")}),document.querySelectorAll(".modal-close").forEach(e=>e.addEventListener("click",e=>closeModal(e.target.closest(".modal-overlay").id))),document.querySelectorAll(".modal-overlay").forEach(e=>e.addEventListener("click",e=>{e.target.classList.contains("modal-overlay")&&closeModal(e.target.id)})),document.getElementById("tasks-tbody").addEventListener("click",handleTableClick),document.getElementById("export-json-btn").addEventListener("click",handleExport),document.getElementById("import-json-input").addEventListener("change",handleImport),document.querySelector(".filters").addEventListener("click",e=>{e.target.classList.contains("filter-btn")&&applyFilter(e.target.dataset.filter,!0)}),document.getElementById("search-input").addEventListener("keyup",()=>{const e=document.querySelector(".filters .filter-btn.active")?.dataset.filter||"all";applyFilter(e,!1)}),document.getElementById("bulk-delete-btn").addEventListener("click",handleBulkDelete),document.getElementById("bulk-done-btn").addEventListener("click",()=>handleBulkProgress(1)),document.getElementById("bulk-redo-btn").addEventListener("click",()=>handleBulkProgress(0)),document.getElementById("bulk-move-btn").addEventListener("click",openMoveModal),document.getElementById("move-items-form").addEventListener("submit",handleBulkMove),document.getElementById("summary").addEventListener("click",e=>{e.target.closest(".summary-item")?.querySelector("#countdown-days")&&handleChangeDeliveryDate()}),document.getElementById("back-btn").addEventListener("click",e=>{hasUnsavedChanges()&&!confirm("Você tem alterações não salvas. Deseja voltar e perder as alterações?")&&e.preventDefault()}),window.addEventListener("beforeunload",e=>{if(hasUnsavedChanges())return e.preventDefault(),e.returnValue="",""}),window.addEventListener("resize",()=>{updateContainerPadding(),renderTable()}),window.addEventListener("scroll",handleHeaderScroll),document.addEventListener("keydown",e=>{const t=document.getElementById("add-choice-modal"),a=document.getElementById("add-item-modal"),d=document.getElementById("move-item-modal");"Escape"===e.key?(t.classList.contains("visible")&&closeModal("add-choice-modal"),a.classList.contains("visible")&&closeModal("add-item-modal"),d.classList.contains("visible")&&closeModal("move-item-modal")):"Enter"===e.key&&e.ctrlKey&&(e.preventDefault(),a.classList.contains("visible")?document.getElementById("modal-task-form-container").classList.contains("visible")?document.getElementById("add-task-form").requestSubmit():document.getElementById("add-group-form").requestSubmit():d.classList.contains("visible")&&document.getElementById("move-items-form").requestSubmit())})}function updateContainerPadding(){const e=document.querySelector(".main-header"),t=document.querySelector(".container");e&&t&&(t.style.paddingTop=`${e.offsetHeight+20}px`)}function handleHeaderScroll(){window.matchMedia("(max-width: 768px)").matches&&document.querySelector(".main-header").classList.toggle("header-scrolled",window.scrollY>10),updateContainerPadding()}function buildPageHTML(){document.getElementById("summary").innerHTML='<div class="summary-item"><strong id="total-dias">0</strong><span>Total de Dias</span></div><div class="summary-item"><strong id="dias-restantes">0.00</strong><span>Dias Restantes</span></div><div class="summary-item"><strong id="countdown-days">0</strong><span>Até a Entrega</span></div><div class="summary-item"><strong id="progresso-geral">0%</strong><span>Progresso Geral</span></div><div id="progress-bar-container"><div id="progress-bar"></div></div>',document.querySelector(".filters").innerHTML='<button class="filter-btn active" data-filter="all">Tudo</button><button class="filter-btn" data-filter="not-started">Não Iniciados (0%)</button><button class="filter-btn" data-filter="in-progress">Em Andamento</button><button class="filter-btn" data-filter="not-done">Não Concluídos</button><button class="filter-btn" data-filter="done">Concluídos</button>',document.getElementById("add-item-modal").innerHTML='<div class="modal-content"><span class="modal-close">×</span><div id="modal-task-form-container"><h2>Adicionar Nova Tarefa</h2><form id="add-task-form" class="form"><input type="text" id="new-task-name" placeholder="Nome da Tarefa" required><input type="number" id="new-task-days" placeholder="Dias" step="0.01" min="0" required><label for="new-task-group">Adicionar em:</label><select id="new-task-group"></select><button type="submit" class="btn btn-success">Adicionar Tarefa</button></form></div><div id="modal-group-form-container"><h2>Adicionar Novo Grupo</h2><form id="add-group-form" class="form"><input type="text" id="new-group-name" placeholder="Nome do Grupo" required><label for="new-group-parent">Adicionar em:</label><select id="new-group-parent"></select><button type="submit" class="btn btn-info">Adicionar Grupo</button></form></div></div>'}function renderTableHeader(){const e=document.getElementById("tasks-thead-row"),t=window.matchMedia("(max-width: 768px)").matches;e.innerHTML="";const a=document.createElement("th");a.className="col-task",a.innerHTML="Tarefa",e.appendChild(a);const d=document.createElement("th");d.className="col-progresso",d.innerHTML="Progresso";const o=document.createElement("th");o.className="col-dias",o.innerHTML="Dias",t?(e.appendChild(d),e.appendChild(o)):(e.appendChild(o),e.appendChild(d));const s=document.createElement("th");s.className="col-checkbox",s.style.width="20px",s.innerHTML='<input type="checkbox" id="select-all-checkbox">',e.appendChild(s),document.getElementById("select-all-checkbox").addEventListener("change",handleSelectAll)}function renderTable(){renderTableHeader();const e=document.getElementById("tasks-tbody"),t=document.querySelector(".filters .filter-btn.active")?.dataset.filter||"all";e.innerHTML="";const a=window.matchMedia("(max-width: 768px)").matches,d=function t(o,s){o.forEach(o=>{const n="group"===o.type,i=document.createElement("tr");i.className="task-row",n&&i.classList.add("is-group"),selectedItems.has(o.id)&&i.classList.add("selected"),i.dataset.id=o.id;const l=i.insertCell();l.className="col-task",l.style.paddingLeft=`${5+25*s}px`,l.innerHTML=(n?`<span class="toggle-children">${collapsedGroups.has(o.id)?"▶":"▼"}</span>`:"")+`<span>${o.servico}</span><span class="edit-btn">✏️</span>`;const r=(o._totalDias||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}),c=Math.round(100*(o._progress||0)),p=`<div class="control-group"><button class="dias-btn" data-delta="-0.25" ${n?"disabled":""}>-</button><span class="display dias-display">${r}</span><button class="dias-btn" data-delta="0.25" ${n?"disabled":""}>+</button></div>`,g=`<div class="control-group"><button class="progress-btn" data-delta="-0.25" ${n?"disabled":""}>-</button><span class="display progress-display status-${c}">${c}%</span><button class="progress-btn" data-delta="0.25" ${n?"disabled":""}>+</button></div>`;if(a){const e=i.insertCell();e.className="col-progresso",e.innerHTML=g;const t=i.insertCell();t.className="col-dias",t.innerHTML=p}else{const e=i.insertCell();e.className="col-dias",e.innerHTML=p;const t=i.insertCell();t.className="col-progresso",t.innerHTML=g}const m=i.insertCell();m.className="col-checkbox",m.innerHTML=`<input type="checkbox" class="select-checkbox" ${selectedItems.has(o.id)?"checked":""}>`,e.appendChild(i),n&&!collapsedGroups.has(o.id)&&t(o.children,s+1)})};d(tasksData,0),new Sortable(e,{group:"nested-tasks",animation:150,delay:200,delayOnTouchOnly:!0,onEnd:handleDragEnd}),applyFilter(t,!1)}function calculateAllTotals(){const e=t=>{t.type==="group"?(t.children.forEach(e),t._totalDias=t.children.reduce((e,t)=>e+t._totalDias,0),t._completedDias=t.children.reduce((e,t)=>e+t._completedDias,0)):(t._totalDias=t.dias,t._completedDias=t.dias*(progressData[t.id]||0)),t._progress=t._totalDias>0?t._completedDias/t._totalDias:0};tasksData.forEach(e)}function openModal(e,t){const a=document.getElementById(e);t&&(a.querySelector("#modal-task-form-container").classList.toggle("visible","task"===t),a.querySelector("#modal-group-form-container").classList.toggle("visible","group"===t),"task"===t?updateGroupDropdown("new-task-group"):"group"===t&&updateGroupDropdown("new-group-parent")),a.classList.add("visible")}function closeModal(e){document.getElementById(e).classList.remove("visible")}function createUniqueId(){return`item-${Date.now()}-${Math.random().toString(36).substr(2,9)}`}function transformData(e){return(e||[]).map(e=>({id:e.id||createUniqueId(),servico:e.servico,dias:void 0===e.dias?0:e.dias,type:e.type||(e.children?"group":"task"),children:transformData(e.children)}))}function updateGroupDropdown(e,t=new Set){const a=document.getElementById(e),d=a.value;a.innerHTML='<option value="root">Nível Principal (Raiz)</option>';!function o(e,d){e.forEach(e=>{e.type==="group"&&!t.has(e.id)&&(a.add(new Option(`${"--".repeat(d)} ${e.servico}`,e.id)),collapsedGroups.has(e.id)||o(e.children,d+1))})}(tasksData,0),a.value=d}function getAllItemsAsMap(e=tasksData){const t=new Map;return function a(e){for(const d of e)t.set(d.id,d),d.children&&a(d.children)}(e),t}function findParentList(e,t){for(let a=0;a<e.length;a++){const d=e[a];if(d.id===t)return{parentList:e,index:a};if("group"===d.type){const a=findParentList(d.children,t);if(a)return a}}return null}function handleDragEnd(e){const t=e.item.dataset.id,a=getAllItemsAsMap(),d=a.get(t);if(!d)return;findAndDelete(tasksData,new Set([t]));const o=e.item.previousElementSibling;let s,n;if(o){const e=o.dataset.id,t=a.get(e);"group"===t.type&&!collapsedGroups.has(e)?(s=t.children,n=0):(e=findParentList(tasksData,e),s=e?e.parentList:tasksData,n=e?e.index+1:tasksData.length)}else s=tasksData,n=0;s.splice(n,0,d),renderAndCalculate(!0)}function updateSummary(){const e=tasksData.reduce((e,t)=>e+(t._totalDias||0),0),t=tasksData.reduce((e,t)=>e+(t._completedDias||0),0);document.getElementById("total-dias").textContent=e.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}),document.getElementById("dias-restantes").textContent=(e-t).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});const a=(e>0?t/e:0)*100;document.getElementById("progresso-geral").textContent=`${a.toFixed(1).replace(".",",")}%`;const d=document.getElementById("progress-bar");d.style.width=`${a}%`,d.textContent=`${a.toFixed(1)}%`;const o=document.getElementById("countdown-days");o.parentElement.style.cursor="pointer",o.parentElement.title="Clique para alterar a data de entrega",deliveryDate?(e=Math.ceil((new Date(deliveryDate+"T23:59:59")-new Date)/864e5),o.textContent=e>=0?e:"Atrasado!",o.style.color=e<0?"#dc3545":""):(o.textContent="N/D",o.style.color="")}function handleChangeDeliveryDate(){const e=prompt("Digite a nova data de entrega (formato AAAA-MM-DD):",deliveryDate||(new Date).toISOString().slice(0,10));e&&/^\d{4}-\d{2}-\d{2}$/.test(e)?(deliveryDate=e,renderAndCalculate(!0)):null!==e&&alert("Formato de data inválido. Por favor, use o formato AAAA-MM-DD.")}function handleTableClick(e){const t=e.target.closest(".task-row");if(!t)return;const a=t.dataset.id,d=getAllItemsAsMap().get(a);d&&(e.target.classList.contains("select-checkbox")?(e.target.checked?selectedItems.add(a):selectedItems.delete(a),updateBulkActionsBar(),void t.classList.toggle("selected",e.target.checked)):e.target.classList.contains("toggle-children")?collapsedGroups.has(a)?collapsedGroups.delete(a):collapsedGroups.add(a):e.target.classList.contains("edit-btn")?void(t=prompt("Editar nome:",d.servico))?.trim()&&(d.servico=t.trim(),"project-title-id"===d.id&&(projectName=t.trim(),document.getElementById("project-name").textContent=projectName)):e.target.classList.contains("progress-btn")?(t=parseFloat(e.target.dataset.delta),progressData[a]=Math.max(0,Math.min(1,Math.round(100*((progressData[a]||0)+t))/100))):e.target.classList.contains("dias-btn")&&(d.dias=Math.max(.25,d.dias+parseFloat(e.target.dataset.delta))),renderAndCalculate(!0))}function applyFilter(e,t=!0){t&&((t=document.querySelector(".filters .filter-btn.active"))?.classList.remove("active"),(t=document.querySelector(`.filters .filter-btn[data-filter="${e}"]`))?.classList.add("active"));const a=document.getElementById("search-input").value.toLowerCase(),d=t=>{switch(e){case"not-started":return 0===t._progress;case"in-progress":return t._progress>0&&t._progress<1;case"done":return 1===t._progress;case"not-done":return t._progress<1;default:return!0}},o=t=>{let o=new Set;return t.forEach(t=>{const s=t.servico.toLowerCase().includes(a);let n=d(t),i=!1;"group"===t.type&&(r=o(t.children),i=r.size>0,r.forEach(e=>o.add(e)));(n||i)&&o.add(t.id);var r}),o}(tasksData);document.querySelectorAll("#tasks-tbody .task-row").forEach(e=>e.style.display=o.has(e.dataset.id)?"":"none")}function handleAddTask(e){e.preventDefault();const t=document.getElementById("new-task-name"),a=document.getElementById("new-task-days"),d={id:createUniqueId(),servico:t.value.trim(),dias:parseFloat(a.value)||0,type:"task",children:[]};e=document.getElementById("new-task-group").value,e="root"==e?tasksData:getAllItemsAsMap().get(e)?.children,e&&e.push(d),t.value="",a.value="",closeModal("add-item-modal"),renderAndCalculate(!0)}function handleAddGroup(e){e.preventDefault();const t=document.getElementById("new-group-name"),a={id:createUniqueId(),servico:t.value.trim(),dias:0,type:"group",children:[]};e=document.getElementById("new-group-parent").value,e="root"==e?tasksData:getAllItemsAsMap().get(e)?.children,e&&e.push(a),t.value="",closeModal("add-item-modal"),renderAndCalculate(!0)}function handleExport(){try{const e=getCanonicalState(),t=document.createElement("a");t.href=URL.createObjectURL(new Blob([e],{type:"application/json"})),t.download=`${projectName.replace(/ /g,"_")}.json`,t.click(),URL.revokeObjectURL(t.href)}catch(e){console.error("Erro ao exportar:",e),alert("Ocorreu um erro ao gerar o arquivo para download.")}}function handleImport(e){if(hasUnsavedChanges()&&!confirm("Isto irá substituir todos os dados do projeto atual com o conteúdo do arquivo. Deseja continuar?"))return void(e.target.value="");const t=e.target.files[0];if(!t)return;const a=new FileReader;a.onload=e=>{try{const t=JSON.parse(e.target.result);tasksData=transformData(t.tasks||[]),progressData=t.progress||{},collapsedGroups=new Set(t.collapsed||[]),projectName=t.name||file.name.replace(/\.json$/i,"").replace(/_/g," "),deliveryDate=t.deliveryDate||null,document.getElementById("project-name").textContent=projectName,renderAndCalculate(!0),alert(`Projeto "${projectName}" importado e salvo com sucesso!`)}catch(e){console.error("Erro ao processar JSON:",e),alert("Erro ao ler o arquivo JSON. Verifique o formato do arquivo.")}},a.readAsText(t),e.target.value=""}function updateBulkActionsBar(){const e=document.getElementById("bulk-actions-container");e.classList.toggle("visible",selectedItems.size>0);const t=document.getElementById("select-all-checkbox");t&&(e=document.querySelectorAll("#tasks-tbody .task-row:not([style*=\"display: none\"])"),t.checked=e.length>0&&selectedItems.size===e.length),updateContainerPadding()}function handleSelectAll(e){selectedItems.clear(),e.target.checked&&document.querySelectorAll("#tasks-tbody .task-row:not([style*=\"display: none\"])").forEach(e=>selectedItems.add(e.dataset.id)),renderAndCalculate(!1)}function findAndDelete(e,t){for(let a=e.length-1;a>=0;a--){const d=e[a];t.has(d.id)?e.splice(a,1):d.children&&findAndDelete(d.children,t)}}function handleBulkDelete(){selectedItems.size>0&&confirm(`Tem certeza que deseja excluir ${selectedItems.size} item(ns)?`)&&(findAndDelete(tasksData,selectedItems),selectedItems.clear(),renderAndCalculate(!0))}function handleBulkProgress(e){if(selectedItems.size>0&&confirm(`Tem certeza que deseja ${1===e?"completar":"refazer"} ${selectedItems.size} item(ns)?`)){const t=getAllItemsAsMap(),a=new Set,d=t=>{t&&("task"===t.type?a.add(t.id):t.children&&t.children.forEach(d))};selectedItems.forEach(e=>d(t.get(e))),a.forEach(t=>{progressData[t]=e}),selectedItems.clear(),renderAndCalculate(!0)}}function openMoveModal(){if(0!==selectedItems.size){const e=getAllItemsAsMap(),t=new Set,a=d=>{d&&(t.add(d.id),d.children&&d.children.forEach(a))};selectedItems.forEach(d=>a(e.get(d))),updateGroupDropdown("move-target-group",t),document.getElementById("move-selection-count").textContent=selectedItems.size,openModal("move-item-modal")}}function handleBulkMove(e){e.preventDefault();const t=document.getElementById("move-target-group").value,a=getAllItemsAsMap(),d=[];selectedItems.forEach(e=>{e=a.get(e),e&&d.push(e)}),findAndDelete(tasksData,selectedItems);const o="root"===t?tasksData:a.get(t)?.children;o&&o.push(...d),selectedItems.clear(),closeModal("move-item-modal"),renderAndCalculate(!0)}
+    const getCanonicalState = () => {
+        const state = { tasks: tasksData, progress: progressData, collapsed: Array.from(collapsedGroups).sort(), name: projectName, deliveryDate: deliveryDate };
+        const cleanTasks = JSON.parse(JSON.stringify(state.tasks));
+        const cleanRecursive = (tasks) => {
+            tasks.forEach(task => {
+                delete task._totalDias; delete task._completedDias; delete task._progress;
+                if (task.children) cleanRecursive(task.children);
+            });
+        };
+        cleanRecursive(cleanTasks);
+        state.tasks = cleanTasks;
+        return JSON.stringify(state, null, 2);
+    };
+    
+    const hasUnsavedChanges = () => getCanonicalState() !== initialDataState;
+
+    function renderAndCalculate(doSave = true) {
+        calculateAllTotals();
+        renderTable();
+        updateGroupDropdown('new-task-group');
+        updateGroupDropdown('new-group-parent');
+        updateSummary();
+        updateBulkActionsBar();
+        if (doSave) saveDataToFirebase();
+    }
+
+    function setupEventListeners() {
+        document.getElementById('add-task-form').addEventListener('submit', handleAddTask);
+        document.getElementById('add-group-form').addEventListener('submit', handleAddGroup);
+        
+        document.getElementById('show-add-choice-modal-btn').addEventListener('click', () => openModal('add-choice-modal'));
+        document.getElementById('choice-add-task-btn').addEventListener('click', () => { closeModal('add-choice-modal'); openModal('add-item-modal', 'task'); });
+        document.getElementById('choice-add-group-btn').addEventListener('click', () => { closeModal('add-choice-modal'); openModal('add-item-modal', 'group'); });
+        
+        document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.target.closest('.modal-overlay').id)));
+        document.querySelectorAll('.modal-overlay').forEach(modal => modal.addEventListener('click', (e) => { if (e.target.classList.contains('modal-overlay')) closeModal(e.target.id); }));
+        document.getElementById('tasks-tbody').addEventListener('click', handleTableClick);
+        document.getElementById('export-json-btn').addEventListener('click', handleExport);
+        document.getElementById('import-json-input').addEventListener('change', handleImport);
+        document.querySelector('.filters').addEventListener('click', (e) => { if (e.target.classList.contains('filter-btn')) applyFilter(e.target.dataset.filter, true); });
+        document.getElementById('search-input').addEventListener('keyup', () => { const activeFilter = document.querySelector('.filters .filter-btn.active')?.dataset.filter || 'all'; applyFilter(activeFilter, false); });
+        document.getElementById('bulk-delete-btn').addEventListener('click', handleBulkDelete);
+        document.getElementById('bulk-done-btn').addEventListener('click', () => handleBulkProgress(1));
+        document.getElementById('bulk-redo-btn').addEventListener('click', () => handleBulkProgress(0));
+        document.getElementById('bulk-move-btn').addEventListener('click', openMoveModal);
+        document.getElementById('move-items-form').addEventListener('submit', handleBulkMove);
+        document.getElementById('summary').addEventListener('click', (e) => { if (e.target.closest('.summary-item')?.querySelector('#countdown-days')) { handleChangeDeliveryDate(); }});
+        document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges() && !confirm("Você tem alterações não salvas. Deseja voltar e perder as alterações?")) e.preventDefault(); });
+        window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; return ''; } });
+        
+        window.addEventListener('resize', () => {
+            updateContainerPadding();
+            renderTable();
+        });
+        window.addEventListener('scroll', handleHeaderScroll);
+
+        document.addEventListener('keydown', (e) => {
+            const choiceModal = document.getElementById('add-choice-modal');
+            const itemModal = document.getElementById('add-item-modal');
+            const moveModal = document.getElementById('move-item-modal');
+
+            if (e.key === 'Escape') {
+                if (choiceModal.classList.contains('visible')) closeModal('add-choice-modal');
+                if (itemModal.classList.contains('visible')) closeModal('add-item-modal');
+                if (moveModal.classList.contains('visible')) closeModal('move-item-modal');
+            }
+
+            if (e.key === 'Enter' && e.ctrlKey) {
+                e.preventDefault();
+                if (itemModal.classList.contains('visible')) {
+                    const taskFormContainer = document.getElementById('modal-task-form-container');
+                    if (taskFormContainer.classList.contains('visible')) {
+                        document.getElementById('add-task-form').requestSubmit();
+                    } else {
+                        document.getElementById('add-group-form').requestSubmit();
+                    }
+                } else if (moveModal.classList.contains('visible')) {
+                    document.getElementById('move-items-form').requestSubmit();
+                }
+            }
+        });
+    }
+
+    function updateContainerPadding() {
+        const header = document.querySelector('.main-header');
+        const container = document.querySelector('.container');
+        if (header && container) {
+            const headerHeight = header.offsetHeight;
+            container.style.paddingTop = `${headerHeight + 20}px`;
+        }
+    }
+    
+    function handleHeaderScroll() {
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            const header = document.querySelector('.main-header');
+            if (window.scrollY > 10) header.classList.add('header-scrolled');
+            else header.classList.remove('header-scrolled');
+        }
+        updateContainerPadding();
+    }
+    
+    function buildPageHTML() {
+        document.getElementById('summary').innerHTML = `<div class="summary-item"><strong id="total-dias">0</strong><span>Total de Dias</span></div><div class="summary-item"><strong id="dias-restantes">0.00</strong><span>Dias Restantes</span></div><div class="summary-item"><strong id="countdown-days">0</strong><span>Até a Entrega</span></div><div class="summary-item"><strong id="progresso-geral">0%</strong><span>Progresso Geral</span></div><div id="progress-bar-container"><div id="progress-bar"></div></div>`;
+        document.querySelector('.filters').innerHTML = `<button class="filter-btn active" data-filter="all">Tudo</button><button class="filter-btn" data-filter="not-started">Não Iniciados (0%)</button><button class="filter-btn" data-filter="in-progress">Em Andamento</button><button class="filter-btn" data-filter="not-done">Não Concluídos</button><button class="filter-btn" data-filter="done">Concluídos</button>`;
+        document.getElementById('add-item-modal').innerHTML = `<div class="modal-content"><span class="modal-close">×</span><div id="modal-task-form-container"><h2>Adicionar Nova Tarefa</h2><form id="add-task-form" class="form"><input type="text" id="new-task-name" placeholder="Nome da Tarefa" required><input type="number" id="new-task-days" placeholder="Dias" step="0.01" min="0" required><label for="new-task-group">Adicionar em:</label><select id="new-task-group"></select><button type="submit" class="btn btn-success">Adicionar Tarefa</button></form></div><div id="modal-group-form-container"><h2>Adicionar Novo Grupo</h2><form id="add-group-form" class="form"><input type="text" id="new-group-name" placeholder="Nome do Grupo" required><label for="new-group-parent">Adicionar em:</label><select id="new-group-parent"></select><button type="submit" class="btn btn-info">Adicionar Grupo</button></form></div></div>`;
+    }
+
+    function renderTableHeader() {
+        const headerRow = document.getElementById('tasks-thead-row');
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+        headerRow.innerHTML = '';
+        const taskHeader = document.createElement('th');
+        taskHeader.className = 'col-task';
+        taskHeader.innerHTML = 'Tarefa';
+        headerRow.appendChild(taskHeader);
+        const progressHeader = document.createElement('th');
+        progressHeader.className = 'col-progresso';
+        progressHeader.innerHTML = 'Progresso';
+        const daysHeader = document.createElement('th');
+        daysHeader.className = 'col-dias';
+        daysHeader.innerHTML = 'Dias';
+        if (isMobile) { headerRow.appendChild(progressHeader); headerRow.appendChild(daysHeader); } 
+        else { headerRow.appendChild(daysHeader); headerRow.appendChild(progressHeader); }
+        const checkboxHeader = document.createElement('th');
+        checkboxHeader.className = 'col-checkbox';
+        checkboxHeader.style.width = '20px';
+        checkboxHeader.innerHTML = `<input type="checkbox" id="select-all-checkbox">`;
+        headerRow.appendChild(checkboxHeader);
+        document.getElementById('select-all-checkbox').addEventListener('change', handleSelectAll);
+    }
+
+
+    function renderTable() {
+        renderTableHeader();
+        const tableBody = document.getElementById('tasks-tbody');
+        const activeFilter = document.querySelector('.filters .filter-btn.active')?.dataset.filter || 'all';
+        tableBody.innerHTML = ''; 
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+        
+        const createRowsRecursive = (tasks, level = 0) => {
+            tasks.forEach(task => {
+                const isGroup = task.type === 'group';
+                const row = document.createElement('tr');
+                row.className = 'task-row';
+                if(isGroup) row.classList.add('is-group');
+                if(selectedItems.has(task.id)) row.classList.add('selected');
+                row.dataset.id = task.id;
+                
+                const servicoCell = row.insertCell();
+                servicoCell.className = 'col-task';
+                servicoCell.style.paddingLeft = `${5 + level * 25}px`;
+                servicoCell.innerHTML = (isGroup ? `<span class="toggle-children">${collapsedGroups.has(task.id) ? '▶' : '▼'}</span>` : '') + `<span>${task.servico}</span><span class="edit-btn">✏️</span>`;
+                
+                const diasDisplay = (task._totalDias || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                const progressPercentage = Math.round((task._progress || 0) * 100);
+
+                const diasHTML = `<div class="control-group"><button class="dias-btn" data-delta="-0.25" ${isGroup ? 'disabled' : ''}>-</button><span class="display dias-display">${diasDisplay}</span><button class="dias-btn" data-delta="0.25" ${isGroup ? 'disabled' : ''}>+</button></div>`;
+                const progressHTML = `<div class="control-group"><button class="progress-btn" data-delta="-0.25" ${isGroup ? 'disabled' : ''}>-</button><span class="display progress-display status-${progressPercentage}">${progressPercentage}%</span><button class="progress-btn" data-delta="0.25" ${isGroup ? 'disabled' : ''}>+</button></div>`;
+
+                if (isMobile) {
+                    const progressCell = row.insertCell();
+                    progressCell.className = 'col-progresso';
+                    progressCell.innerHTML = progressHTML;
+                    const diasCell = row.insertCell();
+                    diasCell.className = 'col-dias';
+                    diasCell.innerHTML = diasHTML;
+                } else {
+                    const diasCell = row.insertCell();
+                    diasCell.className = 'col-dias';
+                    diasCell.innerHTML = diasHTML;
+                    const progressCell = row.insertCell();
+                    progressCell.className = 'col-progresso';
+                    progressCell.innerHTML = progressHTML;
+                }
+                
+                const checkboxCell = row.insertCell();
+                checkboxCell.className = 'col-checkbox';
+                checkboxCell.innerHTML = `<input type="checkbox" class="select-checkbox" ${selectedItems.has(task.id) ? 'checked' : ''}>`;
+                
+                tableBody.appendChild(row);
+
+                if (isGroup && !collapsedGroups.has(task.id)) createRowsRecursive(task.children, level + 1);
+            });
+        };
+        
+        createRowsRecursive(tasksData);
+        new Sortable(tableBody, { group: 'nested-tasks', animation: 150, delay: 200, delayOnTouchOnly: true, onEnd: handleDragEnd });
+        applyFilter(activeFilter, false); 
+    }
+    
+    function calculateAllTotals() {
+        const calculateRecursive = (task) => {
+            if (task.type === 'group') {
+                task.children.forEach(calculateRecursive);
+                task._totalDias = task.children.reduce((sum, child) => sum + child._totalDias, 0);
+                task._completedDias = task.children.reduce((sum, child) => sum + child._completedDias, 0);
+            } else {
+                task._totalDias = task.dias;
+                task._completedDias = task.dias * (progressData[task.id] || 0);
+            }
+            task._progress = task._totalDias > 0 ? (task._completedDias / task._totalDias) : 0;
+        };
+        tasksData.forEach(calculateRecursive);
+    }
+    
+    function openModal(id, type) {
+        const modal = document.getElementById(id);
+        if (type) {
+            modal.querySelector('#modal-task-form-container').classList.toggle('visible', type === 'task');
+            modal.querySelector('#modal-group-form-container').classList.toggle('visible', type === 'group');
+            if (type === 'task') updateGroupDropdown('new-task-group');
+            else if (type === 'group') updateGroupDropdown('new-group-parent');
+        }
+        modal.classList.add('visible');
+    }
+
+    function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
+    function createUniqueId() { return `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; }
+    
+    function transformData(data) {
+        return (data || []).map(item => ({
+            id: item.id || createUniqueId(),
+            servico: item.servico,
+            dias: item.dias === undefined ? 0 : item.dias,
+            type: item.type || (item.children ? 'group' : 'task'),
+            children: transformData(item.children)
+        }));
+    }
+    
+    function updateGroupDropdown(dropdownId, excludeIds = new Set()) {
+        const dropdown = document.getElementById(dropdownId);
+        const currentVal = dropdown.value;
+        dropdown.innerHTML = '<option value="root">Nível Principal (Raiz)</option>';
+        const addGroupsToDropdown = (tasks, level) => {
+            tasks.forEach(task => {
+                if (task.type === 'group' && !excludeIds.has(task.id)) {
+                    dropdown.add(new Option(`${'--'.repeat(level)} ${task.servico}`, task.id));
+                    if (!collapsedGroups.has(task.id)) addGroupsToDropdown(task.children, level + 1);
+                }
+            });
+        };
+        addGroupsToDropdown(tasksData, 0);
+        dropdown.value = currentVal;
+    }
+
+    function getAllItemsAsMap(tasks = tasksData) {
+        const map = new Map();
+        const recurse = (items) => {
+            for (const item of items) {
+                map.set(item.id, item);
+                if (item.children) recurse(item.children);
+            }
+        };
+        recurse(tasks);
+        return map;
+    }
+    
+    function findParentList(list, childId) {
+        for (let i = 0; i < list.length; i++) {
+            const item = list[i];
+            if (item.id === childId) return { parentList: list, index: i };
+            if (item.type === 'group') {
+                const found = findParentList(item.children, childId);
+                if (found) return found;
+            }
+        }
+        return null;
+    }
+
+    function handleDragEnd(evt) {
+        const movedItemId = evt.item.dataset.id;
+        const allItemsMap = getAllItemsAsMap();
+        const movedItem = allItemsMap.get(movedItemId);
+        if (!movedItem) return;
+        findAndDelete(tasksData, new Set([movedItemId]));
+        const prevSiblingEl = evt.item.previousElementSibling;
+        let destinationList, destinationIndex;
+        if (!prevSiblingEl) {
+            destinationList = tasksData;
+            destinationIndex = 0;
+        } else {
+            const prevSiblingId = prevSiblingEl.dataset.id;
+            const prevSiblingItem = allItemsMap.get(prevSiblingId);
+            if (prevSiblingItem.type === 'group' && !collapsedGroups.has(prevSiblingId)) {
+                destinationList = prevSiblingItem.children;
+                destinationIndex = 0;
+            } else {
+                const parentInfo = findParentList(tasksData, prevSiblingId);
+                destinationList = parentInfo ? parentInfo.parentList : tasksData;
+                destinationIndex = parentInfo ? parentInfo.index + 1 : tasksData.length;
+            }
+        }
+        destinationList.splice(destinationIndex, 0, movedItem);
+        renderAndCalculate(true);
+    }
+    
+    function updateSummary() {
+        const totalProjectDias = tasksData.reduce((sum, task) => sum + (task._totalDias || 0), 0);
+        const totalProjectCompletedDias = tasksData.reduce((sum, task) => sum + (task._completedDias || 0), 0);
+        document.getElementById('total-dias').textContent = totalProjectDias.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('dias-restantes').textContent = (totalProjectDias - totalProjectCompletedDias).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        const progressoGeral = totalProjectDias > 0 ? (totalProjectCompletedDias / totalProjectDias) * 100 : 0;
+        document.getElementById('progresso-geral').textContent = `${progressoGeral.toFixed(1).replace('.', ',')}%`;
+        const progressBar = document.getElementById('progress-bar');
+        progressBar.style.width = `${progressoGeral}%`;
+        progressBar.textContent = `${progressoGeral.toFixed(1)}%`;
+        const countdownEl = document.getElementById('countdown-days');
+        countdownEl.parentElement.style.cursor = 'pointer';
+        countdownEl.parentElement.title = 'Clique para alterar a data de entrega';
+        if (deliveryDate) {
+            const targetDate = new Date(deliveryDate + 'T23:59:59');
+            const diffDays = Math.ceil((targetDate - new Date()) / 86400000);
+            countdownEl.textContent = diffDays >= 0 ? diffDays : 'Atrasado!';
+            countdownEl.style.color = diffDays < 0 ? '#dc3545' : '';
+        } else {
+            countdownEl.textContent = 'N/D';
+            countdownEl.style.color = '';
+        }
+    }
+    
+    function handleChangeDeliveryDate() {
+        const currentDate = deliveryDate || new Date().toISOString().slice(0, 10);
+        const newDateStr = prompt("Digite a nova data de entrega (formato AAAA-MM-DD):", currentDate);
+        if (newDateStr && /^\d{4}-\d{2}-\d{2}$/.test(newDateStr)) {
+            deliveryDate = newDateStr;
+            renderAndCalculate(true);
+        } else if (newDateStr !== null) {
+            alert("Formato de data inválido. Por favor, use o formato AAAA-MM-DD.");
+        }
+    }
+
+    function handleTableClick(e) {
+        const row = e.target.closest('.task-row');
+        if (!row) return;
+        const id = row.dataset.id;
+        const item = getAllItemsAsMap().get(id);
+        if (!item) return;
+
+        if (e.target.classList.contains('select-checkbox')) {
+            if (e.target.checked) selectedItems.add(id); else selectedItems.delete(id);
+            updateBulkActionsBar();
+            row.classList.toggle('selected', e.target.checked);
+            return;
+        }
+        if (e.target.classList.contains('toggle-children')) { if (collapsedGroups.has(id)) collapsedGroups.delete(id); else collapsedGroups.add(id); }
+        else if (e.target.classList.contains('edit-btn')) { const newName = prompt("Editar nome:", item.servico); if (newName?.trim()) { item.servico = newName.trim(); if (item.id === 'project-title-id') { projectName = newName.trim(); document.getElementById('project-name').textContent = projectName; }} }
+        else if (e.target.classList.contains('progress-btn')) { const delta = parseFloat(e.target.dataset.delta); progressData[id] = Math.max(0, Math.min(1, Math.round(((progressData[id] || 0) + delta) * 100) / 100)); }
+        else if (e.target.classList.contains('dias-btn')) { item.dias = Math.max(0.25, item.dias + parseFloat(e.target.dataset.delta)); }
+        renderAndCalculate(true);
+    }
+    
+    function applyFilter(filterType, changeActiveButton = true) {
+        if (changeActiveButton) {
+            document.querySelector('.filters .filter-btn.active')?.classList.remove('active');
+            document.querySelector(`.filters .filter-btn[data-filter="${filterType}"]`)?.classList.add('active');
+        }
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        const checkFilter = (task) => {
+            switch(filterType) {
+                case 'not-started': return task._progress === 0;
+                case 'in-progress': return task._progress > 0 && task._progress < 1;
+                case 'done': return task._progress === 1;
+                case 'not-done': return task._progress < 1;
+                default: return true;
+            }
+        };
+        const findVisibleRecursive = (tasks) => {
+            let visibleIds = new Set();
+            tasks.forEach(task => {
+                const searchMatch = task.servico.toLowerCase().includes(searchTerm);
+                let selfIsVisible = checkFilter(task) && searchMatch;
+                let childIsVisible = false;
+                if(task.type === 'group') {
+                    const visibleChildren = findVisibleRecursive(task.children);
+                    childIsVisible = visibleChildren.size > 0;
+                    visibleChildren.forEach(id => visibleIds.add(id));
+                }
+                if(selfIsVisible || childIsVisible) visibleIds.add(task.id);
+            });
+            return visibleIds;
+        };
+        const visibleIds = findVisibleRecursive(tasksData);
+        document.querySelectorAll('#tasks-tbody .task-row').forEach(row => row.style.display = visibleIds.has(row.dataset.id) ? '' : 'none');
+    }
+    
+    function handleAddTask(e) {
+        e.preventDefault();
+        const nameInput = document.getElementById('new-task-name');
+        const daysInput = document.getElementById('new-task-days');
+        const parentGroupId = document.getElementById('new-task-group').value;
+        const newTask = { id: createUniqueId(), servico: nameInput.value.trim(), dias: parseFloat(daysInput.value) || 0, type: 'task', children: [] };
+        const parentList = (parentGroupId === 'root') ? tasksData : getAllItemsAsMap().get(parentGroupId)?.children;
+        if (parentList) parentList.push(newTask);
+        nameInput.value = ''; daysInput.value = '';
+        closeModal('add-item-modal');
+        renderAndCalculate(true);
+    }
+
+    function handleAddGroup(e) {
+        e.preventDefault();
+        const nameInput = document.getElementById('new-group-name');
+        const parentGroupId = document.getElementById('new-group-parent').value;
+        const newGroup = { id: createUniqueId(), servico: nameInput.value.trim(), dias: 0, type: 'group', children: [] };
+        const parentList = (parentGroupId === 'root') ? tasksData : getAllItemsAsMap().get(parentGroupId)?.children;
+        if (parentList) parentList.push(newGroup);
+        nameInput.value = '';
+        closeModal('add-item-modal');
+        renderAndCalculate(true);
+    }
+
+    function handleExport() {
+        const dataToExport = getCanonicalState();
+        try {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([dataToExport], { type: 'application/json' }));
+            a.download = `${projectName.replace(/ /g,"_")}.json`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+        } catch(e) { console.error("Erro ao exportar:", e); alert("Ocorreu um erro ao gerar o arquivo para download."); }
+    }
+
+    function handleImport(event) {
+        if (hasUnsavedChanges() && !confirm("Isto irá substituir todos os dados do projeto atual com o conteúdo do arquivo. Deseja continuar?")) {
+            event.target.value = ''; return;
+        }
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                tasksData = transformData(data.tasks || []);
+                progressData = data.progress || {};
+                collapsedGroups = new Set(data.collapsed || []);
+                projectName = data.name || file.name.replace(/\.json$/i, '').replace(/_/g, ' ');
+                deliveryDate = data.deliveryDate || null;
+                document.getElementById('project-name').textContent = projectName;
+                renderAndCalculate(true); 
+                alert(`Projeto "${projectName}" importado e salvo com sucesso!`);
+            } catch(err) { console.error("Erro ao processar JSON:", err); alert("Erro ao ler o arquivo JSON. Verifique o formato do arquivo."); }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+    
+    function updateBulkActionsBar() {
+        const container = document.getElementById('bulk-actions-container');
+        container.classList.toggle('visible', selectedItems.size > 0);
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        if (selectAllCheckbox) {
+            const visibleRows = document.querySelectorAll('#tasks-tbody .task-row:not([style*="display: none"])');
+            selectAllCheckbox.checked = (visibleRows.length > 0 && selectedItems.size === visibleRows.length);
+        }
+        updateContainerPadding(); 
+    }
+
+    function handleSelectAll(e) {
+        selectedItems.clear();
+        if (e.target.checked) document.querySelectorAll('#tasks-tbody .task-row:not([style*="display: none"])').forEach(row => selectedItems.add(row.dataset.id));
+        renderAndCalculate(false);
+    }
+    
+    function findAndDelete(items, idsToDelete) {
+        for (let i = items.length - 1; i >= 0; i--) {
+            const item = items[i];
+            if (idsToDelete.has(item.id)) items.splice(i, 1);
+            else if (item.children) findAndDelete(item.children, idsToDelete);
+        }
+    }
+
+    function handleBulkDelete() {
+        if (selectedItems.size === 0 || !confirm(`Tem certeza que deseja excluir ${selectedItems.size} item(ns)?`)) return;
+        findAndDelete(tasksData, selectedItems);
+        selectedItems.clear();
+        renderAndCalculate(true);
+    }
+
+    function handleBulkProgress(value) {
+        if (selectedItems.size === 0 || !confirm(`Tem certeza que deseja ${value === 1 ? 'completar' : 'refazer'} ${selectedItems.size} item(ns)?`)) return;
+        const allItems = getAllItemsAsMap();
+        const taskIdsToUpdate = new Set();
+        const getChildTasks = (item) => {
+            if(!item) return;
+            if (item.type === 'task') taskIdsToUpdate.add(item.id);
+            else if (item.children) item.children.forEach(getChildTasks);
+        };
+        selectedItems.forEach(id => getChildTasks(allItems.get(id)));
+        taskIdsToUpdate.forEach(id => { progressData[id] = value; });
+        selectedItems.clear();
+        renderAndCalculate(true);
+    }
+
+    function openMoveModal() {
+        if (selectedItems.size === 0) return;
+        const allItems = getAllItemsAsMap();
+        const allDescendantIds = new Set();
+        const getDescendantIds = (item) => {
+            if(!item) return;
+            allDescendantIds.add(item.id);
+            if (item.children) item.children.forEach(getDescendantIds);
+        };
+        selectedItems.forEach(id => getDescendantIds(allItems.get(id)));
+        updateGroupDropdown('move-target-group', allDescendantIds);
+        document.getElementById('move-selection-count').textContent = selectedItems.size;
+        openModal('move-item-modal');
+    }
+
+    function handleBulkMove(e) {
+        e.preventDefault();
+        const targetGroupId = document.getElementById('move-target-group').value;
+        const allItems = getAllItemsAsMap();
+        const itemsToMove = [];
+        selectedItems.forEach(id => {
+            const item = allItems.get(id);
+            if(item) itemsToMove.push(item);
+        });
+        
+        findAndDelete(tasksData, selectedItems);
+        
+        const destinationList = (targetGroupId === 'root') ? tasksData : allItems.get(targetGroupId)?.children;
+        if (destinationList) destinationList.push(...itemsToMove);
+        
+        selectedItems.clear();
+        closeModal('move-item-modal');
+        renderAndCalculate(true);
+    }
+
     </script>
 </body>
 </html>
