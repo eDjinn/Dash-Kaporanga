@@ -6,6 +6,7 @@
     <title>Gerenciador Central - Conectado</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
@@ -110,11 +111,11 @@
         .control-group { display: flex; flex-direction: column; align-items: center; }
         .control-group > label { font-weight: 500; font-size: 0.9em; color: var(--primary-text-color); margin-bottom: 8px; }
         .control-group .button-container { display: inline-flex; gap: 10px; }
-        #bg-button, #export-layout-btn, #import-layout-label, #remove-bg-btn { display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 16px; font-size: 14px; font-weight: 500; color: #fff; border-radius: 5px; box-sizing: border-box; cursor: pointer; transition: opacity 0.2s ease; }
+        #bg-button, #export-layout-btn, #import-layout-label, #remove-bg-btn, #logout-btn { display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 16px; font-size: 14px; font-weight: 500; color: #fff; border-radius: 5px; box-sizing: border-box; cursor: pointer; transition: opacity 0.2s ease; }
         #bg-button, #export-layout-btn, #import-layout-label { background-color: var(--accent-color); border: 1px solid var(--accent-color); }
-        #remove-bg-btn { background-color: #dc3545; border: 1px solid #dc3545; }
+        #remove-bg-btn, #logout-btn { background-color: #dc3545; border: 1px solid #dc3545; }
         #light-theme-btn, #dark-theme-btn { display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 16px; font-size: 14px; font-weight: 500; color: var(--primary-text-color); background-color: transparent; border: 1px solid var(--secondary-text-color); border-radius: 5px; box-sizing: border-box; cursor: pointer; transition: all 0.2s ease; }
-        #bg-button:hover, #export-layout-btn:hover, #import-layout-label:hover, #remove-bg-btn:hover { opacity: 0.85; }
+        #bg-button:hover, #export-layout-btn:hover, #import-layout-label:hover, #remove-bg-btn:hover, #logout-btn:hover { opacity: 0.85; }
         #light-theme-btn:hover, #dark-theme-btn:hover { color: #fff; background-color: var(--accent-color); border-color: var(--accent-color); }
         #bg-input, #import-layout-input { display: none; }
         input[type="range"] { cursor: pointer; max-width: 120px; height: 38px; margin: 0; box-sizing: border-box; }
@@ -141,18 +142,9 @@
             .card-small { width: 150px; padding: 15px 10px; }
             .card-tiny { width: 100px; height: 100px; }
             .page-controls { flex-direction: column; align-items: center; gap: 25px; padding: 20px 15px; }
-
-            /* ALTERAÇÃO PARA VERSÃO MOBILE */
-            .card:not(.card-small):not(.card-tiny) {
-                width: 150px;
-                padding: 15px 10px;
-            }
-            .card:not(.card-small):not(.card-tiny) .card-icon {
-                font-size: 2.5em;
-            }
-            .card:not(.card-small):not(.card-tiny) h3 {
-                font-size: 1.1em;
-            }
+            .card:not(.card-small):not(.card-tiny) { width: 150px; padding: 15px 10px; }
+            .card:not(.card-small):not(.card-tiny) .card-icon { font-size: 2.5em; }
+            .card:not(.card-small):not(.card-tiny) h3 { font-size: 1.1em; }
         }
     </style>
 </head>
@@ -213,6 +205,7 @@
         <div class="control-group"><label for="opacity-slider">Opacidade</label><input type="range" id="opacity-slider" min="0" max="1" step="0.05" value="1"></div>
         <div class="control-group"><label for="color-picker">Cor de Fundo</label><input type="color" id="color-picker" value="#f4f7f9"></div>
         <div class="control-group"><label>Layout</label><div class="button-container"><label for="import-layout-input" id="import-layout-label">Importar</label><input type="file" id="import-layout-input" accept=".json"><button id="export-layout-btn">Salvar</button></div></div>
+        <div class="control-group"><label>Conta</label><div class="button-container"><button id="logout-btn">Sair</button></div></div>
     </footer>
 
     <script>
@@ -227,7 +220,22 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const userSettingsDocRef = db.collection('settings').doc('main-dashboard');
+        const auth = firebase.auth();
+        
+        let userDocRef; // Será definido quando o usuário estiver logado
+        
+        // Gatekeeper: Verifica o estado de autenticação
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // Usuário está logado. Defina a referência do documento dele e carregue os dados.
+                userDocRef = db.collection('userData').doc(user.uid);
+                loadAllData();
+            } else {
+                // Usuário não está logado. Redireciona para a página de login.
+                window.location.href = 'login.html';
+            }
+        });
+
         const body = document.body, root = document.documentElement;
         const managersContainer = document.getElementById('managers-container');
         const linksContainer = document.getElementById('links-container');
@@ -241,11 +249,12 @@
         const cancelModalBtn = document.getElementById('cancel-modal-btn');
         const emojiPickerBtn = document.getElementById('emoji-picker-btn'), emojiPickerContainer = document.querySelector('.emoji-picker-container'), emojiPicker = document.querySelector('emoji-picker');
         const itemIconInput = document.getElementById('item-icon'), itemDescriptionInput = document.getElementById('item-description');
+        const logoutBtn = document.getElementById('logout-btn');
 
         let appData = {};
         let currentModalType = null;
         let currentEditingId = null;
-        let sortableInstances = {}; // Objeto para guardar as instâncias do Sortable
+        let sortableInstances = {};
 
         const defaultData = {
             styleData: { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' },
@@ -255,19 +264,26 @@
         const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
         async function saveAllData() {
-            try { await userSettingsDocRef.set(appData); } 
+            if (!userDocRef) return;
+            try {
+                // Usar 'merge: true' para não sobrescrever dados de tarefas salvos pela outra página
+                await userDocRef.set(appData, { merge: true });
+            } 
             catch (error) { console.error("Erro ao salvar dados no Firebase: ", error); }
         }
 
         function loadAllData() {
-            userSettingsDocRef.onSnapshot(doc => {
+            if (!userDocRef) return;
+            userDocRef.onSnapshot(doc => {
                 if (doc.exists) {
-                    appData = doc.data();
-                    appData.styleData = { ...defaultData.styleData, ...appData.styleData };
-                    appData.layoutData = { ...defaultData.layoutData, ...appData.layoutData };
+                    const data = doc.data();
+                    // Garante que a estrutura de dados exista mesmo que parcialmente salva
+                    appData = data;
+                    appData.styleData = { ...defaultData.styleData, ...(data.styleData || {}) };
+                    appData.layoutData = { ...defaultData.layoutData, ...(data.layoutData || {}) };
                 } else {
                     appData = JSON.parse(JSON.stringify(defaultData));
-                    saveAllData();
+                    saveAllData(); // Salva os dados padrão para o novo usuário
                 }
                 applyStyles();
                 renderCards();
@@ -293,23 +309,20 @@
         }
         
         function renderCards() {
-            // Destrói as instâncias Sortable existentes antes de limpar o HTML
             Object.values(sortableInstances).forEach(instance => instance.destroy());
             sortableInstances = {};
-
             managersContainer.innerHTML = ''; 
             linksContainer.innerHTML = ''; 
             quickAccessContainer.innerHTML = '';
             
-            appData.layoutData.managers.forEach(item => managersContainer.appendChild(createCard(item, 'card', 'manager')));
-            appData.layoutData.usefulLinks.forEach(item => linksContainer.appendChild(createCard(item, 'card card-small', 'usefulLink')));
-            appData.layoutData.quickAccessLinks.forEach(item => quickAccessContainer.appendChild(createCard(item, 'card card-tiny', 'quickAccess')));
+            (appData.layoutData.managers || []).forEach(item => managersContainer.appendChild(createCard(item, 'card', 'manager')));
+            (appData.layoutData.usefulLinks || []).forEach(item => linksContainer.appendChild(createCard(item, 'card card-small', 'usefulLink')));
+            (appData.layoutData.quickAccessLinks || []).forEach(item => quickAccessContainer.appendChild(createCard(item, 'card card-tiny', 'quickAccess')));
             
             managersContainer.appendChild(createAddPlaceholder('manager'));
             linksContainer.appendChild(createAddPlaceholder('usefulLink'));
             quickAccessContainer.appendChild(createAddPlaceholder('quickAccess'));
             
-            // Recria as instâncias Sortable no novo HTML
             initSortable(managersContainer, 'managers');
             initSortable(linksContainer, 'usefulLinks');
             initSortable(quickAccessContainer, 'quickAccessLinks');
@@ -352,6 +365,7 @@
         
         function closeModal() { modalBackdrop.style.display = 'none'; modal.style.display = 'none'; emojiPickerContainer.style.display = 'none'; }
         
+        logoutBtn.addEventListener('click', () => { auth.signOut(); });
         lightThemeBtn.addEventListener('click', () => { appData.styleData.theme = 'light-theme'; saveAllData(); });
         darkThemeBtn.addEventListener('click', () => { appData.styleData.theme = 'dark-theme'; saveAllData(); });
         colorPicker.addEventListener('input', (e) => { appData.styleData.bgColor = e.target.value; saveAllData(); });
@@ -412,23 +426,15 @@
         const searchInput = document.getElementById('search-input');
         searchForm.addEventListener('submit', (e) => {
             const query = searchInput.value.trim();
-            const urlPattern = new RegExp('^(https?://)?'+ // protocol
-            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-            '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-            '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-            '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+            const urlPattern = new RegExp('^(https?://)?'+ '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ '((\\d{1,3}\\.){3}\\d{1,3}))'+ '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ '(\\?[;&a-z\\d%_.~+=-]*)?'+ '(\\#[-a-z\\d_]*)?$','i');
             if (urlPattern.test(query)) {
                 e.preventDefault();
                 let url = query;
-                if (!/^https?:\/\//i.test(url)) {
-                    url = 'https://' + url;
-                }
+                if (!/^https?:\/\//i.test(url)) { url = 'https://' + url; }
                 window.open(url, '_blank');
             }
         });
 
-        loadAllData();
     });
     </script>
 </body>

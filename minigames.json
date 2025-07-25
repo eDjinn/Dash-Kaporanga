@@ -2,41 +2,10 @@
   "projectName": "Projeto de Minigames Importado",
   "games": [
     {
-      "VideoGuiaFilename": "",
-      "ThumbFilename": "",
-      "Texto Botão Secundário": "Empurrar",
-      "Texto Stick": "Mover",
-      "Usa Botão Secundário": true,
-      "Usa Stick": true,
-      "Descrição": "Os jogadores tentam se equilibrar na folhagem da copa de um Jequitibá-rosa. Após sustentar o jogador por algum tempo, a folhagem da árvore cede, e se o jogador não se mover a tempo para outra folhagem ele cai da árvore. O vencedor é aquele que se equilibrar por mais tempo no topo da árvore. Cenário: Parque Estadual dos Três Picos asdasdasd",
-      "Texto Guia": "Corra e pule para não cair nos espaços vazios. Cuidado: se você demorar muito, a folha vai cair!",
-      "Curiosidades": [
-        {
-          "foto": "https://edjinn.github.io/Dash-Kaporanga/minigames.html",
-          "texto": "- Estima-se que o jequitibá-rosa do Parque Estadual dos Três Picos tenha mais de 1.000 anos, sendo um dos seres vivos mais antigos do estado."
-        },
-        {
-          "texto": "- Com alcance de cerca de 40mts de altura, a copa imponente do jequitibá-rosa se eleva acima da floresta, podendo ser vista de longe.",
-          "foto": "https://edjinn.github.io/Dash-Kaporanga/minigames.html"
-        },
-        {
-          "foto": "https://edjinn.github.io/Dash-Kaporanga/minigames.html",
-          "texto": "- Com 6mt de diâmetro e 19mt de circunferência, a base da arvore é tão larga que seriam necessárias varias pessoas de mãos dadas para abraça-la."
-        },
-        {
-          "foto": "https://edjinn.github.io/Dash-Kaporanga/minigames.html",
-          "texto": "- É um dos maiores jequitibás vivos do Brasil, rivalizando com os do Parque Estadual do Vassununga (SP)."
-        },
-        {
-          "texto": "- O nome vem do tupi \"Yiki-T-Ibá\", que significa “fruto em forma de covo”, em referência ao jequi, armadilha de pesca indígena.",
-          "foto": "https://edjinn.github.io/Dash-Kaporanga/minigames.html"
-        }
-      ],
-      "Nome": "Na Copa do Jequitibá",
       "Thumb": "",
-      "Inspiração": "Hex-A-Gon (Fall Guys)",
-      "Título Guia": "Tente não cair!",
-      "Nome do Arquivo do mapa": "Minigame01_Hexagon",
+      "Texto Botão Primário": "Pular",
+      "Local": "Parque Estadual dos Três Picos (PETP)",
+      "Texto Stick": "Mover",
       "Referências": [
         {
           "nome": "Fall Guys",
@@ -51,21 +20,54 @@
           "url": "https://youtu.be/yaauarq15Xg"
         }
       ],
+      "Usa Botão Secundário": true,
+      "#": 1,
+      "Curiosidades": [
+        {
+          "foto": "https://edjinn.github.io/Dash-Kaporanga/minigames.html",
+          "texto": "- Estima-se que o jequitibá-rosa do Parque Estadual dos Três Picos tenha mais de 1.000 anos, sendo um dos seres vivos mais antigos do estado."
+        },
+        {
+          "texto": "- Com alcance de cerca de 40mts de altura, a copa imponente do jequitibá-rosa se eleva acima da floresta, podendo ser vista de longe.",
+          "foto": "https://edjinn.github.io/Dash-Kaporanga/minigames.html"
+        },
+        {
+          "foto": "https://edjinn.github.io/Dash-Kaporanga/minigames.html",
+          "texto": "- Com 6mt de diâmetro e 19mt de circunferência, a base da arvore é tão larga que seriam necessárias varias pessoas de mãos dadas para abraça-la."
+        },
+        {
+          "texto": "- É um dos maiores jequitibás vivos do Brasil, rivalizando com os do Parque Estadual do Vassununga (SP).",
+          "foto": "https://edjinn.github.io/Dash-Kaporanga/minigames.html"
+        },
+        {
+          "texto": "- O nome vem do tupi \"Yiki-T-Ibá\", que significa “fruto em forma de covo”, em referência ao jequi, armadilha de pesca indígena.",
+          "foto": "https://edjinn.github.io/Dash-Kaporanga/minigames.html"
+        }
+      ],
+      "Usa Stick": true,
+      "Título Guia": "Tente não cair!",
+      "Inspiração": "Hex-A-Gon (Fall Guys)",
+      "Descrição": "Os jogadores tentam se equilibrar na folhagem da copa de um Jequitibá-rosa. Após sustentar o jogador por algum tempo, a folhagem da árvore cede, e se o jogador não se mover a tempo para outra folhagem ele cai da árvore. O vencedor é aquele que se equilibrar por mais tempo no topo da árvore. Cenário: Parque Estadual dos Três Picos asdasdasd",
+      "Nome": "Na Copa do Jequitibá",
+      "ThumbFilename": "",
+      "Texto Botão Secundário": "Empurrar",
+      "Texto Guia": "Corra e pule para não cair nos espaços vazios. Cuidado: se você demorar muito, a folha vai cair!",
       "Usa Botão Primário": true,
-      "Texto Botão Primário": "Pular",
-      "Local": "Parque Estadual dos Três Picos (PETP)",
-      "#": 1
+      "Nome do Arquivo do mapa": "Minigame01_Hexagon",
+      "VideoGuiaFilename": ""
     },
     {
       "Texto Botão Secundário": "",
-      "Nome": "Batata Quente",
-      "Local": "?",
-      "Nome do Arquivo do mapa": "",
-      "Usa Botão Primário": false,
+      "Thumb": "",
       "Curiosidades": [],
+      "Nome do Arquivo do mapa": "",
+      "Usa Stick": false,
+      "Nome": "Batata Quente",
       "Inspiração": "Explosive Exchange (Pummel Party)",
-      "Usa Botão Secundário": false,
-      "#": 2,
+      "ThumbFilename": "",
+      "Texto Botão Primário": "",
+      "Texto Guia": "",
+      "Usa Botão Primário": false,
       "Referências": [
         {
           "url": "https://youtu.be/zY_JpH8nuyo?t=2008",
@@ -77,53 +79,49 @@
         }
       ],
       "Título Guia": "",
+      "Usa Botão Secundário": false,
+      "VideoGuiaFilename": "",
       "Descrição": "Era só um piquenique, mas a batata esquentou demais. O minijogo é a clássica brincadeira de criança. Um dos jogadores começa a partida com a batata quente em mãos, e tem que correr atrás dos outros jogadores para passar a batata. Uma música animada toca ao fundo, e quando a mesma parar o jogador que resta com a batata quente na mão perde pontos. Depois de uma série de rodadas o jogador que restar com mais pontos é o vencedor. Cenário: Parque Nacional da Tijuca.",
       "Texto Stick": "",
-      "Texto Botão Primário": "",
-      "Thumb": "",
-      "Usa Stick": false,
-      "VideoGuiaFilename": "",
-      "ThumbFilename": "",
-      "Texto Guia": ""
+      "#": 2,
+      "Local": "?"
     },
     {
+      "Usa Botão Primário": false,
       "Local": "Unknown",
-      "Texto Stick": "Mover",
-      "Curiosidades": [],
-      "#": 3,
-      "Texto Guia": "Texto Guia",
-      "Descrição": "Mestre mandou",
+      "Nome": "O Mestre Mandou",
       "Título Guia": "Texto Título Guia",
+      "Texto Botão Primário": "-",
+      "Texto Botão Secundário": "-",
       "Referências": [
         {
           "nome": "Rabbids Land",
           "url": "https://www.youtube.com/watch?v=G2yg4iM1Hjs&t=2227s"
         },
         {
-          "url": "https://www.youtube.com/watch?v=srvcHBiOeb0&t=127s&ab_channel=MarioPartyLegacy",
-          "nome": "Mario Party"
+          "nome": "Mario Party",
+          "url": "https://www.youtube.com/watch?v=srvcHBiOeb0&t=127s&ab_channel=MarioPartyLegacy"
         }
       ],
-      "Usa Botão Primário": false,
+      "Descrição": "Mestre mandou",
       "Nome do Arquivo do mapa": "Minigame03_MestreMandou",
       "Usa Botão Secundário": false,
-      "Nome": "O Mestre Mandou",
-      "Usa Stick": true,
-      "Texto Botão Secundário": "-",
+      "Curiosidades": [],
       "Inspiração": "Earling Commands All (Rabbids)",
-      "Texto Botão Primário": "-"
+      "Usa Stick": true,
+      "Texto Stick": "Mover",
+      "#": 3,
+      "Texto Guia": "Texto Guia"
     },
     {
-      "Curiosidades": [],
-      "Inspiração": "Gold & Silver Horned Monsters (Rabbids)",
-      "Descrição": "Mestre mandou mas com 2 mestres, e você tem que fazer a ordem inversa de um deles.",
-      "#": 5,
-      "Local": "Unknown",
-      "Nome do Arquivo do mapa": "Minigame05_DoisMestres",
-      "Texto Botão Secundário": "-",
-      "Título Guia": "Texto Título Guia",
-      "Usa Botão Primário": false,
+      "Texto Stick": "Mover",
       "Texto Guia": "Texto Guia",
+      "Usa Stick": true,
+      "Local": "Unknown",
+      "Texto Botão Secundário": "-",
+      "Nome": "Dois Mestres",
+      "Título Guia": "Texto Título Guia",
+      "Texto Botão Primário": "-",
       "Referências": [
         {
           "url": "https://www.youtube.com/watch?v=G2yg4iM1Hjs&t=3689s",
@@ -134,96 +132,105 @@
           "nome": "Mario Party"
         }
       ],
-      "Texto Botão Primário": "-",
-      "Texto Stick": "Mover",
-      "Usa Stick": true,
+      "Curiosidades": [],
+      "#": 5,
+      "Descrição": "Mestre mandou mas com 2 mestres, e você tem que fazer a ordem inversa de um deles.",
+      "Inspiração": "Gold & Silver Horned Monsters (Rabbids)",
       "Usa Botão Secundário": false,
-      "Nome": "Dois Mestres"
+      "Nome do Arquivo do mapa": "Minigame05_DoisMestres",
+      "Usa Botão Primário": false
     },
     {
-      "Texto Botão Primário": "Contar",
-      "Nome do Arquivo do mapa": "Minigame06_Tempo",
-      "Texto Botão Secundário": "-",
-      "Descrição": "Jogadores tem que precionar o botão o mais próximo do timer atingir 0 segundos.",
-      "Usa Botão Primário": true,
-      "Texto Stick": "-",
-      "Usa Stick": false,
-      "Título Guia": "Texto Título Guia",
-      "#": 6,
       "Curiosidades": [],
-      "Local": "Unknown",
-      "Inspiração": "Where the Foul Winds Blow",
+      "Texto Stick": "-",
+      "#": 6,
+      "Usa Botão Secundário": false,
       "Referências": [
         {
           "url": "https://www.youtube.com/watch?v=G2yg4iM1Hjs&t=3020s",
           "nome": "Rabbids Land"
         },
         {
-          "nome": "Rabbids Land",
-          "url": "https://www.youtube.com/watch?v=G2yg4iM1Hjs&t=1266s"
+          "url": "https://www.youtube.com/watch?v=G2yg4iM1Hjs&t=1266s",
+          "nome": "Rabbids Land"
         }
       ],
-      "Usa Botão Secundário": false,
+      "Local": "Unknown",
+      "Nome": "Acerte o Tempo",
+      "Texto Botão Secundário": "-",
+      "Inspiração": "Where the Foul Winds Blow",
+      "Texto Botão Primário": "Contar",
+      "Usa Botão Primário": true,
+      "Descrição": "Jogadores tem que precionar o botão o mais próximo do timer atingir 0 segundos.",
+      "Usa Stick": false,
+      "Título Guia": "Texto Título Guia",
       "Texto Guia": "Texto Guia",
-      "Nome": "Acerte o Tempo"
+      "Nome do Arquivo do mapa": "Minigame06_Tempo"
     },
     {
+      "Nome": "Warlock",
+      "Descrição": "Os jogadores têm que jogar os adversários para fora atirando projéteis.",
+      "Título Guia": "Texto Título Guia",
+      "Texto Guia": "Texto Guia",
+      "Texto Botão Primário": "Atirar",
+      "Inspiração": "Warlock",
       "Curiosidades": [
         {
           "foto": "",
           "texto": "- A faixa de areia tem cerca de 700 a 800 metros, permitindo longas caminhadas com vista panorâmica da lagoa."
         },
         {
-          "texto": "- A região é conhecida por ser um ponto forte para a prática de kitesurf, com ventos constantes e águas propícias para manobras.",
+          "foto": "",
+          "texto": "- A região é conhecida por ser um ponto forte para a prática de kitesurf, com ventos constantes e águas propícias para manobras."
+        },
+        {
+          "texto": "- Um lado da ponta apresenta águas mais profundas e ventosas, enquanto o outro oferece águas rasas e transparentes, com muitas conchas na areia.",
           "foto": ""
         },
         {
           "foto": "",
-          "texto": "- Um lado da ponta apresenta águas mais profundas e ventosas, enquanto o outro oferece águas rasas e transparentes, com muitas conchas na areia."
+          "texto": "- Não há quiosques, banheiros ou lixeiras — o local é 100% natureza, e os visitantes devem levar tudo o que precisarem (e trazer de volta!)."
         },
         {
-          "texto": "- Não há quiosques, banheiros ou lixeiras — o local é 100% natureza, e os visitantes devem levar tudo o que precisarem (e trazer de volta!).",
-          "foto": ""
-        },
-        {
-          "texto": "- A faixa de areia que avança pela lagoa lembra o famoso Caminho de Moisés, em Maragogi (AL), permitindo caminhar “dentro da água”.",
-          "foto": ""
+          "foto": "",
+          "texto": "- A faixa de areia que avança pela lagoa lembra o famoso Caminho de Moisés, em Maragogi (AL), permitindo caminhar “dentro da água”."
         }
       ],
-      "#": 7,
-      "Local": "Arubinha",
-      "Título Guia": "Texto Título Guia",
-      "Descrição": "Os jogadores têm que jogar os adversários para fora atirando projéteis.",
-      "Usa Botão Primário": true,
-      "Inspiração": "Warlock",
-      "Usa Botão Secundário": true,
-      "Nome do Arquivo do mapa": "Minigame07_Warlock",
-      "Usa Stick": true,
-      "Texto Botão Primário": "Atirar",
-      "Texto Guia": "Texto Guia",
-      "Texto Botão Secundário": "Mirar",
       "Texto Stick": "Mover",
-      "Nome": "Warlock",
+      "#": 7,
+      "Usa Stick": true,
+      "Nome do Arquivo do mapa": "Minigame07_Warlock",
       "Referências": [
         {
-          "url": "https://youtu.be/v2uOGQegj2c?si=yw_EoMfrRx93t7K4",
-          "nome": "Warlock -"
+          "nome": "Warlock -",
+          "url": "https://youtu.be/v2uOGQegj2c?si=yw_EoMfrRx93t7K4"
         },
         {
-          "nome": "Warlock Gameplay",
-          "url": "https://youtu.be/rsSEEJrDaik?si=MOKMyS0WkiUxvtjd"
+          "url": "https://youtu.be/rsSEEJrDaik?si=MOKMyS0WkiUxvtjd",
+          "nome": "Warlock Gameplay"
         },
         {
           "url": "https://youtu.be/zY_JpH8nuyo?t=321",
           "nome": "Pummel Party"
         }
-      ]
+      ],
+      "Usa Botão Secundário": true,
+      "Texto Botão Secundário": "Mirar",
+      "Local": "Arubinha",
+      "Usa Botão Primário": true
     },
     {
-      "Nome": "Escalada",
-      "Nome do Arquivo do mapa": "Minigame08_CorridaAoTopo",
-      "Texto Botão Secundário": "Empurrar",
+      "Local": "Pico das Agulhas Negras",
+      "Usa Botão Primário": true,
+      "Usa Botão Secundário": true,
+      "Inspiração": "Fall Mountain (Fall Guys)",
+      "Usa Stick": true,
+      "Texto Botão Primário": "Pular",
       "Descrição": "Os jogadores competem em um tipo de corrida de obstáculos enquanto tentam chegar no topo do Pico das Agulhas Negras. Ao não conseguirem desviar de obstáculos, os personagens são jogados para baixo, eliminando parte de seus progressos. Cenário: Pico das Agulhas Negras.",
+      "Texto Botão Secundário": "Empurrar",
+      "Texto Stick": "Mover",
+      "Texto Guia": "Evite os obstaculos e seja o primeiro a alcançar o topo.",
+      "Nome do Arquivo do mapa": "Minigame08_CorridaAoTopo",
       "Referências": [
         {
           "url": "https://youtu.be/HaO9BTwjTJo",
@@ -234,17 +241,12 @@
           "nome": "Fall Guys"
         },
         {
-          "nome": "Quais são",
-          "url": "https://www.vidadeturista.com/artigos/melhores-lugares-escalada-brasil.html"
+          "url": "https://www.vidadeturista.com/artigos/melhores-lugares-escalada-brasil.html",
+          "nome": "Quais são"
         }
       ],
       "Título Guia": "Alcance o topo!",
-      "Usa Botão Primário": true,
-      "Texto Botão Primário": "Pular",
-      "Texto Guia": "Evite os obstaculos e seja o primeiro a alcançar o topo.",
-      "Inspiração": "Fall Mountain (Fall Guys)",
-      "Usa Botão Secundário": true,
-      "Local": "Pico das Agulhas Negras",
+      "#": 8,
       "Curiosidades": [
         {
           "foto": "",
@@ -259,20 +261,19 @@
           "texto": "- A montanha é composta por granito e gnaisse, formados há milhões de anos por atividade vulcânica subterrânea."
         },
         {
-          "texto": "- O pico já registrou neve e geada, especialmente entre junho e agosto. A última vez que teve um grande acumulo de neve, foi 1985, onde chegou a ter 15 cm e é a terceira maior precipitação que já aconteceu no Brasil.",
-          "foto": ""
+          "foto": "",
+          "texto": "- O pico já registrou neve e geada, especialmente entre junho e agosto. A última vez que teve um grande acumulo de neve, foi 1985, onde chegou a ter 15 cm e é a terceira maior precipitação que já aconteceu no Brasil."
         },
         {
-          "texto": "- Do topo, é possível ver partes de três estados: RJ, MG e SP — além de outras montanhas como o Morro do Couto e o Maciço das Prateleiras.",
-          "foto": ""
+          "foto": "",
+          "texto": "- Do topo, é possível ver partes de três estados: RJ, MG e SP — além de outras montanhas como o Morro do Couto e o Maciço das Prateleiras."
         }
       ],
-      "Usa Stick": true,
-      "Texto Stick": "Mover",
-      "#": 8
+      "Nome": "Escalada"
     },
     {
-      "Texto Botão Secundário": "-",
+      "Nome do Arquivo do mapa": "Minigame09_Clefairy",
+      "Texto Stick": "Toque uma nota",
       "Referências": [
         {
           "nome": "Pokémon Stadium",
@@ -283,21 +284,17 @@
           "nome": "Rabbids Land"
         },
         {
-          "nome": "Genius (Estrela)",
-          "url": "https://www.youtube.com/shorts/gZ7QgMRSzQM"
+          "url": "https://www.youtube.com/shorts/gZ7QgMRSzQM",
+          "nome": "Genius (Estrela)"
         }
       ],
-      "Título Guia": "Siga o maestro!",
       "Texto Botão Primário": "-",
-      "#": 9,
-      "Usa Botão Secundário": false,
-      "Texto Guia": "Use o direcional para fazer o mesmo movimento do maestro após o sinal.",
-      "Nome": "PIM PIM POM",
-      "Local": "Praça Barão de Campo Belo",
-      "Nome do Arquivo do mapa": "Minigame09_Clefairy",
       "Usa Botão Primário": false,
-      "Descrição": "Uma UI define uma ordem de botões e os jogadores devem repetí-la em um tempo determinado.",
-      "Texto Stick": "Toque uma nota",
+      "Texto Botão Secundário": "-",
+      "Local": "Praça Barão de Campo Belo",
+      "Título Guia": "Siga o maestro!",
+      "#": 9,
+      "Nome": "PIM PIM POM",
       "Curiosidades": [
         {
           "texto": "- A praça foi idealizada e construída a pedido de Laureano Corrêa Castro, Barão de Campo Belo, entre os anos de 1835 e 1857, demonstrando a influência e o prestígio da aristocracia local.",
@@ -316,17 +313,21 @@
           "texto": "- Ao redor da praça, destacam-se casarões e edificações do século XIX que contam a história do florescimento econômico de Vassouras durante o ciclo do café."
         },
         {
-          "texto": "- A praça abriga um raro relógio solar de 1851, encomendado pelo Barão de Campo Belo. Esse tipo de instrumento mede o tempo com base na posição do sol e da sombra projetada por um gnômon (a haste central).",
-          "foto": ""
+          "foto": "",
+          "texto": "- A praça abriga um raro relógio solar de 1851, encomendado pelo Barão de Campo Belo. Esse tipo de instrumento mede o tempo com base na posição do sol e da sombra projetada por um gnômon (a haste central)."
         }
       ],
+      "Usa Stick": true,
+      "Usa Botão Secundário": false,
       "Inspiração": "Genius",
-      "Usa Stick": true
+      "Texto Guia": "Use o direcional para fazer o mesmo movimento do maestro após o sinal.",
+      "Descrição": "Uma UI define uma ordem de botões e os jogadores devem repetí-la em um tempo determinado."
     },
     {
-      "Inspiração": "The Bull Fight",
       "Nome": "Desviar",
-      "Curiosidades": [],
+      "Local": "",
+      "Descrição": "Jogadores têm que desviar ded disparos aleatórios de projéteis.",
+      "Inspiração": "The Bull Fight",
       "Referências": [
         {
           "url": "https://www.youtube.com/watch?v=G2yg4iM1Hjs&t=4918s",
@@ -337,20 +338,24 @@
           "nome": "Mario Party"
         },
         {
-          "url": "https://youtu.be/srvcHBiOeb0?t=2072",
-          "nome": "Mario Party"
+          "nome": "Mario Party",
+          "url": "https://youtu.be/srvcHBiOeb0?t=2072"
         },
         {
-          "nome": "Pummel Party",
-          "url": "https://youtu.be/zY_JpH8nuyo?t=1957"
+          "url": "https://youtu.be/zY_JpH8nuyo?t=1957",
+          "nome": "Pummel Party"
         }
       ],
-      "Local": "",
-      "Descrição": "Jogadores têm que desviar ded disparos aleatórios de projéteis.",
-      "#": null
+      "#": null,
+      "Curiosidades": []
     },
     {
+      "Descrição": "",
+      "Curiosidades": [],
+      "Inspiração": "Streaming Stampede",
       "Nome": "Contagem",
+      "Local": "Ponte Bela",
+      "#": null,
       "Referências": [
         {
           "url": "https://www.youtube.com/watch?v=G3gpZnBWO-Y&t=937s",
@@ -368,71 +373,63 @@
           "nome": "Mario Party",
           "url": "https://youtu.be/srvcHBiOeb0?t=1327"
         }
-      ],
-      "Descrição": "",
-      "Inspiração": "Streaming Stampede",
-      "Local": "Ponte Bela",
-      "Curiosidades": [],
-      "#": null
+      ]
     },
     {
+      "Curiosidades": [],
       "Inspiração": "Mystery maze",
       "Nome": "",
-      "#": null,
-      "Curiosidades": [],
+      "Descrição": "",
       "Referências": [
         {
           "nome": "Party Animals",
           "url": "https://youtu.be/gXdHO7XomSA?si=h2wUJ-sgaNn2JiVY"
         },
         {
-          "url": "https://youtu.be/ZZD855HSoyk?t=413",
-          "nome": "Fall Guys"
+          "nome": "Fall Guys",
+          "url": "https://youtu.be/ZZD855HSoyk?t=413"
         }
       ],
-      "Local": "",
-      "Descrição": ""
+      "#": null,
+      "Local": ""
     },
     {
       "Inspiração": "3 Cortes",
-      "Curiosidades": [],
-      "#": null,
       "Descrição": "As bolas vão caindo 1 por vez e os jogadores têm que encostar nela enqnt ela quica até atingir o terceiro toque. No terceiro toque, sai uma cortada na direção que o jogador estava olhando. Os outros jogadores têm que desviar. Quanto mais toca na bola, mais forte sai a cortada daquele jogador. Os toques são acumulativos com as novas bolas.",
-      "Local": "",
-      "Nome": "3 cortes",
       "Referências": [
         {
           "url": "https://www.youtube.com/watch?v=CUVL-IVKajY&ab_channel=Izzytorium",
           "nome": "Super Smash"
         }
-      ]
+      ],
+      "Curiosidades": [],
+      "Nome": "3 cortes",
+      "#": null,
+      "Local": ""
     },
     {
-      "#": null,
-      "Descrição": "Os animais dos jogadores se disfarçam de pombos e se escondem no meio de diversos outros pombos não jogáveis no meio da praça. Esses pombos não jogáveis fazem movimentos aleatórios, se comportando como pombos reais. Como não há nenhuma indicação de qual é o personagem de cada um, os jogadores têm que se mover para se identificarem, ao mesmo tempo que precisam respeitar o padrão dos pombos não jogáveis para não serem descobertos. Ao identificarem os oponentes, os jogadores têm de bicá-los. Ao ser bicado, o jogador é revelado e eliminado do jogo. Cenário: Praça XV",
+      "Local": "Praça XV",
       "Curiosidades": [],
-      "Nome": "Pombos na Praça",
       "Referências": [
         {
-          "url": "https://youtu.be/O6qEa7AwV38",
-          "nome": "ESSE JOGO"
+          "nome": "ESSE JOGO",
+          "url": "https://youtu.be/O6qEa7AwV38"
         }
       ],
-      "Local": "Praça XV",
-      "Inspiração": "Unspottable"
+      "Nome": "Pombos na Praça",
+      "#": null,
+      "Inspiração": "Unspottable",
+      "Descrição": "Os animais dos jogadores se disfarçam de pombos e se escondem no meio de diversos outros pombos não jogáveis no meio da praça. Esses pombos não jogáveis fazem movimentos aleatórios, se comportando como pombos reais. Como não há nenhuma indicação de qual é o personagem de cada um, os jogadores têm que se mover para se identificarem, ao mesmo tempo que precisam respeitar o padrão dos pombos não jogáveis para não serem descobertos. Ao identificarem os oponentes, os jogadores têm de bicá-los. Ao ser bicado, o jogador é revelado e eliminado do jogo. Cenário: Praça XV"
     },
     {
-      "Inspiração": "Bumper Balls (Mario Party)",
-      "Local": "Dedo de Deus",
-      "Descrição": "Os jogadores têm que jogar os adversários para fora. A localização ainda não foi definida, mas deveria ser um pico. Talvez o Dedo de Deus.",
       "Referências": [
         {
           "url": "https://youtu.be/8kyUftSpUrg?si=PrYtHf2JD-tqyhkf",
           "nome": "Mario Party"
         },
         {
-          "url": "https://youtu.be/zY_JpH8nuyo?t=1291",
-          "nome": "Pummel Party"
+          "nome": "Pummel Party",
+          "url": "https://youtu.be/zY_JpH8nuyo?t=1291"
         },
         {
           "url": "https://www.youtube.com/watch?v=B2j3VQqAzCc&ab_channel=DroneXtreme",
@@ -443,34 +440,34 @@
           "url": "https://youtu.be/G2yg4iM1Hjs?t=3776"
         }
       ],
-      "#": null,
+      "Local": "Dedo de Deus",
       "Nome": "Sumô",
-      "Curiosidades": []
+      "#": null,
+      "Descrição": "Os jogadores têm que jogar os adversários para fora. A localização ainda não foi definida, mas deveria ser um pico. Talvez o Dedo de Deus.",
+      "Curiosidades": [],
+      "Inspiração": "Bumper Balls (Mario Party)"
     },
     {
-      "Nome": "Obstáculos voando",
       "Inspiração": "Sorcerers Sprint",
+      "Local": "",
       "#": null,
-      "Descrição": "",
       "Referências": [
         {
           "url": "https://www.youtube.com/watch?v=G3gpZnBWO-Y&t=547s",
           "nome": "Pokémon Stadium"
         },
         {
-          "nome": "Pummel Party",
-          "url": "https://www.youtube.com/watch?v=LxHAVt32Jl0&ab_channel=FlamingScreamer"
+          "url": "https://www.youtube.com/watch?v=LxHAVt32Jl0&ab_channel=FlamingScreamer",
+          "nome": "Pummel Party"
         }
       ],
       "Curiosidades": [],
-      "Local": ""
+      "Nome": "Obstáculos voando",
+      "Descrição": ""
     },
     {
       "Descrição": "Os jogadores têm que atravessar a rua e desviar de obstáculos para trazer algo de um lado para o outro.",
-      "Inspiração": "Frogger",
-      "#": null,
       "Nome": "Galinha atravessando a rua",
-      "Curiosidades": [],
       "Referências": [
         {
           "url": "https://www.youtube.com/watch?v=Iojw0TgzTRM&ab_channel=GAMEEVOLUTIONTV",
@@ -485,16 +482,18 @@
           "nome": "Overcooked 2"
         }
       ],
-      "Local": "?"
+      "#": null,
+      "Local": "?",
+      "Curiosidades": [],
+      "Inspiração": "Frogger"
     },
     {
       "#": null,
-      "Descrição": "A bola cai, a perna fica.",
       "Inspiração": "Bull Family Plays Ball",
       "Referências": [
         {
-          "nome": "Rabbids Sports",
-          "url": "https://www.youtube.com/watch?v=umbVp_LRTG4&ab_channel=PCMasterRaceLatinoam%C3%A9rica%28Pey%29"
+          "url": "https://www.youtube.com/watch?v=umbVp_LRTG4&ab_channel=PCMasterRaceLatinoam%C3%A9rica%28Pey%29",
+          "nome": "Rabbids Sports"
         },
         {
           "nome": "Fall Guys",
@@ -505,36 +504,35 @@
           "nome": "Mario Party"
         }
       ],
-      "Local": "?",
+      "Descrição": "A bola cai, a perna fica.",
       "Curiosidades": [],
+      "Local": "?",
       "Nome": "Futebol com os parças"
     },
     {
-      "Local": "?",
       "Nome": "Pique-Bandeira",
-      "Descrição": "Os jogadores têm que roubar a bandeira dos outros e proteger sua própria bandeira.",
       "Referências": [
         {
-          "nome": "Pummel Party",
-          "url": "https://youtu.be/zY_JpH8nuyo?si=qXRJlB_6FsWTq9Ve&t=971"
+          "url": "https://youtu.be/zY_JpH8nuyo?si=qXRJlB_6FsWTq9Ve&t=971",
+          "nome": "Pummel Party"
         },
         {
           "url": "https://www.youtube.com/watch?v=MlAdsiom8ds&ab_channel=FallGuys",
           "nome": "Fall Guys"
         },
         {
-          "url": "https://www.youtube.com/watch?v=VkHu7sPMYRI&ab_channel=FallGuys",
-          "nome": "Fall Guys"
+          "nome": "Fall Guys",
+          "url": "https://www.youtube.com/watch?v=VkHu7sPMYRI&ab_channel=FallGuys"
         }
       ],
+      "Descrição": "Os jogadores têm que roubar a bandeira dos outros e proteger sua própria bandeira.",
       "Curiosidades": [],
+      "#": null,
       "Inspiração": "Bot Jack Found the Treasure (Pummel Party)",
-      "#": null
+      "Local": "?"
     },
     {
-      "Inspiração": "Dança das Cadeiras",
-      "Local": "?",
-      "#": null,
+      "Curiosidades": [],
       "Referências": [
         {
           "nome": "Pummel Party",
@@ -542,34 +540,36 @@
         }
       ],
       "Descrição": "",
-      "Curiosidades": [],
-      "Nome": "Dança das Cadeiras"
+      "#": null,
+      "Nome": "Dança das Cadeiras",
+      "Inspiração": "Dança das Cadeiras",
+      "Local": "?"
     },
     {
-      "Nome": "Batatinha Frita",
+      "Curiosidades": [],
+      "#": null,
       "Descrição": "(Green Light / Red Light)",
+      "Nome": "Batatinha Frita",
+      "Local": "",
+      "Inspiração": "Sneaking Up On Lady Iron Fan",
       "Referências": [
         {
-          "nome": "Rabbids Land",
-          "url": "https://www.youtube.com/watch?v=G2yg4iM1Hjs&t=4538s"
+          "url": "https://www.youtube.com/watch?v=G2yg4iM1Hjs&t=4538s",
+          "nome": "Rabbids Land"
         },
         {
-          "url": "https://youtu.be/srvcHBiOeb0?t=1012",
-          "nome": "Mario Party"
+          "nome": "Mario Party",
+          "url": "https://youtu.be/srvcHBiOeb0?t=1012"
         },
         {
-          "url": "https://youtu.be/M3HCV8urjf8?si=cDcI3R3NGN2rsph9",
-          "nome": "ROUND 6"
+          "nome": "ROUND 6",
+          "url": "https://youtu.be/M3HCV8urjf8?si=cDcI3R3NGN2rsph9"
         }
-      ],
-      "Inspiração": "Sneaking Up On Lady Iron Fan",
-      "#": null,
-      "Curiosidades": [],
-      "Local": ""
+      ]
     },
     {
-      "Descrição": "",
-      "Local": "",
+      "#": null,
+      "Curiosidades": [],
       "Referências": [
         {
           "nome": "Brincadeira de",
@@ -581,16 +581,17 @@
         }
       ],
       "Nome": "Corrida de Saco",
-      "#": null,
-      "Curiosidades": [],
-      "Inspiração": "Corrida de Saco"
+      "Local": "",
+      "Inspiração": "Corrida de Saco",
+      "Descrição": ""
     },
     {
+      "Descrição": "Os jogadores plantam bombas em um labirinto e tentam sobreviver.",
       "Local": "?",
+      "Nome": "Bombas no labirinto",
       "Inspiração": "Bomberman",
       "Curiosidades": [],
       "#": null,
-      "Descrição": "Os jogadores plantam bombas em um labirinto e tentam sobreviver.",
       "Referências": [
         {
           "url": "https://youtu.be/zY_JpH8nuyo?t=519",
@@ -601,13 +602,15 @@
           "nome": "Super Bomberman"
         },
         {
-          "nome": "Kirby 64",
-          "url": "https://youtu.be/Fj1zCsYydD8?t=395"
+          "url": "https://youtu.be/Fj1zCsYydD8?t=395",
+          "nome": "Kirby 64"
         }
-      ],
-      "Nome": "Bombas no labirinto"
+      ]
     },
     {
+      "#": null,
+      "Nome": "",
+      "Descrição": "",
       "Referências": [
         {
           "url": "https://www.youtube.com/watch?v=G3gpZnBWO-Y&t=292s",
@@ -618,54 +621,52 @@
           "nome": "Pummel Party"
         },
         {
-          "nome": "ALGUÉM ME",
-          "url": "https://www.youtube.com/watch?v=cZusqzoqln4&t=993s&ab_channel=AlanzokaClipes"
+          "url": "https://www.youtube.com/watch?v=cZusqzoqln4&t=993s&ab_channel=AlanzokaClipes",
+          "nome": "ALGUÉM ME"
         }
       ],
-      "#": null,
-      "Local": "",
       "Inspiração": "Sushi Goes Hard",
       "Curiosidades": [],
-      "Nome": "",
-      "Descrição": ""
+      "Local": ""
     },
     {
-      "#": null,
       "Inspiração": "Hexagon Hit (Mario Party 2)",
-      "Nome": "Chão que cai",
-      "Curiosidades": [],
       "Descrição": "Os jogadores devem escolher o piso de acordo com o que é mostrado em uma UI. Se escolherem corretamente, vivem. Se errarem, caem.",
       "Referências": [
         {
-          "nome": "Mario Party",
-          "url": "https://youtu.be/G-sSlssOYtU?si=rZt6oafHUCbj9YgC"
+          "url": "https://youtu.be/G-sSlssOYtU?si=rZt6oafHUCbj9YgC",
+          "nome": "Mario Party"
         },
         {
           "nome": "Fall Guys",
           "url": "https://www.youtube.com/watch?v=2VXE4ajVWnI&ab_channel=BlueBlurChamp"
         }
       ],
-      "Local": "?"
+      "Nome": "Chão que cai",
+      "#": null,
+      "Local": "?",
+      "Curiosidades": []
     },
     {
+      "Curiosidades": [],
       "Referências": [
         {
-          "url": "https://www.youtube.com/watch?v=yqBzoQCx2Tc&ab_channel=MisterLotsaSpaghetti",
-          "nome": "Mario Kart"
+          "nome": "Mario Kart",
+          "url": "https://www.youtube.com/watch?v=yqBzoQCx2Tc&ab_channel=MisterLotsaSpaghetti"
         },
         {
-          "nome": "Mario Kart",
-          "url": "https://www.youtube.com/watch?v=0edSOVqLo9w&ab_channel=CasiniLoogi"
+          "url": "https://www.youtube.com/watch?v=0edSOVqLo9w&ab_channel=CasiniLoogi",
+          "nome": "Mario Kart"
         }
       ],
-      "Inspiração": "Mario Kart",
-      "Curiosidades": [],
+      "Local": "Jardim de Vassouras",
       "#": null,
       "Descrição": "Corrida em volta da PRAÇA VASS.",
-      "Nome": "Corrida",
-      "Local": "Jardim de Vassouras"
+      "Inspiração": "Mario Kart",
+      "Nome": "Corrida"
     },
     {
+      "Local": "?",
       "Referências": [
         {
           "url": "https://www.youtube.com/watch?v=G3gpZnBWO-Y&t=170s",
@@ -684,20 +685,15 @@
           "nome": "Pummel Party"
         }
       ],
-      "Descrição": "Jogadores correm na horizontal desviando de obstáculos",
-      "Local": "?",
-      "Inspiração": "Run, Rattata, Run",
-      "Nome": "Corrida 2",
       "Curiosidades": [],
-      "#": null
+      "Inspiração": "Run, Rattata, Run",
+      "#": null,
+      "Nome": "Corrida 2",
+      "Descrição": "Jogadores correm na horizontal desviando de obstáculos"
     },
     {
       "Descrição": "Os jogadores têm que apertar o botão na hora certa para pularem a corda e não caírem.",
-      "Inspiração": "Hot Rope Jump (Mario Party)",
-      "#": null,
-      "Nome": "Pular Corda",
       "Curiosidades": [],
-      "Local": "?",
       "Referências": [
         {
           "nome": "Mario Party",
@@ -708,26 +704,35 @@
           "url": "https://www.youtube.com/watch?v=-YdYzkaGGKU&ab_channel=MarioPartySuperStar"
         },
         {
-          "url": "https://www.youtube.com/watch?v=uOsb56Ui1_8&ab_channel=NintendoMovies",
-          "nome": "Mario Party"
+          "nome": "Mario Party",
+          "url": "https://www.youtube.com/watch?v=uOsb56Ui1_8&ab_channel=NintendoMovies"
         }
-      ]
+      ],
+      "Nome": "Pular Corda",
+      "Local": "?",
+      "Inspiração": "Hot Rope Jump (Mario Party)",
+      "#": null
     },
     {
-      "Nome": "Queimada",
-      "#": null,
-      "Inspiração": "Dodgeball Academia",
       "Curiosidades": [],
-      "Descrição": "Não tem times. As bolas vão caindo na quadra e os jogadores tem que pegá-las para queimar alguém, eliminando-os.",
+      "#": null,
       "Local": "Ilha do Japonês",
+      "Inspiração": "Dodgeball Academia",
       "Referências": [
         {
           "nome": "Dodgeball Academia",
           "url": "https://youtu.be/-vvvIVCYqvo?si=mUN9DQrRFNOCNwLo&t=230"
         }
-      ]
+      ],
+      "Descrição": "Não tem times. As bolas vão caindo na quadra e os jogadores tem que pegá-las para queimar alguém, eliminando-os.",
+      "Nome": "Queimada"
     },
     {
+      "Inspiração": "Desafio do Ovo",
+      "Local": "Ilha do Boi",
+      "Nome": "Desafio do Ovo",
+      "Descrição": "Ilha do Boi em São Pedro da Aldeia ou na Ponta do Alcaíra (Arubinha). Divide a tela em 2. Tem x posições pra jogar se tiverem x players. Ou seja, um jogando, x-1 correndo. A cada rodada, a maré sobe o caminho diminui, mantendo sempre x posições pra x-1 correndo. Se errar, sai. Se for atingido, sai.",
+      "Curiosidades": [],
       "Referências": [
         {
           "url": "https://www.youtube.com/watch?v=02eDjfi6PpE&ab_channel=KaiqueSoares",
@@ -742,44 +747,39 @@
           "url": "https://www.youtube.com/watch?v=2pB7F-HReRw&ab_channel=Regi%C3%A3odosLagosRJ"
         }
       ],
-      "Local": "Ilha do Boi",
-      "Inspiração": "Desafio do Ovo",
-      "#": null,
-      "Nome": "Desafio do Ovo",
-      "Curiosidades": [],
-      "Descrição": "Ilha do Boi em São Pedro da Aldeia ou na Ponta do Alcaíra (Arubinha). Divide a tela em 2. Tem x posições pra jogar se tiverem x players. Ou seja, um jogando, x-1 correndo. A cada rodada, a maré sobe o caminho diminui, mantendo sempre x posições pra x-1 correndo. Se errar, sai. Se for atingido, sai."
+      "#": null
     },
     {
       "Descrição": "Similar ao jogo de 3 copos, onde se esconde um objeto em um dos copos e o embaralha. Na referência um animal se transforma e se move junto de outros iguais, aumentando o número com o passar das rodadas, e consequentemente a dificuldade.",
-      "Curiosidades": [],
+      "Local": "?",
       "Nome": "Jogo dos Copos",
+      "#": null,
+      "Curiosidades": [],
       "Inspiração": "The Transformation Game",
       "Referências": [
         {
-          "url": "https://www.youtube.com/watch?v=G2yg4iM1Hjs&t=540s&ab_channel=%E2%98%85WishingTikal%E2%98%85",
-          "nome": "Rabbids Land"
+          "nome": "Rabbids Land",
+          "url": "https://www.youtube.com/watch?v=G2yg4iM1Hjs&t=540s&ab_channel=%E2%98%85WishingTikal%E2%98%85"
         }
-      ],
-      "#": null,
-      "Local": "?"
+      ]
     },
     {
-      "Nome": "?",
+      "Curiosidades": [],
       "Descrição": "",
-      "Inspiração": "",
       "#": null,
       "Local": "Pedra do Sino",
-      "Curiosidades": [],
-      "Referências": []
+      "Inspiração": "",
+      "Referências": [],
+      "Nome": "?"
     },
     {
-      "Descrição": "",
-      "Nome": "?",
-      "#": null,
-      "Referências": [],
-      "Curiosidades": [],
       "Inspiração": "",
-      "Local": "Lago azul de Tanguá"
+      "Descrição": "",
+      "Local": "Lago azul de Tanguá",
+      "#": null,
+      "Curiosidades": [],
+      "Nome": "?",
+      "Referências": []
     }
   ]
 }

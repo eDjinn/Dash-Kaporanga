@@ -125,9 +125,11 @@
         
         fieldset { border: 1px solid #ccc; border-radius: 4px; padding: 10px 15px; margin-bottom: 15px; }
         legend { font-weight: bold; padding: 0 10px; color: var(--accent-color); font-size: 1.1em;}
-        #filter-color-container button, #filter-status-container button { padding: 5px 10px; border: 1px solid var(--secondary-text-color); background: transparent; color: var(--primary-text-color); border-radius: 5px; cursor: pointer; }
-        #filter-color-container button.active, #filter-status-container button.active { background-color: var(--accent-color); color: white; border-color: var(--accent-color); }
-        #filter-color-container button { width: 30px; height: 30px; border-radius: 50%; }
+        #filter-color-container button, #filter-status-container button { padding: 5px 10px; border: 1px solid var(--secondary-text-color); background: transparent; color: var(--primary-text-color); border-radius: 5px; cursor: pointer; transition: all 0.2s ease-in-out; }
+        #filter-status-container button.active { background-color: var(--accent-color); color: white; border-color: var(--accent-color); }
+        #filter-color-container button { width: 30px; height: 30px; border-radius: 50%; padding: 0; position: relative; }
+        #filter-color-container button.active { box-shadow: 0 0 0 2px var(--accent-color); }
+        #filter-color-container button.active::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; border-radius: 50%; background-color: var(--button-dot-color); border: 1px solid rgba(0, 0, 0, 0.3); }
 
         @media (max-width: 768px) {
             .container { padding: 10px; }
@@ -216,8 +218,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let notesData = [];
     let initialDataState = '[]';
+    let activeFilters = { statuses: [], themes: [], startDate: null, endDate: null };
     
-    // Definição dos temas e outras constantes
     const statusMap = { none: 'Nenhum', seen: 'Visto', in_progress: 'Em Progresso', done: 'Feito' };
     const statusCycle = ['none', 'seen', 'in_progress', 'done'];
     const themes = [
@@ -245,7 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     `).join('\n');
     
-    // Elementos do DOM
     const notesContainer = document.getElementById('notes-container');
     const searchInput = document.getElementById('search-input');
     const noteModal = document.getElementById('note-modal');
@@ -254,7 +255,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterForm = document.getElementById('filter-form');
     const modalTitle = document.getElementById('modal-title');
 
-    // Funções de utilidade
     const generateId = () => `note_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const formatTimestamp = (isoString) => isoString ? new Date(isoString).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '';
     const hasUnsavedChanges = () => JSON.stringify(notesData) !== initialDataState;
@@ -325,10 +325,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const applyFiltersAndRender = () => {
         const filterText = searchInput.value.toLowerCase();
-        const startDate = document.getElementById('start-date-filter').value ? new Date(document.getElementById('start-date-filter').value).getTime() : null;
-        const endDate = document.getElementById('end-date-filter').value ? new Date(document.getElementById('end-date-filter').value).getTime() : null;
-        const activeStatuses = Array.from(document.querySelectorAll('#filter-status-container button.active')).map(b => b.dataset.status);
-        const activeThemes = Array.from(document.querySelectorAll('#filter-color-container button.active')).map(b => b.dataset.theme);
+        const startDate = activeFilters.startDate ? new Date(activeFilters.startDate).getTime() : null;
+        const endDate = activeFilters.endDate ? new Date(activeFilters.endDate).getTime() : null;
+        const activeStatuses = activeFilters.statuses;
+        const activeThemes = activeFilters.themes;
 
         let filteredData = notesData.filter(note => {
             const textMatch = (note.title || '').toLowerCase().includes(filterText) || (note.content || '').toLowerCase().includes(filterText);
@@ -344,10 +344,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateModalTheme = (themeName) => {
         const modalContent = noteModal.querySelector('.modal-content');
-        modalContent.className = 'modal-content'; // Reset
+        modalContent.className = 'modal-content';
         modalContent.classList.add(themeName);
         modalContent.dataset.selectedTheme = themeName;
-        // Marcar swatch ativo
         document.querySelectorAll('#note-theme-selector .theme-swatch').forEach(sw => {
             sw.classList.toggle('active', sw.dataset.themeName === themeName);
         });
@@ -383,12 +382,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const statusContainer = document.getElementById('filter-status-container');
         const colorContainer = document.getElementById('filter-color-container');
         
+        document.getElementById('start-date-filter').value = activeFilters.startDate || '';
+        document.getElementById('end-date-filter').value = activeFilters.endDate || '';
+        
         statusContainer.innerHTML = Object.keys(statusMap).map(key => 
-            `<button type="button" data-status="${key}">${statusMap[key]}</button>`
+            `<button type="button" data-status="${key}" class="${activeFilters.statuses.includes(key) ? 'active' : ''}">${statusMap[key]}</button>`
         ).join('');
         
         colorContainer.innerHTML = themes.map(theme => 
-            `<button type="button" data-theme="theme-${theme.name}" style="background-color: ${theme.bg}; border: 1px solid ${theme.text};" title="${theme.name}"></button>`
+            `<button type="button" data-theme="theme-${theme.name}" class="${activeFilters.themes.includes(`theme-${theme.name}`) ? 'active' : ''}" style="background-color: ${theme.bg}; border: 1px solid ${theme.text}; --button-dot-color: ${theme.text};" title="${theme.name}"></button>`
         ).join('');
         
         statusContainer.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => btn.classList.toggle('active')));
@@ -406,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
             delay: 200,
             delayOnTouchOnly: true,
             onEnd: (evt) => {
-                const hasFilters = searchInput.value || document.getElementById('start-date-filter').value || document.getElementById('end-date-filter').value || document.querySelector('#filter-status-container .active') || document.querySelector('#filter-color-container .active');
+                const hasFilters = searchInput.value || activeFilters.startDate || activeFilters.endDate || activeFilters.statuses.length > 0 || activeFilters.themes.length > 0;
                 if (hasFilters) {
                     alert("Limpe todos os filtros para poder reordenar as anotações.");
                     applyFiltersAndRender(); return;
@@ -418,7 +420,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Populando seletor de tema
     const themeSelector = document.getElementById('note-theme-selector');
     themeSelector.innerHTML = themes.map(theme => 
         `<div class="theme-swatch" data-theme-name="theme-${theme.name}" style="background-color: ${theme.bg};" title="${theme.name}"></div>`
@@ -436,8 +437,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.getElementById('show-filter-modal-btn').addEventListener('click', openFilterModal);
     filterModal.querySelector('.modal-close').addEventListener('click', closeFilterModal);
-    document.getElementById('clear-filters-btn').addEventListener('click', () => { filterForm.reset(); document.querySelectorAll('#filter-modal .active').forEach(el => el.classList.remove('active')); applyFiltersAndRender(); });
-    filterForm.addEventListener('submit', (e) => { e.preventDefault(); applyFiltersAndRender(); closeFilterModal(); });
+    
+    document.getElementById('clear-filters-btn').addEventListener('click', () => {
+        activeFilters = { statuses: [], themes: [], startDate: null, endDate: null };
+        applyFiltersAndRender();
+        closeFilterModal();
+    });
+
+    filterForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        activeFilters.startDate = document.getElementById('start-date-filter').value || null;
+        activeFilters.endDate = document.getElementById('end-date-filter').value || null;
+        activeFilters.statuses = Array.from(document.querySelectorAll('#filter-status-container button.active')).map(b => b.dataset.status);
+        activeFilters.themes = Array.from(document.querySelectorAll('#filter-color-container button.active')).map(b => b.dataset.theme);
+        applyFiltersAndRender();
+        closeFilterModal();
+    });
 
     noteForm.addEventListener('submit', e => {
         e.preventDefault();
@@ -463,7 +478,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!card) return;
         const noteId = card.dataset.id;
 
-        // Prioridade para os botões
         if (e.target.closest('.status-btn')) {
             e.stopPropagation();
             const noteIndex = notesData.findIndex(n => n.id === noteId);
@@ -521,9 +535,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (noteModal.classList.contains('visible')) closeNoteModal();
             if (filterModal.classList.contains('visible')) closeFilterModal();
         } else if (e.key === 'Enter' && e.ctrlKey) {
+            e.preventDefault();
             if (noteModal.classList.contains('visible')) {
-                e.preventDefault();
                 noteForm.requestSubmit();
+            } else if (filterModal.classList.contains('visible')) {
+                filterForm.requestSubmit();
             }
         }
     });

@@ -1,46 +1,76 @@
 {
   "notes": [
     {
-      "title": "Mudanças aqui",
-      "timestamp": "2025-07-24T14:40:07.395Z",
-      "id": "note_1753327486442_ubf5e4yqm",
-      "content": "No anotacoes.html, mudar o importar. Tem um \"escolher ficheiro\" do nada ali. Quero um botão de Importar apenas, igual o da minigames.html. Ao clicar em uma anotação, abrir em um popup. Como o editar. Pode remover o lápis, visto que agora é só clicar no card.\n\nNa tarefas.html, diminuir o tamanho da coluna de nome de tarefa e grupos para mobile, pq n consigo ler nada pra direita, só se arrastar.\n\nNo index, já abrir direto com o texto pra escrever na barra de endereços, ou omnibox. Se eu abrir essa página em uma nova guia, já posso chegar digitando uma URL pra ir pra outro site.\n\nNa minigames.html, remova completamente a coluna de ver mais. Para ver mais agora, basta clicar em cima do item. Algumas colunas estão sendo escondidas quando o site fica pequeno horizontalmente, mas ainda não é o suficiente. Esconda também a coluna de Local.\n\nEm todas as páginas que tiverem popups para salvar alguma informação, adicionar o atalho ctrl+Enter para Salvar e ESC para fechar/cancelar.\n"
+      "theme": "theme-matcha",
+      "status": "seen",
+      "timestamp": "2025-07-24T23:08:07.756Z",
+      "id": "note_1753398477470_1xcjzbbph",
+      "title": "Empate OP",
+      "content": "Empatou? Minigame entre os empatados. TUDO BUFADO."
     },
     {
-      "content": "https://www.instagram.com/p/C2ARtyTr6Xf/",
-      "id": "note_1753314164453_9vi02f0rf",
-      "title": "Datas SECEC",
-      "timestamp": "2025-07-23T23:42:44.453Z"
+      "timestamp": "2025-07-24T22:56:50.845Z",
+      "theme": "theme-ocean",
+      "status": "seen",
+      "id": "note_1753397810845_p318u3ror",
+      "content": "Of course. Crafting palettes where all 8 colors are highly distinguishable from each other for a specific type of color blindness is an excellent accessibility goal. The key is to leverage variations in **brightness and saturation** in addition to hues that the user can perceive well.\n\nHere are three distinct 8-color palettes, one for each major type of color vision deficiency. Each is designed so that the colors within that set are as distinct as possible from one another.\n\n---\n\n### 1. Palette for Deuteranopia (Green-Blind)\n\n*   **Design Philosophy:** Deuteranopes struggle to distinguish reds, greens, and browns. Their world is built primarily on a spectrum of **blues and yellows**. This palette leans heavily into that strength, using highly distinct shades of blue and ensuring that any \"warm\" colors are differentiated by extreme brightness, making them stand out as \"bright\" even if the hue is ambiguous.\n\n| Color Name | Hex Code | Swatch | Rationale |\n| :--- | :--- | :--- | :--- |\n| **Pure White** | `#FFFFFF` | ⬜️ | Maximum brightness, universal anchor. |\n| **Near Black** | `#1C1C1C` | ⬛️ | Maximum darkness, universal anchor. |\n| **Bright Yellow** | `#FDE100` | 🟨 | A core color that is perceived very clearly. |\n| **Vibrant Orange** | `#FF6A00` | 🟧 | Perceived as a variant of yellow, but its intensity and darkness distinguish it from pure yellow. |\n| **Deep Blue** | `#0044CC` | 🟦 | A strong, dark blue that is unmistakable and contrasts well with yellow/orange tones. |\n| **Sky Blue** | `#00A9E8` | 💧 | A much lighter, brighter blue. Its brightness makes it clearly distinct from the deep blue. |\n| **Vibrant Magenta**| `#E6007E` | 🌺 | Appears as a grayish-pink or magenta, but is distinct from the pure blues and yellows. |\n| **Medium Grey** | `#808080` | ◻️ | A neutral mid-tone that won't be confused with any of the vibrant colors. |\n\n---\n\n### 2. Palette for Protanopia (Red-Blind)\n\n*   **Design Philosophy:** Similar to Deuteranopia, but with a critical difference: reds appear very dark and dim, sometimes merging with black or dark brown. This palette **avoids pure reds** and instead focuses on a strong blue/yellow axis, adding distinct blue-green and yellow-green tones that are easily differentiated.\n\n| Color Name | Hex Code | Swatch | Rationale |\n| :--- | :--- | :--- | :--- |\n| **Pure White** | `#FFFFFF` | ⬜️ | Maximum brightness, universal anchor. |\n| **Near Black** | `#1C1C1C` | ⬛️ | Maximum darkness, universal anchor. |\n| **Bright Yellow** | `#FDE100` | 🟨 | The most vibrant and easily identifiable color for Protanopes. |\n| **Lime Green** | `#B3D400` | 🟩 | Perceived as a distinct shade of yellow, easily separated from pure yellow. |\n| **Strong Blue** | `#0050CF` | 🟦 | A pure, strong blue that provides a solid cool-color anchor. |\n| **Bright Cyan** | `#00A9E8` | 💧 | A light, bright blue-green that is clearly different in brightness and hue from the strong blue. |\n| **Turquoise** | `#009E97` | ✳️ | A darker blue-green. Its hue is distinct from pure blue for protanopes. |\n| **Bright Orange** | `#FF8C00` | 🟧 | Riskiest color here. It will appear as a dim yellow, but its saturation makes it distinct from black, the blues, and the brighter yellows. |\n\n---\n\n### 3. Palette for Tritanopia (Blue-Yellow Blind)\n\n*   **Design Philosophy:** Tritanopes struggle to distinguish blue from green and yellow from pink. This means the blue/yellow axis is unreliable. The palette must be built on the **red/cyan axis**, which they perceive clearly. We can use variations of red (pinks, oranges) and then contrast them with shades of cyan and neutral tones.\n\n| Color Name | Hex Code | Swatch | Rationale |\n| :--- | :--- | :--- | :--- |\n| **Pure White** | `#FFFFFF` | ⬜️ | Maximum brightness, universal anchor. |\n| **Near Black** | `#1C1C1C` | ⬛️ | Maximum darkness, universal anchor. |\n| **Bright Red** | `#E60000` | 🟥 | A core color that is perceived very clearly and strongly. |\n| **Vibrant Pink** | `#FF69B4` | 🌺 | Perceived as a lighter shade of red, its brightness clearly separates it from pure red. |\n| **Vivid Orange** | `#FF7F00` | 🟧 | Seen as a yellowish-red, it's distinct in hue from both pure red and pink. |\n| **Teal / Cyan** | `#009E97` | ✳️ | A core \"cool\" color. This is perceived as a distinct hue, not blue or green. |\n| **Rich Purple** | `#8A00C2` | 🟪 | Seen as a mix of red and a dark color (their perception of blue), making it a distinct \"dark reddish\" hue. |\n| **Medium Grey** | `#808080` | ◻️ | A safe neutral that provides a non-color option for contrast. |\n\n### Universal Tip\n\nWhen implementing these, remember that **brightness contrast is your most powerful tool**. Even if two hues are confusing, a very light version and a very dark version of those hues will almost always be distinguishable. This is why each palette includes pure white and near-black anchors.",
+      "title": "Colorblind PALETAS"
     },
     {
-      "title": "Collider da Lapa",
+      "content": "Na hora que morre, fazer um juice.",
+      "id": "note_1753393567815_npenv1phq",
+      "timestamp": "2025-07-24T22:59:12.931Z",
+      "theme": "theme-matcha",
+      "title": "Juice da Arubinha",
+      "status": "seen"
+    },
+    {
+      "theme": "theme-cherry",
+      "status": "none",
+      "id": "note_1753392807845_trp1xh1v6",
+      "timestamp": "2025-07-24T23:42:00.573Z",
+      "content": "[x] Arrumar o final map q n tá na build\narrumar o loading screen que não tá saindo pro client\nanimação loading screen\npregame não tá puxando informação no client\nVer negócio da sombra\nCorrida ao topo cheio de problemas - Personagem fica branco depois da porrada\n[X] Fog collision\n[X] câmera n segue na arubinha\nO loading tem que ser local",
+      "title": "GIL"
+    },
+    {
+      "theme": "theme-matcha",
       "id": "note_1753311195823_wonywunwi",
+      "status": "seen",
       "content": "Lembrar de arrumar o collider dos Arcos da Lapa",
-      "timestamp": "2025-07-23T22:53:15.823Z"
+      "timestamp": "2025-07-24T18:25:23.591Z",
+      "title": "Collider da Lapa"
     },
     {
-      "timestamp": "2025-07-23T19:48:57.692Z",
-      "title": "[GameSelection] Sequencers",
       "content": "Ajustar a camera dos sequencers, e botar pra tocar na BP do GameState. Tem que ajustar a camera normal também, com base na imagem de referência.",
-      "id": "note_1753300087580_up41ho8pi"
+      "status": "seen",
+      "title": "[GameSelection] Sequencers",
+      "theme": "theme-rose",
+      "id": "note_1753300087580_up41ho8pi",
+      "timestamp": "2025-07-24T18:25:17.211Z"
     },
     {
-      "timestamp": "2025-07-23T19:48:34.468Z",
-      "id": "note_1753300060252_lc82bjm4k",
+      "theme": "theme-rose",
+      "status": "seen",
+      "title": "[GameSelection] Música",
       "content": "precisa da música do pião da casa própria",
-      "title": "[GameSelection] Música"
+      "timestamp": "2025-07-24T18:14:35.729Z",
+      "id": "note_1753300060252_lc82bjm4k"
     },
     {
-      "title": "Arrumar Site",
-      "timestamp": "2025-07-22T17:17:12.199Z",
+      "theme": "theme-apricot",
       "id": "note_1753204632199_718fokpbh",
+      "title": "Arrumar Site",
+      "status": "seen",
+      "timestamp": "2025-07-24T18:25:29.673Z",
       "content": "Logo antigo, imagens velhas, informações faltando..."
     },
     {
+      "status": "seen",
+      "id": "note_1753136350021_x9pe3nstt",
       "title": "Mudança nos mapas",
-      "timestamp": "2025-07-21T22:19:10.021Z",
       "content": "Mudar o Sol de posição no mesmo minigame em vezes diferentes que se acessa o mapa.",
-      "id": "note_1753136350021_x9pe3nstt"
+      "timestamp": "2025-07-24T18:25:03.455Z",
+      "theme": "theme-matcha"
     }
   ]
 }
