@@ -8,6 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-functions-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-storage-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
         :root { --primary-text-color: #1a2533; --secondary-text-color: #6c757d; --page-bg-color: #f4f7f9; --card-bg-color: rgba(255, 255, 255, 0.92); --card-shadow-color: rgba(0, 0, 0, 0.1); --accent-color: #007bff; --bg-image: none; --bg-opacity: 1; }
@@ -57,6 +58,27 @@
         #filter-color-container button { width: 30px; height: 30px; border-radius: 50%; padding: 0; position: relative; }
         #filter-color-container button.active { box-shadow: 0 0 0 2px var(--accent-color); }
         #filter-color-container button.active::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; border-radius: 50%; background-color: var(--button-dot-color); border: 1px solid rgba(0, 0, 0, 0.3); }
+        
+        /* --- ESTILOS DO MENU DE PERFIL DO USUÁRIO --- */
+        #user-profile-menu-container { position: relative; margin-left: 15px; }
+        .user-profile-trigger { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 2px solid var(--accent-color); padding: 2px; background-color: var(--card-bg-color); }
+        .user-profile-trigger img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .profile-menu-dropdown { display: none; position: absolute; top: calc(100% + 10px); right: 0; background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 8px 16px var(--card-shadow-color); z-index: 2000; width: 300px; border: 1px solid rgba(128,128,128,0.2); }
+        .profile-menu-dropdown.visible { display: block; }
+        .profile-menu-header { display: flex; flex-direction: column; align-items: center; padding: 20px; border-bottom: 1px solid rgba(128,128,128,0.1); }
+        .profile-menu-header .profile-pic-wrapper { position: relative; cursor: pointer; }
+        .profile-menu-header .profile-pic-wrapper:hover::after { content: '✏️'; position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.6); color: white; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; }
+        .profile-menu-header img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid var(--accent-color); }
+        .profile-menu-header #user-email-display { font-size: 0.9em; color: var(--secondary-text-color); word-break: break-all; }
+        .profile-menu-body { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        .profile-menu-body .control-group { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .profile-menu-body label { font-weight: 500; font-size: 0.95em; }
+        .profile-menu-body .button-container { display: flex; gap: 8px; }
+        .profile-menu-body .btn-sm { padding: 5px 10px; font-size: 12px; border: 1px solid var(--secondary-text-color); background: transparent; color: var(--primary-text-color); cursor: pointer; border-radius: 3px; }
+        .profile-menu-body .btn-sm.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
+        .profile-menu-footer { padding: 15px; border-top: 1px solid rgba(128,128,128,0.1); display: flex; justify-content: center; }
+        #logout-from-menu-btn { width: 100%; background-color: #dc3545; color: white; border: none; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold;}
+        
         @media (max-width: 768px) { .container { padding: 10px; } .header-left-group { flex-grow: 1; } .note-card { height: 220px; } .header-scrolled #primary-actions-container { overflow: hidden; opacity: 0; max-height: 0; } }
     </style>
 </head>
@@ -74,8 +96,8 @@
                 <button id="show-filter-modal-btn" class="btn btn-primary">Filtro</button>
                 <div class="file-input-wrapper"><button class="btn btn-secondary">Importar</button><input type="file" id="import-json-input" accept=".json"></div>
                 <button id="export-json-btn" class="btn btn-primary">Exportar</button>
-                <button id="logout-btn" class="btn btn-danger">Sair</button>
             </div>
+            <div id="user-profile-menu-container"></div>
         </div>
     </header>
     <div class="container"><div id="notes-container"></div></div>
@@ -90,12 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const auth = firebase.auth();
     const functions = firebase.app().functions('us-central1');
     
-    // --- Variáveis Globais ---
     let notesData = [], initialDataState = '[]', activeFilters = { statuses: [], themes: [], startDate: null, endDate: null };
     let userStyleDocRef, currentUser, unsubscribeListener;
     const notesDocRef = db.collection('sharedData').doc('sharedNotes');
     
-    // --- Gatekeeper de Autenticação ---
     auth.onAuthStateChanged(user => {
         if (user) {
             startApp(user);
@@ -104,51 +124,85 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Função Principal de Inicialização ---
     function startApp(user) {
         currentUser = user;
         userStyleDocRef = db.collection('userData').doc(user.uid);
         
-        initializeSharedDataListener(); // Renomeado para clareza
-        loadAndApplyGlobalStyle();
+        const menuContainer = document.getElementById('user-profile-menu-container');
+        menuContainer.innerHTML = createProfileMenuHTML(user);
+
+        initializeSharedDataListener();
+        loadAndApplyGlobalStyle(user);
         setupEventListeners();
         updateContainerPadding();
         initSortable();
     }
     
-    // --- CORREÇÃO PRINCIPAL ESTÁ AQUI ---
+    // --- INÍCIO DO COMPONENTE DE MENU DE PERFIL REUTILIZÁVEL ---
+    function createProfileMenuHTML(user) {
+        const photoURL = user.photoURL || 'https://ssl.gstatic.com/images/branding/product/2x/avatar_circle_blue_96dp.png';
+        const userEmail = user.email || 'Nenhum e-mail';
+        return `
+            <div class="user-profile-trigger" id="profile-pic-trigger" title="Menu de Perfil"><img src="${photoURL}" alt="Foto de Perfil"></div>
+            <div class="profile-menu-dropdown" id="profile-menu-dropdown">
+                <div class="profile-menu-header">
+                    <div class="profile-pic-wrapper"><img src="${photoURL}" alt="Foto de Perfil" id="profile-pic-display"><input type="file" id="profile-pic-input" accept="image/*" style="display:none;"></div>
+                    <span id="user-email-display">${userEmail}</span>
+                </div>
+                <div class="profile-menu-body">
+                    <div class="control-group"><label>Tema</label><div class="button-container"><button id="menu-light-theme-btn" class="btn-sm">Claro</button><button id="menu-dark-theme-btn" class="btn-sm">Escuro</button></div></div>
+                    <div class="control-group"><label>Fundo</label><div class="button-container"><label for="menu-bg-input" class="btn-sm btn-primary" style="padding: 5px 10px;">Imagem</label><input type="file" id="menu-bg-input" accept="image/*" style="display:none;"><button id="menu-remove-bg-btn" class="btn-sm btn-danger">Remover</button></div></div>
+                    <div class="control-group"><label for="menu-opacity-slider">Opacidade</label><input type="range" id="menu-opacity-slider" min="0" max="1" step="0.05" style="max-width: 120px;"></div>
+                    <div class="control-group"><label for="menu-color-picker">Cor Fundo</label><input type="color" id="menu-color-picker" style="width: 40px; height: 25px; border: 1px solid #ccc; padding: 2px; background: transparent;"></div>
+                </div>
+                <div class="profile-menu-footer"><button id="logout-from-menu-btn" class="btn">Sair</button></div>
+            </div>`;
+    }
+    function setupProfileMenuEventListeners(user, userDocRef, styleDataObject, saveDataFunction) {
+        const auth = firebase.auth(), storage = firebase.storage();
+        const trigger = document.getElementById('profile-pic-trigger'), dropdown = document.getElementById('profile-menu-dropdown');
+        trigger.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('visible'); });
+        document.addEventListener('click', (e) => { if (!dropdown.contains(e.target) && !trigger.contains(e.target)) { dropdown.classList.remove('visible'); } });
+        document.getElementById('logout-from-menu-btn').addEventListener('click', () => auth.signOut());
+        const lightThemeBtn = document.getElementById('menu-light-theme-btn'), darkThemeBtn = document.getElementById('menu-dark-theme-btn'), colorPicker = document.getElementById('menu-color-picker'), opacitySlider = document.getElementById('menu-opacity-slider'), bgInput = document.getElementById('menu-bg-input'), removeBgBtn = document.getElementById('menu-remove-bg-btn');
+        if(styleDataObject.theme === 'dark-theme') { darkThemeBtn.classList.add('active'); lightThemeBtn.classList.remove('active'); } else { lightThemeBtn.classList.add('active'); darkThemeBtn.classList.remove('active'); }
+        colorPicker.value = styleDataObject.bgColor; opacitySlider.value = styleDataObject.bgOpacity;
+        lightThemeBtn.addEventListener('click', () => { styleDataObject.theme = 'light-theme'; saveDataFunction(); });
+        darkThemeBtn.addEventListener('click', () => { styleDataObject.theme = 'dark-theme'; saveDataFunction(); });
+        colorPicker.addEventListener('input', (e) => { styleDataObject.bgColor = e.target.value; saveDataFunction(); });
+        opacitySlider.addEventListener('input', (e) => { styleDataObject.bgOpacity = e.target.value; saveDataFunction(); });
+        removeBgBtn.addEventListener('click', () => { styleDataObject.bgImage = null; saveDataFunction(); });
+        bgInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (re) => { styleDataObject.bgImage = re.target.result; saveDataFunction(); }; reader.readAsDataURL(file); } });
+        const profilePicWrapper = document.querySelector('.profile-pic-wrapper'), profilePicInput = document.getElementById('profile-pic-input');
+        profilePicWrapper.addEventListener('click', () => profilePicInput.click());
+        profilePicInput.addEventListener('change', (e) => {
+            const file = e.target.files[0]; if (!file) return; if (file.size > 50 * 1024) { alert("A imagem é muito grande! Por favor, escolha um arquivo com menos de 50KB."); return; }
+            const uploadTask = storage.ref(`profile_pictures/${user.uid}`).put(file);
+            uploadTask.on('state_changed', null, (error) => { console.error("Erro no upload:", error); alert("Falha ao enviar imagem."); }, () => {
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    user.updateProfile({ photoURL: downloadURL }).then(() => {
+                        document.getElementById('profile-pic-display').src = downloadURL; document.querySelector('#profile-pic-trigger img').src = downloadURL;
+                    });
+                });
+            });
+        });
+    }
+    // --- FIM DO COMPONENTE DE MENU DE PERFIL REUTILIZÁVEL ---
+
     function initializeSharedDataListener() {
-        if (unsubscribeListener) unsubscribeListener(); // Para o listener antigo se houver
-        
+        if (unsubscribeListener) unsubscribeListener(); 
         unsubscribeListener = notesDocRef.onSnapshot(snapshot => {
-            // Sucesso: O usuário tem permissão para ler o documento.
-            if (!snapshot.exists) {
-                // Caso raro onde o documento foi deletado.
-                console.error("O documento de anotações compartilhadas não existe.");
-                document.querySelector('.container').innerHTML = `<p style='color:red;padding:20px; text-align:center;'>Erro: O projeto de anotações não foi encontrado.</p>`;
-                return;
-            }
+            if (!snapshot.exists) { console.error("O documento de anotações compartilhadas não existe."); document.querySelector('.container').innerHTML = `<p style='color:red;padding:20px; text-align:center;'>Erro: O projeto de anotações não foi encontrado.</p>`; return; }
             notesData = snapshot.data().notes || [];
             initialDataState = JSON.stringify(notesData);
             applyFiltersAndRender();
-
         }, error => {
-            // Erro: O usuário provavelmente não tem permissão.
             console.error("Erro no listener do Firestore:", error);
-            if (error.code === 'permission-denied') {
-                // Informa ao usuário sobre a falta de permissão.
-                document.querySelector('.container').innerHTML = `<p style='color: var(--secondary-text-color); padding: 20px; text-align: center; font-size: 1.1em;'>Você não tem acesso a estas anotações.<br>Peça para um membro existente convidá-lo usando o seu e-mail.</p>`;
-                // Desabilita botões de ação
-                document.getElementById('add-note-btn').disabled = true;
-                document.getElementById('import-json-input').disabled = true;
-            } else {
-                // Outros erros (ex: offline)
-                document.querySelector('.container').innerHTML = `<p style='color:red;padding:20px; text-align:center;'>Falha ao carregar anotações. Verifique sua conexão.</p>`;
-            }
+            if (error.code === 'permission-denied') { document.querySelector('.container').innerHTML = `<p style='color: var(--secondary-text-color); padding: 20px; text-align: center; font-size: 1.1em;'>Você não tem acesso a estas anotações.<br>Peça para um membro existente convidá-lo usando o seu e-mail.</p>`; document.getElementById('add-note-btn').disabled = true; document.getElementById('import-json-input').disabled = true;
+            } else { document.querySelector('.container').innerHTML = `<p style='color:red;padding:20px; text-align:center;'>Falha ao carregar anotações. Verifique sua conexão.</p>`; }
         });
     }
 
-    // --- O RESTANTE DO CÓDIGO PERMANECE O MESMO ---
     const statusMap = { none: 'Nenhum', seen: 'Visto', in_progress: 'Em Progresso', done: 'Feito' };
     const statusCycle = ['none', 'seen', 'in_progress', 'done'];
     const themes = [ { name: 'default-light', bg: '#FFFFFF', text: '#1a2533', title: '#007bff' }, { name: 'default-dark', bg: '#2d3436', text: '#dfe6e9', title: '#74b9ff' }, { name: 'slate', bg: '#4a4a4a', text: '#f1f1f1', title: '#a4b0be' }, { name: 'solar', bg: '#fdf6e3', text: '#657b83', title: '#b58900' }, { name: 'mint', bg: '#E0F2F1', text: '#004D40', title: '#00796B' }, { name: 'apricot', bg: '#FFECB3', text: '#E65100', title: '#F57C00' }, { name: 'lavender', bg: '#E1BEE7', text: '#4A148C', title: '#7B1FA2' }, { name: 'rose', bg: '#FCE4EC', text: '#880E4F', title: '#C2185B' }, { name: 'matcha', bg: '#e8f5e9', text: '#2e7d32', title: '#4caf50' }, { name: 'ocean', bg: '#01579B', text: '#B3E5FC', title: '#E1F5FE' }, { name: 'forest', bg: '#1B5E20', text: '#C8E6C9', title: '#A5D6A7' }, { name: 'cherry', bg: '#880000', text: '#ffcdd2', title: '#ef9a9a' } ];
@@ -159,7 +213,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const formatTimestamp = (isoString) => isoString ? new Date(isoString).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '';
     const hasUnsavedChanges = () => JSON.stringify(notesData) !== initialDataState;
     const saveDataToFirebase = () => notesDocRef.update({ notes: notesData }).then(() => { initialDataState = JSON.stringify(notesData); }).catch(error => console.error("Erro ao salvar:", error));
-    async function loadAndApplyGlobalStyle() { if (!userStyleDocRef) return; try { const doc = await userStyleDocRef.get(); if (doc.exists && doc.data().styleData) { const style = doc.data().styleData; document.body.className = ''; document.body.classList.add(style.theme || 'light-theme'); document.body.style.backgroundColor = style.bgColor; document.documentElement.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none'); document.documentElement.style.setProperty('--bg-opacity', style.bgOpacity || '1'); } } catch (e) { console.error("Falha ao carregar estilos:", e); } }
+    
+    async function loadAndApplyGlobalStyle(user) { 
+        if (!userStyleDocRef) return; 
+        try { 
+            const doc = await userStyleDocRef.get(); 
+            if (doc.exists && doc.data().styleData) { 
+                const styleData = doc.data().styleData; 
+                document.body.className = ''; document.body.classList.add(styleData.theme || 'light-theme');
+                document.body.style.backgroundColor = styleData.bgColor;
+                document.documentElement.style.setProperty('--bg-image', styleData.bgImage ? `url('${styleData.bgImage}')` : 'none');
+                document.documentElement.style.setProperty('--bg-opacity', styleData.bgOpacity || '1');
+                
+                setupProfileMenuEventListeners(user, userStyleDocRef, styleData, async () => {
+                    await userStyleDocRef.set({ styleData }, { merge: true });
+                    loadAndApplyGlobalStyle(user);
+                });
+            } else {
+                 // Caso não tenha estilo, usa um padrão e configura o menu
+                 const defaultStyle = { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' };
+                 setupProfileMenuEventListeners(user, userStyleDocRef, defaultStyle, async () => {
+                    await userStyleDocRef.set({ styleData: defaultStyle }, { merge: true });
+                    loadAndApplyGlobalStyle(user);
+                 });
+            }
+        } catch (e) { console.error("Falha ao carregar estilos:", e); } 
+    }
     const updateContainerPadding = () => { const header = document.querySelector('.main-header'), container = document.querySelector('.container'); if (header && container) container.style.paddingTop = `${header.offsetHeight + 20}px`; };
     const handleHeaderScroll = () => { if (window.matchMedia('(max-width: 768px)').matches) { document.querySelector('.main-header').classList.toggle('header-scrolled', window.scrollY > 10); } updateContainerPadding(); };
     const renderNotes = (dataToRender) => { notesContainer.innerHTML = (dataToRender.length === 0 && searchInput.value === '' && activeFilters.statuses.length === 0 && activeFilters.themes.length === 0) ? `<p style="color: var(--secondary-text-color); padding: 20px; text-align: center;">Nenhuma anotação. Clique em "Adicionar" para começar.</p>` : (dataToRender.length === 0) ? `<p style="color: var(--secondary-text-color); padding: 20px; text-align: center;">Nenhuma anotação encontrada com os filtros atuais.</p>` : ''; dataToRender.forEach(note => { const card = document.createElement('div'); const themeClass = note.theme || (document.body.classList.contains('dark-theme') ? 'theme-default-dark' : 'theme-default-light'); card.className = `note-card ${themeClass}`; card.dataset.id = note.id; const statusText = statusMap[note.status] || 'Nenhum'; card.innerHTML = `<div class="note-card-header"><h3 class="note-card-title">${note.title}</h3><div class="note-card-actions"><button class="delete-btn" title="Excluir">🗑️</button></div></div><div class="note-card-content">${note.content}</div><footer class="note-card-footer"><button class="status-btn status-${note.status || 'none'}" title="Clique para alterar status">${statusText}</button><span>${formatTimestamp(note.timestamp)}</span></footer>`; notesContainer.appendChild(card); }); };
@@ -175,7 +254,6 @@ document.addEventListener('DOMContentLoaded', () => {
         themeSelector.addEventListener('click', e => { if (e.target.classList.contains('theme-swatch')) { updateModalTheme(e.target.dataset.themeName); } });
         searchInput.addEventListener('input', applyFiltersAndRender); document.getElementById('add-note-btn').addEventListener('click', () => openNoteModal('add')); noteModal.querySelector('.modal-close').addEventListener('click', closeNoteModal);
         document.getElementById('show-filter-modal-btn').addEventListener('click', openFilterModal); filterModal.querySelector('.modal-close').addEventListener('click', closeFilterModal);
-        document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
         document.getElementById('invite-friend-btn').addEventListener('click', () => { const email = prompt("Digite o e-mail do amigo que você quer convidar para estas anotações:"); if (!email) return; const inviteFunction = functions.httpsCallable('inviteUserToDocument'); inviteFunction({ targetEmail: email, docPath: 'sharedData/sharedNotes' }).then(result => alert(result.data.result)).catch(error => alert(`Erro: ${error.message}`)); });
         document.getElementById('clear-filters-btn').addEventListener('click', () => { activeFilters = { statuses: [], themes: [], startDate: null, endDate: null }; applyFiltersAndRender(); closeFilterModal(); });
         filterForm.addEventListener('submit', (e) => { e.preventDefault(); activeFilters.startDate = document.getElementById('start-date-filter').value || null; activeFilters.endDate = document.getElementById('end-date-filter').value || null; activeFilters.statuses = Array.from(document.querySelectorAll('#filter-status-container button.active')).map(b => b.dataset.status); activeFilters.themes = Array.from(document.querySelectorAll('#filter-color-container button.active')).map(b => b.dataset.theme); applyFiltersAndRender(); closeFilterModal(); });

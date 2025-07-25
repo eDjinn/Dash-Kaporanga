@@ -8,6 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-functions-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-storage-compat.js"></script>
     <style>
         :root { --primary-text-color: #1a2533; --secondary-text-color: #6c757d; --page-bg-color: #f4f7f9; --card-bg-color: rgba(255, 255, 255, 0.92); --card-shadow-color: rgba(0, 0, 0, 0.1); --accent-color: #007bff; --bg-image: none; --bg-opacity: 1; }
         body.dark-theme { --primary-text-color: #e0e0e0; --secondary-text-color: #b0b0b0; --page-bg-color: #121212; --card-bg-color: rgba(40, 40, 40, 0.92); --card-shadow-color: rgba(0, 0, 0, 0.4); --accent-color: #4dabf7; }
@@ -50,6 +51,27 @@
         .curiosity-text-area { display: flex; flex-direction: column; } .curiosity-char-counter { text-align: right; font-size: 0.8em; color: var(--secondary-text-color); margin-top: 5px; }
         .curiosity-image-area { display: flex; flex-direction: column; align-items: center; gap: 10px; }
         .curiosity-preview { width: 100%; max-width: 200px; height: 112px; border: 2px dashed #ccc; border-radius: 4px; object-fit: cover; background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; color: var(--secondary-text-color); font-size: 0.9em; }
+        
+        /* --- ESTILOS DO MENU DE PERFIL DO USUÁRIO --- */
+        #user-profile-menu-container { position: relative; margin-left: 15px; }
+        .user-profile-trigger { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 2px solid var(--accent-color); padding: 2px; background-color: var(--card-bg-color); }
+        .user-profile-trigger img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .profile-menu-dropdown { display: none; position: absolute; top: calc(100% + 10px); right: 0; background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 8px 16px var(--card-shadow-color); z-index: 2000; width: 300px; border: 1px solid rgba(128,128,128,0.2); }
+        .profile-menu-dropdown.visible { display: block; }
+        .profile-menu-header { display: flex; flex-direction: column; align-items: center; padding: 20px; border-bottom: 1px solid rgba(128,128,128,0.1); }
+        .profile-menu-header .profile-pic-wrapper { position: relative; cursor: pointer; }
+        .profile-menu-header .profile-pic-wrapper:hover::after { content: '✏️'; position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.6); color: white; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; }
+        .profile-menu-header img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid var(--accent-color); }
+        .profile-menu-header #user-email-display { font-size: 0.9em; color: var(--secondary-text-color); word-break: break-all; }
+        .profile-menu-body { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        .profile-menu-body .control-group { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .profile-menu-body label { font-weight: 500; font-size: 0.95em; }
+        .profile-menu-body .button-container { display: flex; gap: 8px; }
+        .profile-menu-body .btn-sm { padding: 5px 10px; font-size: 12px; border: 1px solid var(--secondary-text-color); background: transparent; color: var(--primary-text-color); cursor: pointer; border-radius: 3px; }
+        .profile-menu-body .btn-sm.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
+        .profile-menu-footer { padding: 15px; border-top: 1px solid rgba(128,128,128,0.1); display: flex; justify-content: center; }
+        #logout-from-menu-btn { width: 100%; background-color: #dc3545; color: white; border: none; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold;}
+        
         @media (max-width: 768px) { .container { padding: 10px; } .header-left-group { flex-grow: 1; } .form-grid, .curiosity-entry { grid-template-columns: 1fr; } .curiosity-image-area { margin-top: 10px; } .header-scrolled #primary-actions-container, #bulk-actions-container.visible ~ #primary-actions-container { overflow: hidden; opacity: 0; max-height: 0; } table { min-width: 0; table-layout: auto; } th, td { padding: 10px 5px; } thead th:nth-child(1), tbody td:nth-child(1) { width: 8%; text-align: center; } thead th:nth-child(2), tbody td:nth-child(2) { width: 25%; } thead th:nth-child(3), tbody td:nth-child(3) { width: auto; } thead th:nth-child(7), tbody td:nth-child(7) { width: 10%; text-align: center; } thead th:nth-child(4), tbody td:nth-child(4), thead th:nth-child(5), tbody td:nth-child(5), thead th:nth-child(6), tbody td:nth-child(6) { display: none; } }
     </style>
 </head>
@@ -67,8 +89,8 @@
                 <button id="invite-friend-btn" class="btn btn-info">Convidar</button>
                 <div class="file-input-wrapper"><button class="btn btn-secondary">Importar</button><input type="file" id="import-json-input" accept=".json"></div>
                 <button id="export-json-btn" class="btn btn-primary">Exportar</button>
-                <button id="logout-btn" class="btn btn-danger">Sair</button>
             </div>
+            <div id="user-profile-menu-container"></div>
         </div>
     </header>
     <div class="container"><div id="table-container"><table><thead><tr><th style="width: 5%;" data-column="#">#</th><th style="width: 10%;" class="no-sort">Thumb</th><th style="width: 25%;" data-column="Nome">Nome</th><th style="width: 25%;" data-column="Inspiração">Inspiração</th><th style="width: 15%;" data-column="Local">Local</th><th style="width: 15%;" class="no-sort">Referências</th><th style="width: 5%; text-align: center;" class="no-sort"><input type="checkbox" id="select-all-checkbox" title="Selecionar Todos"></th></tr></thead><tbody id="minigames-tbody"></tbody></table></div></div>
@@ -95,50 +117,106 @@ document.addEventListener('DOMContentLoaded', () => {
         currentUser = user;
         userStyleDocRef = db.collection('userData').doc(user.uid);
         
-        initializeSharedDataListener(); // Renomeado para clareza
-        loadAndApplyGlobalStyle();
+        const menuContainer = document.getElementById('user-profile-menu-container');
+        menuContainer.innerHTML = createProfileMenuHTML(user);
+
+        initializeSharedDataListener();
+        loadAndApplyGlobalStyle(user);
         setupEventListeners();
         updateContainerPadding();
     }
     
-    // --- CORREÇÃO PRINCIPAL ESTÁ AQUI ---
-    function initializeSharedDataListener() {
-        if (unsubscribeListener) unsubscribeListener(); // Para o listener antigo
+    // --- INÍCIO DO COMPONENTE DE MENU DE PERFIL REUTILIZÁVEL ---
+    function createProfileMenuHTML(user) {
+        const photoURL = user.photoURL || 'https://ssl.gstatic.com/images/branding/product/2x/avatar_circle_blue_96dp.png';
+        const userEmail = user.email || 'Nenhum e-mail';
+        return `
+            <div class="user-profile-trigger" id="profile-pic-trigger" title="Menu de Perfil"><img src="${photoURL}" alt="Foto de Perfil"></div>
+            <div class="profile-menu-dropdown" id="profile-menu-dropdown">
+                <div class="profile-menu-header">
+                    <div class="profile-pic-wrapper"><img src="${photoURL}" alt="Foto de Perfil" id="profile-pic-display"><input type="file" id="profile-pic-input" accept="image/*" style="display:none;"></div>
+                    <span id="user-email-display">${userEmail}</span>
+                </div>
+                <div class="profile-menu-body">
+                    <div class="control-group"><label>Tema</label><div class="button-container"><button id="menu-light-theme-btn" class="btn-sm">Claro</button><button id="menu-dark-theme-btn" class="btn-sm">Escuro</button></div></div>
+                    <div class="control-group"><label>Fundo</label><div class="button-container"><label for="menu-bg-input" class="btn-sm btn-primary" style="padding: 5px 10px;">Imagem</label><input type="file" id="menu-bg-input" accept="image/*" style="display:none;"><button id="menu-remove-bg-btn" class="btn-sm btn-danger">Remover</button></div></div>
+                    <div class="control-group"><label for="menu-opacity-slider">Opacidade</label><input type="range" id="menu-opacity-slider" min="0" max="1" step="0.05" style="max-width: 120px;"></div>
+                    <div class="control-group"><label for="menu-color-picker">Cor Fundo</label><input type="color" id="menu-color-picker" style="width: 40px; height: 25px; border: 1px solid #ccc; padding: 2px; background: transparent;"></div>
+                </div>
+                <div class="profile-menu-footer"><button id="logout-from-menu-btn" class="btn">Sair</button></div>
+            </div>`;
+    }
+    function setupProfileMenuEventListeners(user, userDocRef, styleDataObject, saveDataFunction) {
+        const auth = firebase.auth(), storage = firebase.storage();
+        const trigger = document.getElementById('profile-pic-trigger'), dropdown = document.getElementById('profile-menu-dropdown');
+        trigger.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('visible'); });
+        document.addEventListener('click', (e) => { if (!dropdown.contains(e.target) && !trigger.contains(e.target)) { dropdown.classList.remove('visible'); } });
+        document.getElementById('logout-from-menu-btn').addEventListener('click', () => auth.signOut());
+        const lightThemeBtn = document.getElementById('menu-light-theme-btn'), darkThemeBtn = document.getElementById('menu-dark-theme-btn'), colorPicker = document.getElementById('menu-color-picker'), opacitySlider = document.getElementById('menu-opacity-slider'), bgInput = document.getElementById('menu-bg-input'), removeBgBtn = document.getElementById('menu-remove-bg-btn');
+        if(styleDataObject.theme === 'dark-theme') { darkThemeBtn.classList.add('active'); lightThemeBtn.classList.remove('active'); } else { lightThemeBtn.classList.add('active'); darkThemeBtn.classList.remove('active'); }
+        colorPicker.value = styleDataObject.bgColor; opacitySlider.value = styleDataObject.bgOpacity;
+        lightThemeBtn.addEventListener('click', () => { styleDataObject.theme = 'light-theme'; saveDataFunction(); });
+        darkThemeBtn.addEventListener('click', () => { styleDataObject.theme = 'dark-theme'; saveDataFunction(); });
+        colorPicker.addEventListener('input', (e) => { styleDataObject.bgColor = e.target.value; saveDataFunction(); });
+        opacitySlider.addEventListener('input', (e) => { styleDataObject.bgOpacity = e.target.value; saveDataFunction(); });
+        removeBgBtn.addEventListener('click', () => { styleDataObject.bgImage = null; saveDataFunction(); });
+        bgInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (re) => { styleDataObject.bgImage = re.target.result; saveDataFunction(); }; reader.readAsDataURL(file); } });
+        const profilePicWrapper = document.querySelector('.profile-pic-wrapper'), profilePicInput = document.getElementById('profile-pic-input');
+        profilePicWrapper.addEventListener('click', () => profilePicInput.click());
+        profilePicInput.addEventListener('change', (e) => {
+            const file = e.target.files[0]; if (!file) return; if (file.size > 50 * 1024) { alert("A imagem é muito grande! Por favor, escolha um arquivo com menos de 50KB."); return; }
+            const uploadTask = storage.ref(`profile_pictures/${user.uid}`).put(file);
+            uploadTask.on('state_changed', null, (error) => { console.error("Erro no upload:", error); alert("Falha ao enviar imagem."); }, () => {
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    user.updateProfile({ photoURL: downloadURL }).then(() => {
+                        document.getElementById('profile-pic-display').src = downloadURL; document.querySelector('#profile-pic-trigger img').src = downloadURL;
+                    });
+                });
+            });
+        });
+    }
+    // --- FIM DO COMPONENTE DE MENU DE PERFIL REUTILIZÁVEL ---
 
+    function initializeSharedDataListener() {
+        if (unsubscribeListener) unsubscribeListener();
         unsubscribeListener = minigamesDocRef.onSnapshot(snapshot => {
-            // Sucesso: O usuário tem permissão para ler.
-            if (!snapshot.exists) {
-                console.error("O documento de minigames compartilhados não existe.");
-                document.getElementById('table-container').innerHTML = "<p style='color:red;padding:20px;text-align:center;'>Erro: O projeto de minigames não foi encontrado.</p>";
-                document.getElementById('project-title').textContent = "Projeto não encontrado";
-                return;
-            }
+            if (!snapshot.exists) { console.error("O documento de minigames compartilhados não existe."); document.getElementById('table-container').innerHTML = "<p style='color:red;padding:20px;text-align:center;'>Erro: O projeto de minigames não foi encontrado.</p>"; document.getElementById('project-title').textContent = "Projeto não encontrado"; return; }
             const data = snapshot.data();
-            minigameData = data.games || [];
-            projectName = data.projectName || "Projeto";
+            minigameData = data.games || []; projectName = data.projectName || "Projeto";
             initialDataState = JSON.stringify(minigameData);
             document.getElementById('project-title').textContent = projectName;
             updateAndRender();
-
         }, error => {
-            // Erro: Provavelmente falta de permissão.
             console.error("Erro no listener do Firestore:", error);
-            if (error.code === 'permission-denied') {
-                document.getElementById('project-title').textContent = "Acesso Negado";
-                document.getElementById('table-container').innerHTML = "<p style='color: var(--secondary-text-color); padding: 20px; text-align: center; font-size: 1.1em;'>Você não tem acesso a este projeto.<br>Peça para um membro existente convidá-lo usando o seu e-mail.</p>";
-                // Desabilita botões de ação
-                document.getElementById('show-add-item-modal-btn').disabled = true;
-                document.getElementById('import-json-input').disabled = true;
-            } else {
-                document.getElementById('project-title').textContent = "Falha ao Carregar";
-                document.getElementById('table-container').innerHTML = "<p style='color:red;padding:20px;text-align:center;'>Falha ao carregar dados. Verifique sua conexão.</p>";
-            }
+            if (error.code === 'permission-denied') { document.getElementById('project-title').textContent = "Acesso Negado"; document.getElementById('table-container').innerHTML = "<p style='color: var(--secondary-text-color); padding: 20px; text-align: center; font-size: 1.1em;'>Você não tem acesso a este projeto.<br>Peça para um membro existente convidá-lo usando o seu e-mail.</p>"; document.getElementById('show-add-item-modal-btn').disabled = true; document.getElementById('import-json-input').disabled = true;
+            } else { document.getElementById('project-title').textContent = "Falha ao Carregar"; document.getElementById('table-container').innerHTML = "<p style='color:red;padding:20px;text-align:center;'>Falha ao carregar dados. Verifique sua conexão.</p>"; }
         });
     }
 
-    // --- O RESTANTE DO CÓDIGO PERMANECE O MESMO ---
     const saveDataToFirebase = () => { if (isSaving) return; isSaving = true; minigamesDocRef.update({ projectName, games: minigameData }).then(() => { initialDataState = JSON.stringify(minigameData); }).catch(error => console.error("Erro ao salvar:", error)).finally(() => { isSaving = false; }); };
-    async function loadAndApplyGlobalStyle() { if (!userStyleDocRef) return; try { const doc = await userStyleDocRef.get(); if (doc.exists && doc.data().styleData) { const style = doc.data().styleData; document.body.className = ''; document.body.classList.add(style.theme || 'light-theme'); document.body.style.backgroundColor = style.bgColor; document.documentElement.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none'); document.documentElement.style.setProperty('--bg-opacity', style.bgOpacity || '1'); } } catch (e) { console.error("Falha ao carregar estilos:", e); } }
+    
+    async function loadAndApplyGlobalStyle(user) { 
+        if (!userStyleDocRef) return; 
+        try { 
+            const doc = await userStyleDocRef.get(); 
+            let styleData;
+            if (doc.exists && doc.data().styleData) { 
+                styleData = doc.data().styleData; 
+            } else {
+                 styleData = { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' };
+            }
+            document.body.className = ''; document.body.classList.add(styleData.theme || 'light-theme');
+            document.body.style.backgroundColor = styleData.bgColor;
+            document.documentElement.style.setProperty('--bg-image', styleData.bgImage ? `url('${styleData.bgImage}')` : 'none');
+            document.documentElement.style.setProperty('--bg-opacity', styleData.bgOpacity || '1');
+            
+            setupProfileMenuEventListeners(user, userStyleDocRef, styleData, async () => {
+                await userStyleDocRef.set({ styleData }, { merge: true });
+                loadAndApplyGlobalStyle(user);
+            });
+        } catch (e) { console.error("Falha ao carregar estilos:", e); } 
+    }
+    
     const hasUnsavedChanges = () => JSON.stringify(minigameData) !== initialDataState;
     const updateAndRender = (doSave = false) => { filterAndRender(); if(doSave) saveDataToFirebase(); };
     const updateContainerPadding = () => { const header = document.querySelector('.main-header'), container = document.querySelector('.container'); if (header && container) container.style.paddingTop = `${header.offsetHeight + 20}px`; };
@@ -163,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('delete-selected-btn').addEventListener('click', () => { if (selectedItems.size === 0 || !confirm(`Excluir ${selectedItems.size} item(ns)?`)) return; minigameData = minigameData.filter((_, index) => !selectedItems.has(index)); selectedItems.clear(); document.getElementById('select-all-checkbox').checked = false; updateBulkActionsVisibility(); updateAndRender(true); });
         document.getElementById('select-all-checkbox').addEventListener('change', (e) => { selectedItems.clear(); const isChecked = e.target.checked; document.querySelectorAll('#minigames-tbody .select-checkbox').forEach(cb => { cb.checked = isChecked; if(isChecked) selectedItems.add(parseInt(cb.dataset.index, 10)); cb.closest('tr').classList.toggle('selected-row', isChecked); }); updateBulkActionsVisibility(); });
         document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges() && !confirm("Sair e perder alterações não salvas?")) e.preventDefault(); });
-        document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
         document.getElementById('invite-friend-btn').addEventListener('click', () => { const email = prompt("Digite o e-mail do amigo que você quer convidar para este projeto:"); if (!email) return; const inviteFunction = functions.httpsCallable('inviteUserToDocument'); inviteFunction({ targetEmail: email, docPath: 'sharedData/sharedMinigames' }).then(result => alert(result.data.result)).catch(error => alert(`Erro: ${error.message}`)); });
         window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; } });
         window.addEventListener('resize', updateContainerPadding); window.addEventListener('scroll', handleHeaderScroll);

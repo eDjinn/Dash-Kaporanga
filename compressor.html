@@ -4,197 +4,64 @@
     <title>Compressor de Imagens PNG</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Biblioteca de compressão de imagem -->
+    <!-- Scripts do Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-storage-compat.js"></script>
+    <!-- Outras bibliotecas -->
     <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-    <!-- Biblioteca para criar arquivos .zip -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
-        /* ⭐️ INÍCIO DA SEÇÃO DE ESTILO HERDADA ⭐️ */
-        :root {
-            --primary-text-color: #1a2533;
-            --secondary-text-color: #6c757d;
-            --page-bg-color: #f4f7f9;
-            --card-bg-color: rgba(255, 255, 255, 0.92);
-            --card-shadow-color: rgba(0, 0, 0, 0.1);
-            --accent-color: #007bff;
-            --success-color: #28a745;
-            --bg-image: none;
-            --bg-opacity: 1;
-        }
-        body.dark-theme {
-            --primary-text-color: #e0e0e0;
-            --secondary-text-color: #b0b0b0;
-            --page-bg-color: #121212;
-            --card-bg-color: rgba(40, 40, 40, 0.92);
-            --card-shadow-color: rgba(0, 0, 0, 0.4);
-            --accent-color: #4dabf7;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--page-bg-color);
-            color: var(--primary-text-color);
-            margin: 0;
-            padding: 0;
-            position: relative;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            padding-top: 80px; /* Espaço para o header fixo */
-        }
-        body::before {
-            content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1; background-image: var(--bg-image); background-size: cover;
-            background-position: center; background-repeat: no-repeat;
-            opacity: var(--bg-opacity); transition: opacity 0.3s ease, background-image 0.5s ease-in-out;
-        }
-        /* ⭐️ FIM DA SEÇÃO DE ESTILO HERDADA ⭐️ */
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .main-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: var(--card-bg-color);
-            box-shadow: 0 2px 4px var(--card-shadow-color);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .header-left-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .main-header h1 {
-            margin: 0;
-            font-size: 1.5em;
-        }
-        .btn {
-            padding: 8px 15px;
-            border-radius: 4px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s, opacity 0.2s;
-            color: white;
-            text-decoration: none;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            flex-shrink: 0;
-        }
-        .btn-secondary { background-color: #6c757d; }
-        .btn-primary { background-color: var(--accent-color); }
-        .btn-success { background-color: var(--success-color); }
-        .btn-danger { background-color: #dc3545; }
-        #back-btn {
-            width: 40px;
-            height: 40px;
-            padding: 0;
-            border-radius: 50%;
-        }
-        #back-btn svg {
-            width: 22px;
-            height: 22px;
-        }
-        #upload-container {
-            text-align: center;
-            border: 3px dashed var(--accent-color);
-            padding: 50px 20px;
-            margin-bottom: 20px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: background-color 0.3s, border-color 0.3s;
-            background-color: var(--card-bg-color); /* Aplicando variável de tema */
-        }
-        #upload-container.dragover {
-            background-color: #e6f2ff;
-            border-color: #0056b3;
-        }
-        #file-input { display: none; }
-        #preview-area {
-            display: none;
-            margin-bottom: 20px;
-        }
-        #preview-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 10px;
-        }
-        .preview-item {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: white;
-        }
-        .options-panel {
-            background-color: var(--card-bg-color); /* Aplicando variável de tema */
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px var(--card-shadow-color); /* Aplicando variável de tema */
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        #compress-btn {
-            width: 100%;
-            font-size: 18px;
-            padding: 12px;
-            margin-top: 15px;
-        }
-        #compress-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
+        :root { --primary-text-color: #1a2533; --secondary-text-color: #6c757d; --page-bg-color: #f4f7f9; --card-bg-color: rgba(255, 255, 255, 0.92); --card-shadow-color: rgba(0, 0, 0, 0.1); --accent-color: #007bff; --success-color: #28a745; --bg-image: none; --bg-opacity: 1; }
+        body.dark-theme { --primary-text-color: #e0e0e0; --secondary-text-color: #b0b0b0; --page-bg-color: #121212; --card-bg-color: rgba(40, 40, 40, 0.92); --card-shadow-color: rgba(0, 0, 0, 0.4); --accent-color: #4dabf7; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--page-bg-color); color: var(--primary-text-color); margin: 0; padding: 0; position: relative; transition: background-color 0.3s ease, color 0.3s ease; padding-top: 80px; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background-image: var(--bg-image); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: var(--bg-opacity); transition: opacity 0.3s ease, background-image 0.5s ease-in-out; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .main-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: var(--card-bg-color); box-shadow: 0 2px 4px var(--card-shadow-color); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; }
+        .header-left-group { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; flex-grow: 1; }
+        .main-header h1 { margin: 0; font-size: 1.5em; }
+        .btn { padding: 8px 15px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s, opacity 0.2s; color: white; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; flex-shrink: 0; }
+        .btn-secondary { background-color: #6c757d; } .btn-primary { background-color: var(--accent-color); } .btn-success { background-color: var(--success-color); } .btn-danger { background-color: #dc3545; }
+        #back-btn { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
+        #back-btn svg { width: 22px; height: 22px; }
+        #upload-container { text-align: center; border: 3px dashed var(--accent-color); padding: 50px 20px; margin-bottom: 20px; cursor: pointer; border-radius: 8px; transition: background-color 0.3s, border-color 0.3s; background-color: var(--card-bg-color); }
+        #upload-container.dragover { background-color: #e6f2ff; border-color: #0056b3; }
+        #file-input { display: none; } #preview-area { display: none; margin-bottom: 20px; }
+        #preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
+        .preview-item { width: 80px; height: 80px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; background-color: white; }
+        .options-panel { background-color: var(--card-bg-color); padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px var(--card-shadow-color); margin-bottom: 20px; text-align: center; }
+        #compress-btn { width: 100%; font-size: 18px; padding: 12px; margin-top: 15px; }
+        #compress-btn:disabled { background-color: #ccc; cursor: not-allowed; }
         #quality-slider { width: 100%; cursor: pointer; }
         #quality-value { font-weight: bold; color: var(--accent-color); }
-        #results-area {
-            display: none;
-            margin-top: 30px;
-        }
-        #results-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .result-card {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background-color: var(--card-bg-color); /* Aplicando variável de tema */
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px var(--card-shadow-color); /* Aplicando variável de tema */
-            margin-bottom: 10px;
-        }
-        .result-thumbnail {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
+        #results-area { display: none; margin-top: 30px; }
+        #results-actions { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 15px; }
+        .result-card { display: flex; align-items: center; gap: 15px; background-color: var(--card-bg-color); padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px var(--card-shadow-color); margin-bottom: 10px; }
+        .result-thumbnail { width: 60px; height: 60px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; }
         .result-info { flex-grow: 1; }
-        .result-info .file-name {
-            font-weight: bold;
-            word-break: break-all;
-            display: block;
-            margin-bottom: 5px;
-        }
-        .result-info .size-reduction {
-            color: var(--success-color);
-            font-weight: bold;
-        }
+        .result-info .file-name { font-weight: bold; word-break: break-all; display: block; margin-bottom: 5px; }
+        .result-info .size-reduction { color: var(--success-color); font-weight: bold; }
+
+        /* --- ESTILOS DO MENU DE PERFIL DO USUÁRIO --- */
+        #user-profile-menu-container { position: relative; margin-left: 15px; }
+        .user-profile-trigger { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 2px solid var(--accent-color); padding: 2px; background-color: var(--card-bg-color); }
+        .user-profile-trigger img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .profile-menu-dropdown { display: none; position: absolute; top: calc(100% + 10px); right: 0; background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 8px 16px var(--card-shadow-color); z-index: 2000; width: 300px; border: 1px solid rgba(128,128,128,0.2); }
+        .profile-menu-dropdown.visible { display: block; }
+        .profile-menu-header { display: flex; flex-direction: column; align-items: center; padding: 20px; border-bottom: 1px solid rgba(128,128,128,0.1); }
+        .profile-menu-header .profile-pic-wrapper { position: relative; cursor: pointer; }
+        .profile-menu-header .profile-pic-wrapper:hover::after { content: '✏️'; position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.6); color: white; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; }
+        .profile-menu-header img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid var(--accent-color); }
+        .profile-menu-header #user-email-display { font-size: 0.9em; color: var(--secondary-text-color); word-break: break-all; }
+        .profile-menu-body { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        .profile-menu-body .control-group { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .profile-menu-body label { font-weight: 500; font-size: 0.95em; }
+        .profile-menu-body .button-container { display: flex; gap: 8px; }
+        .profile-menu-body .btn-sm { padding: 5px 10px; font-size: 12px; border: 1px solid var(--secondary-text-color); background: transparent; color: var(--primary-text-color); cursor: pointer; border-radius: 3px; }
+        .profile-menu-body .btn-sm.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
+        .profile-menu-footer { padding: 15px; border-top: 1px solid rgba(128,128,128,0.1); display: flex; justify-content: center; }
+        #logout-from-menu-btn { width: 100%; background-color: #dc3545; color: white; border: none; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold;}
     </style>
 </head>
 <body>
@@ -208,6 +75,7 @@
             </a>
             <h1>Compressor de PNG</h1>
         </div>
+        <div id="user-profile-menu-container"></div>
     </header>
 
     <div class="container">
@@ -240,13 +108,8 @@
         </div>
     </div>
 
-    <!-- Scripts do Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // --- LÓGICA HERDADA PARA ESTILO GLOBAL ---
     const firebaseConfig = {
         apiKey: "AIzaSyC9OjBDOX9UUlCrPuhIZj5ipolRT4Gu420",
         authDomain: "gerenciadorcentral-f01e3.firebaseapp.com",
@@ -255,188 +118,202 @@ document.addEventListener('DOMContentLoaded', () => {
         messagingSenderId: "8874050225",
         appId: "1:8874050225:web:a536c7feb14f36af7cd890"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const styleDocRef = db.collection('settings').doc('main-dashboard');
+    const auth = firebase.auth();
+
+    let userDocRef;
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            userDocRef = db.collection('userData').doc(user.uid);
+            const menuContainer = document.getElementById('user-profile-menu-container');
+            if(menuContainer) menuContainer.innerHTML = createProfileMenuHTML(user);
+            loadAndApplyGlobalStyle(user);
+            initializeCompressor();
+        } else {
+            window.location.href = 'login.html';
+        }
+    });
+
+    // --- INÍCIO DO COMPONENTE DE MENU DE PERFIL REUTILIZÁVEL ---
+    function createProfileMenuHTML(user) {
+        const photoURL = user.photoURL || 'https://ssl.gstatic.com/images/branding/product/2x/avatar_circle_blue_96dp.png';
+        const userEmail = user.email || 'Nenhum e-mail';
+        return `
+            <div class="user-profile-trigger" id="profile-pic-trigger" title="Menu de Perfil"><img src="${photoURL}" alt="Foto de Perfil"></div>
+            <div class="profile-menu-dropdown" id="profile-menu-dropdown">
+                <div class="profile-menu-header">
+                    <div class="profile-pic-wrapper"><img src="${photoURL}" alt="Foto de Perfil" id="profile-pic-display"><input type="file" id="profile-pic-input" accept="image/*" style="display:none;"></div>
+                    <span id="user-email-display">${userEmail}</span>
+                </div>
+                <div class="profile-menu-body">
+                    <div class="control-group"><label>Tema</label><div class="button-container"><button id="menu-light-theme-btn" class="btn-sm">Claro</button><button id="menu-dark-theme-btn" class="btn-sm">Escuro</button></div></div>
+                    <div class="control-group"><label>Fundo</label><div class="button-container"><label for="menu-bg-input" class="btn-sm btn-primary" style="padding: 5px 10px;">Imagem</label><input type="file" id="menu-bg-input" accept="image/*" style="display:none;"><button id="menu-remove-bg-btn" class="btn-sm btn-danger">Remover</button></div></div>
+                    <div class="control-group"><label for="menu-opacity-slider">Opacidade</label><input type="range" id="menu-opacity-slider" min="0" max="1" step="0.05" style="max-width: 120px;"></div>
+                    <div class="control-group"><label for="menu-color-picker">Cor Fundo</label><input type="color" id="menu-color-picker" style="width: 40px; height: 25px; border: 1px solid #ccc; padding: 2px; background: transparent;"></div>
+                </div>
+                <div class="profile-menu-footer"><button id="logout-from-menu-btn" class="btn">Sair</button></div>
+            </div>`;
+    }
+    function setupProfileMenuEventListeners(user, userDocRef, styleDataObject, saveDataFunction) {
+        const auth = firebase.auth(), storage = firebase.storage();
+        const trigger = document.getElementById('profile-pic-trigger'), dropdown = document.getElementById('profile-menu-dropdown');
+        trigger.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('visible'); });
+        document.addEventListener('click', (e) => { if (!dropdown.contains(e.target) && !trigger.contains(e.target)) { dropdown.classList.remove('visible'); } });
+        document.getElementById('logout-from-menu-btn').addEventListener('click', () => auth.signOut());
+        const lightThemeBtn = document.getElementById('menu-light-theme-btn'), darkThemeBtn = document.getElementById('menu-dark-theme-btn'), colorPicker = document.getElementById('menu-color-picker'), opacitySlider = document.getElementById('menu-opacity-slider'), bgInput = document.getElementById('menu-bg-input'), removeBgBtn = document.getElementById('menu-remove-bg-btn');
+        if(styleDataObject.theme === 'dark-theme') { darkThemeBtn.classList.add('active'); lightThemeBtn.classList.remove('active'); } else { lightThemeBtn.classList.add('active'); darkThemeBtn.classList.remove('active'); }
+        colorPicker.value = styleDataObject.bgColor; opacitySlider.value = styleDataObject.bgOpacity;
+        lightThemeBtn.addEventListener('click', () => { styleDataObject.theme = 'light-theme'; saveDataFunction(); });
+        darkThemeBtn.addEventListener('click', () => { styleDataObject.theme = 'dark-theme'; saveDataFunction(); });
+        colorPicker.addEventListener('input', (e) => { styleDataObject.bgColor = e.target.value; saveDataFunction(); });
+        opacitySlider.addEventListener('input', (e) => { styleDataObject.bgOpacity = e.target.value; saveDataFunction(); });
+        removeBgBtn.addEventListener('click', () => { styleDataObject.bgImage = null; saveDataFunction(); });
+        bgInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (re) => { styleDataObject.bgImage = re.target.result; saveDataFunction(); }; reader.readAsDataURL(file); } });
+        const profilePicWrapper = document.querySelector('.profile-pic-wrapper'), profilePicInput = document.getElementById('profile-pic-input');
+        profilePicWrapper.addEventListener('click', () => profilePicInput.click());
+        profilePicInput.addEventListener('change', (e) => {
+            const file = e.target.files[0]; if (!file) return; if (file.size > 50 * 1024) { alert("A imagem é muito grande! Por favor, escolha um arquivo com menos de 50KB."); return; }
+            const uploadTask = storage.ref(`profile_pictures/${user.uid}`).put(file);
+            uploadTask.on('state_changed', null, (error) => { console.error("Erro no upload:", error); alert("Falha ao enviar imagem."); }, () => {
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    user.updateProfile({ photoURL: downloadURL }).then(() => {
+                        document.getElementById('profile-pic-display').src = downloadURL; document.querySelector('#profile-pic-trigger img').src = downloadURL;
+                    });
+                });
+            });
+        });
+    }
+    // --- FIM DO COMPONENTE DE MENU DE PERFIL REUTILIZÁVEL ---
     
-    async function loadAndApplyGlobalStyle() {
+    async function loadAndApplyGlobalStyle(user) {
+        if (!userDocRef) return;
         try {
-            const doc = await styleDocRef.get();
+            const doc = await userDocRef.get();
+            let styleData;
             if (doc.exists && doc.data().styleData) {
-                const style = doc.data().styleData;
-                const body = document.body, root = document.documentElement;
-                body.className = ''; body.classList.add(style.theme || 'light-theme');
-                body.style.backgroundColor = style.bgColor;
-                root.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none');
-                root.style.setProperty('--bg-opacity', style.bgOpacity || '1');
+                styleData = doc.data().styleData;
+            } else {
+                styleData = { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' };
             }
+            const body = document.body, root = document.documentElement;
+            body.className = ''; body.classList.add(styleData.theme || 'light-theme');
+            body.style.backgroundColor = styleData.bgColor;
+            root.style.setProperty('--bg-image', styleData.bgImage ? `url('${styleData.bgImage}')` : 'none');
+            root.style.setProperty('--bg-opacity', styleData.bgOpacity || '1');
+            
+            setupProfileMenuEventListeners(user, userDocRef, styleData, async () => {
+                await userDocRef.set({ styleData }, { merge: true });
+                loadAndApplyGlobalStyle(user); // Recarrega para aplicar mudanças
+            });
         } catch (e) { console.error("Não foi possível carregar estilos do Firebase.", e); }
     }
-    // --- FIM DA LÓGICA HERDADA ---
 
-    // --- Elementos do DOM ---
-    const fileInput = document.getElementById('file-input');
-    const uploadContainer = document.getElementById('upload-container');
-    const qualitySlider = document.getElementById('quality-slider');
-    const qualityValue = document.getElementById('quality-value');
-    const compressBtn = document.getElementById('compress-btn');
-    const resultsArea = document.getElementById('results-area');
-    const resultsList = document.getElementById('results-list');
-    const downloadAllBtn = document.getElementById('download-all-btn');
-    const clearResultsBtn = document.getElementById('clear-results-btn');
-    const previewArea = document.getElementById('preview-area');
-    const previewGrid = document.getElementById('preview-grid');
+    function initializeCompressor() {
+        const fileInput = document.getElementById('file-input');
+        const uploadContainer = document.getElementById('upload-container');
+        const qualitySlider = document.getElementById('quality-slider');
+        const qualityValue = document.getElementById('quality-value');
+        const compressBtn = document.getElementById('compress-btn');
+        const resultsArea = document.getElementById('results-area');
+        const resultsList = document.getElementById('results-list');
+        const downloadAllBtn = document.getElementById('download-all-btn');
+        const clearResultsBtn = document.getElementById('clear-results-btn');
+        const previewArea = document.getElementById('preview-area');
+        const previewGrid = document.getElementById('preview-grid');
 
-    // --- Variáveis de estado ---
-    let filesToProcess = [];
-    let compressedFiles = [];
+        let filesToProcess = [];
+        let compressedFiles = [];
 
-    // --- Funções ---
-    const handleFiles = (fileList) => {
-        const pngFiles = Array.from(fileList).filter(file => file.type === 'image/png');
-        if (pngFiles.length === 0) {
-            alert("Nenhum arquivo PNG válido foi selecionado.");
-            return;
-        }
-        filesToProcess = pngFiles;
-        compressBtn.disabled = false;
-        resultsArea.style.display = 'none';
-        resultsList.innerHTML = '';
-        compressedFiles = [];
-        updatePreview();
-    };
-
-    const updatePreview = () => {
-        previewGrid.innerHTML = '';
-        if (filesToProcess.length === 0) {
-            previewArea.style.display = 'none';
-            return;
-        }
-        filesToProcess.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.title = file.name;
-                img.className = 'preview-item';
-                previewGrid.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
-        previewArea.style.display = 'block';
-    };
-
-    const formatBytes = (bytes, decimals = 2) => {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const dm = decimals < 0 ? 0 : decimals;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-    };
-    
-    const createResultCard = (originalFile, compressedBlob) => {
-        const originalSize = originalFile.size;
-        const compressedSize = compressedBlob.size;
-        const reduction = (((originalSize - compressedSize) / originalSize) * 100).toFixed(2);
-        const compressedUrl = URL.createObjectURL(compressedBlob);
-        
-        const card = document.createElement('div');
-        card.className = 'result-card';
-        card.innerHTML = `
-            <img src="${compressedUrl}" class="result-thumbnail" alt="Miniatura de ${originalFile.name}">
-            <div class="result-info">
-                <span class="file-name">${originalFile.name}</span>
-                <span>${formatBytes(originalSize)} → ${formatBytes(compressedSize)}</span>
-                <span class="size-reduction">Redução de ${reduction}%</span>
-            </div>
-            <a href="${compressedUrl}" download="comprimido_${originalFile.name}" class="btn btn-primary">Baixar</a>`;
-        resultsList.appendChild(card);
-    };
-
-    const processImages = async () => {
-        if (filesToProcess.length === 0) return;
-
-        compressBtn.disabled = true;
-        compressBtn.textContent = 'Comprimindo...';
-        resultsArea.style.display = 'none';
-        resultsList.innerHTML = '';
-        compressedFiles = [];
-
-        const options = {
-            maxSizeMB: Infinity,
-            useWebWorker: true,
-            initialQuality: parseFloat(qualitySlider.value),
-            fileType: 'image/png'
+        const handleFiles = (fileList) => {
+            const pngFiles = Array.from(fileList).filter(file => file.type === 'image/png');
+            if (pngFiles.length === 0) { alert("Nenhum arquivo PNG válido foi selecionado."); return; }
+            filesToProcess = pngFiles;
+            compressBtn.disabled = false;
+            resultsArea.style.display = 'none';
+            resultsList.innerHTML = '';
+            compressedFiles = [];
+            updatePreview();
         };
 
-        for (const [index, file] of filesToProcess.entries()) {
-            compressBtn.textContent = `Comprimindo... (${index + 1}/${filesToProcess.length})`;
-            try {
-                const compressedResult = await imageCompression(file, options);
-                compressedFiles.push({ name: `comprimido_${file.name}`, blob: compressedResult });
-                createResultCard(file, compressedResult);
-            } catch (error) {
-                console.error(`Falha ao comprimir ${file.name}:`, error);
-                alert(`Ocorreu um erro ao comprimir o arquivo ${file.name}.`);
+        const updatePreview = () => {
+            previewGrid.innerHTML = '';
+            if (filesToProcess.length === 0) { previewArea.style.display = 'none'; return; }
+            filesToProcess.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result; img.title = file.name; img.className = 'preview-item';
+                    previewGrid.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+            previewArea.style.display = 'block';
+        };
+
+        const formatBytes = (bytes, decimals = 2) => {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024; const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        };
+        
+        const createResultCard = (originalFile, compressedBlob) => {
+            const originalSize = originalFile.size, compressedSize = compressedBlob.size;
+            const reduction = (((originalSize - compressedSize) / originalSize) * 100).toFixed(2);
+            const compressedUrl = URL.createObjectURL(compressedBlob);
+            const card = document.createElement('div');
+            card.className = 'result-card';
+            card.innerHTML = `<img src="${compressedUrl}" class="result-thumbnail" alt="Miniatura de ${originalFile.name}"><div class="result-info"><span class="file-name">${originalFile.name}</span><span>${formatBytes(originalSize)} → ${formatBytes(compressedSize)}</span><span class="size-reduction">Redução de ${reduction}%</span></div><a href="${compressedUrl}" download="comprimido_${originalFile.name}" class="btn btn-primary">Baixar</a>`;
+            resultsList.appendChild(card);
+        };
+
+        const processImages = async () => {
+            if (filesToProcess.length === 0) return;
+            compressBtn.disabled = true; compressBtn.textContent = 'Comprimindo...';
+            resultsArea.style.display = 'none'; resultsList.innerHTML = ''; compressedFiles = [];
+            const options = { maxSizeMB: Infinity, useWebWorker: true, initialQuality: parseFloat(qualitySlider.value), fileType: 'image/png' };
+            for (const [index, file] of filesToProcess.entries()) {
+                compressBtn.textContent = `Comprimindo... (${index + 1}/${filesToProcess.length})`;
+                try {
+                    const compressedResult = await imageCompression(file, options);
+                    compressedFiles.push({ name: `comprimido_${file.name}`, blob: compressedResult });
+                    createResultCard(file, compressedResult);
+                } catch (error) { console.error(`Falha ao comprimir ${file.name}:`, error); alert(`Ocorreu um erro ao comprimir o arquivo ${file.name}.`); }
             }
-        }
+            compressBtn.textContent = 'Comprimir PNGs';
+            compressBtn.disabled = filesToProcess.length === 0;
+            if (compressedFiles.length > 0) { resultsArea.style.display = 'block'; }
+        };
 
-        compressBtn.textContent = 'Comprimir PNGs';
-        compressBtn.disabled = filesToProcess.length === 0;
-        if (compressedFiles.length > 0) {
-            resultsArea.style.display = 'block';
-        }
-    };
+        const clearAll = () => {
+            filesToProcess = []; compressedFiles = []; fileInput.value = '';
+            resultsArea.style.display = 'none'; resultsList.innerHTML = '';
+            previewArea.style.display = 'none'; previewGrid.innerHTML = '';
+            compressBtn.disabled = true;
+        };
 
-    const clearAll = () => {
-        filesToProcess = [];
-        compressedFiles = [];
-        fileInput.value = '';
-        
-        resultsArea.style.display = 'none';
-        resultsList.innerHTML = '';
-        previewArea.style.display = 'none';
-        previewGrid.innerHTML = '';
-        
-        compressBtn.disabled = true;
-    };
-
-    // --- Event Listeners ---
-    qualitySlider.addEventListener('input', (e) => {
-        qualityValue.textContent = parseFloat(e.target.value).toFixed(2);
-    });
-    uploadContainer.addEventListener('click', () => fileInput.click());
-    uploadContainer.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadContainer.classList.add('dragover');
-    });
-    uploadContainer.addEventListener('dragleave', () => uploadContainer.classList.remove('dragover'));
-    uploadContainer.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadContainer.classList.remove('dragover');
-        handleFiles(e.dataTransfer.files);
-    });
-    fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
-    compressBtn.addEventListener('click', processImages);
-    downloadAllBtn.addEventListener('click', () => {
-        if (compressedFiles.length === 0) return;
-        const zip = new JSZip();
-        compressedFiles.forEach(file => zip.file(file.name, file.blob));
-        zip.generateAsync({ type: "blob" }).then(content => {
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(content);
-            link.download = "imagens_png_comprimidas.zip";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        qualitySlider.addEventListener('input', (e) => { qualityValue.textContent = parseFloat(e.target.value).toFixed(2); });
+        uploadContainer.addEventListener('click', () => fileInput.click());
+        uploadContainer.addEventListener('dragover', (e) => { e.preventDefault(); uploadContainer.classList.add('dragover'); });
+        uploadContainer.addEventListener('dragleave', () => uploadContainer.classList.remove('dragover'));
+        uploadContainer.addEventListener('drop', (e) => { e.preventDefault(); uploadContainer.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+        compressBtn.addEventListener('click', processImages);
+        downloadAllBtn.addEventListener('click', () => {
+            if (compressedFiles.length === 0) return;
+            const zip = new JSZip();
+            compressedFiles.forEach(file => zip.file(file.name, file.blob));
+            zip.generateAsync({ type: "blob" }).then(content => {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content); link.download = "imagens_png_comprimidas.zip";
+                document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            });
         });
-    });
-    clearResultsBtn.addEventListener('click', clearAll);
-
-    // Inicializa o carregamento do estilo global
-    loadAndApplyGlobalStyle();
+        clearResultsBtn.addEventListener('click', clearAll);
+    }
 });
 </script>
 </body>
