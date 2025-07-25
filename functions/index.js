@@ -16,7 +16,7 @@ exports.inviteUserToDocument = functions.https.onCall(async (data, context) => {
   if (!targetEmail || !docPath) {
     throw new functions.https.HttpsError(
       "invalid-argument",
-      "É necessário fornecer o e-mail e o caminho do documento."
+      "É necessário fornecer o e-mail do usuário e o caminho do documento."
     );
   }
 
@@ -24,31 +24,42 @@ exports.inviteUserToDocument = functions.https.onCall(async (data, context) => {
   const docRef = db.doc(docPath);
   const callerUid = context.auth.uid;
 
-  // 2. Verifica se o chamador tem permissão para convidar (se ele já está na lista).
-  const docSnap = await docRef.get();
-  if (!docSnap.exists || !docSnap.data().allowedUsers.includes(callerUid)) {
-    throw new functions.https.HttpsError(
-      "permission-denied",
-      "Você não tem permissão para convidar usuários para este documento."
-    );
-  }
-
   try {
-    // 3. Busca o UID do usuário pelo e-mail fornecido.
+    // 2. Busca o UID do usuário pelo e-mail fornecido.
     const targetUser = await admin.auth().getUserByEmail(targetEmail);
     const targetUid = targetUser.uid;
 
-    // 4. Adiciona o UID do novo usuário ao array, sem duplicatas.
+    const docSnap = await docRef.get();
+
+    // 3. Se o documento NÃO EXISTIR, crie-o com o chamador e o alvo na lista.
+    if (!docSnap.exists) {
+      await docRef.set({
+        allowedUsers: [callerUid, targetUid]
+      });
+      return { result: `Documento criado e usuário ${targetEmail} convidado com sucesso.` };
+    }
+
+    // 4. Se o documento EXISTIR, verifique se o chamador tem permissão.
+    const docData = docSnap.data();
+    if (!docData.allowedUsers || !docData.allowedUsers.includes(callerUid)) {
+      throw new functions.https.HttpsError(
+        "permission-denied",
+        "Você não tem permissão para convidar usuários para este documento."
+      );
+    }
+
+    // 5. Adiciona o UID do novo usuário ao array, sem duplicatas.
     await docRef.update({
       allowedUsers: admin.firestore.FieldValue.arrayUnion(targetUid),
     });
 
     return { result: `Usuário ${targetEmail} convidado com sucesso.` };
+
   } catch (error) {
-    // Trata o erro se o e-mail não for encontrado.
     if (error.code === "auth/user-not-found") {
       throw new functions.https.HttpsError("not-found", `O usuário com o e-mail ${targetEmail} não foi encontrado.`);
     }
-    throw new functions.https.HttpsError("internal", "Ocorreu um erro ao processar sua solicitação.");
+    console.error("Erro na Cloud Function:", error);
+    throw new functions.https.HttpsError("internal", "Ocorreu um erro interno ao processar sua solicitação.");
   }
 });

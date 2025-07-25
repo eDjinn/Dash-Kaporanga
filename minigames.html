@@ -18,8 +18,7 @@
         .header-left-group, .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .main-header h1 { margin: 0; font-size: 1.5em; }
         .header-actions .btn { flex-shrink: 0; }
-        #bulk-actions-container { display: none; }
-        #bulk-actions-container.visible { display: flex; align-items: center; gap: 10px; }
+        #bulk-actions-container { display: none; } #bulk-actions-container.visible { display: flex; align-items: center; gap: 10px; }
         .btn { border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s; color: white; text-align: center; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; padding: 8px 15px; font-size: 14px; }
         .btn-sm { padding: 5px 10px; font-size: 12px; }
         .btn-success { background-color: #28a745; } .btn-info { background-color: #17a2b8; } .btn-primary { background-color: var(--accent-color); } .btn-secondary { background-color: #6c757d; } .btn-danger { background-color: #dc3545; }
@@ -45,20 +44,13 @@
         .table-thumb { max-width: 80px; max-height: 45px; border-radius: 4px; object-fit: cover; background-color: #eee; }
         fieldset { border: 1px solid #ccc; border-radius: 4px; padding: 15px; margin: 15px 0; }
         legend { font-weight: bold; padding: 0 10px; color: var(--accent-color); font-size: 1.1em;}
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .form-grid-full { grid-column: 1 / -1; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } .form-grid-full { grid-column: 1 / -1; }
         .checkbox-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .curiosity-entry { border: 1px solid #ddd; border-radius: 4px; padding: 15px; margin-top: 10px; display: grid; grid-template-columns: 1fr 200px; gap: 15px; align-items: flex-start; }
-        .curiosity-text-area { display: flex; flex-direction: column; }
-        .curiosity-char-counter { text-align: right; font-size: 0.8em; color: var(--secondary-text-color); margin-top: 5px; }
+        .curiosity-text-area { display: flex; flex-direction: column; } .curiosity-char-counter { text-align: right; font-size: 0.8em; color: var(--secondary-text-color); margin-top: 5px; }
         .curiosity-image-area { display: flex; flex-direction: column; align-items: center; gap: 10px; }
         .curiosity-preview { width: 100%; max-width: 200px; height: 112px; border: 2px dashed #ccc; border-radius: 4px; object-fit: cover; background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; color: var(--secondary-text-color); font-size: 0.9em; }
-        @media (max-width: 768px) {
-            .container { padding: 10px; } .header-left-group { flex-grow: 1; } .form-grid, .curiosity-entry { grid-template-columns: 1fr; } .curiosity-image-area { margin-top: 10px; } .header-scrolled #primary-actions-container, #bulk-actions-container.visible ~ #primary-actions-container { overflow: hidden; opacity: 0; max-height: 0; }
-            table { min-width: 0; table-layout: auto; } th, td { padding: 10px 5px; }
-            thead th:nth-child(1), tbody td:nth-child(1) { width: 8%; text-align: center; } thead th:nth-child(2), tbody td:nth-child(2) { width: 25%; } thead th:nth-child(3), tbody td:nth-child(3) { width: auto; } thead th:nth-child(7), tbody td:nth-child(7) { width: 10%; text-align: center; }
-            thead th:nth-child(4), tbody td:nth-child(4), thead th:nth-child(5), tbody td:nth-child(5), thead th:nth-child(6), tbody td:nth-child(6) { display: none; }
-        }
+        @media (max-width: 768px) { .container { padding: 10px; } .header-left-group { flex-grow: 1; } .form-grid, .curiosity-entry { grid-template-columns: 1fr; } .curiosity-image-area { margin-top: 10px; } .header-scrolled #primary-actions-container, #bulk-actions-container.visible ~ #primary-actions-container { overflow: hidden; opacity: 0; max-height: 0; } table { min-width: 0; table-layout: auto; } th, td { padding: 10px 5px; } thead th:nth-child(1), tbody td:nth-child(1) { width: 8%; text-align: center; } thead th:nth-child(2), tbody td:nth-child(2) { width: 25%; } thead th:nth-child(3), tbody td:nth-child(3) { width: auto; } thead th:nth-child(7), tbody td:nth-child(7) { width: 10%; text-align: center; } thead th:nth-child(4), tbody td:nth-child(4), thead th:nth-child(5), tbody td:nth-child(5), thead th:nth-child(6), tbody td:nth-child(6) { display: none; } }
     </style>
 </head>
 <body>
@@ -89,14 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const minigamesDocRef = db.collection('sharedData').doc('sharedMinigames');
     let userStyleDocRef;
     let minigameData = [], projectName = "Carregando...", selectedItems = new Set(), currentSort = {}, initialDataState = '', isSaving = false;
+
     auth.onAuthStateChanged(user => {
         if (user) {
             userStyleDocRef = db.collection('userData').doc(user.uid);
             loadAndApplyGlobalStyle(); loadDataFromFirebase(); setupEventListeners(); updateContainerPadding();
         } else { window.location.href = 'login.html'; }
     });
+
     const saveDataToFirebase = () => { if (isSaving) return; isSaving = true; minigamesDocRef.set({ projectName, games: minigameData }, { merge: true }).then(() => { initialDataState = JSON.stringify(minigameData); }).catch(error => console.error("Erro ao salvar:", error)).finally(() => { isSaving = false; }); };
-    const loadDataFromFirebase = () => { minigamesDocRef.onSnapshot(doc => { if (doc.exists) { const data = doc.data(); minigameData = data.games || []; projectName = data.projectName || "Projeto"; } else { minigameData = []; projectName = "Novo Projeto"; } initialDataState = JSON.stringify(minigameData); document.getElementById('project-title').textContent = projectName; updateAndRender(); }, error => { projectName = "Falha na conexão"; updateAndRender(); }); };
+    const loadDataFromFirebase = () => { minigamesDocRef.onSnapshot(doc => { if (doc.exists) { const data = doc.data(); minigameData = data.games || []; projectName = data.projectName || "Projeto"; } else { minigameData = []; projectName = "Novo Projeto"; } initialDataState = JSON.stringify(minigameData); document.getElementById('project-title').textContent = projectName; updateAndRender(); }, error => { console.error("Erro ao carregar dados. Verifique suas permissões.", error); document.getElementById('project-title').textContent = "Falha ao Carregar"; document.querySelector('#table-container').innerHTML = "<p style='color:red;padding:20px;'>Falha ao carregar dados. Você não tem permissão para ver este documento.</p>"; }); };
     async function loadAndApplyGlobalStyle() { if (!userStyleDocRef) return; try { const doc = await userStyleDocRef.get(); if (doc.exists && doc.data().styleData) { const style = doc.data().styleData; document.body.className = ''; document.body.classList.add(style.theme || 'light-theme'); document.body.style.backgroundColor = style.bgColor; document.documentElement.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none'); document.documentElement.style.setProperty('--bg-opacity', style.bgOpacity || '1'); } } catch (e) { console.error("Falha ao carregar estilos:", e); } }
     const hasUnsavedChanges = () => JSON.stringify(minigameData) !== initialDataState;
     const updateAndRender = (doSave = false) => { filterAndRender(); if(doSave) saveDataToFirebase(); };
@@ -123,14 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('select-all-checkbox').addEventListener('change', (e) => { selectedItems.clear(); const isChecked = e.target.checked; document.querySelectorAll('#minigames-tbody .select-checkbox').forEach(cb => { cb.checked = isChecked; if(isChecked) selectedItems.add(parseInt(cb.dataset.index, 10)); cb.closest('tr').classList.toggle('selected-row', isChecked); }); updateBulkActionsVisibility(); });
         document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges() && !confirm("Sair e perder alterações não salvas?")) e.preventDefault(); });
         document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
-        document.getElementById('invite-friend-btn').addEventListener('click', () => {
-            const email = prompt("Digite o e-mail do amigo que você quer convidar:");
-            if (!email) return;
-            const inviteFunction = functions.httpsCallable('inviteUserToDocument');
-            inviteFunction({ targetEmail: email, docPath: 'sharedData/sharedMinigames' })
-                .then(result => alert(result.data.result))
-                .catch(error => alert(`Erro: ${error.message}`));
-        });
+        document.getElementById('invite-friend-btn').addEventListener('click', () => { const email = prompt("Digite o e-mail do amigo que você quer convidar para este projeto:"); if (!email) return; const inviteFunction = functions.httpsCallable('inviteUserToDocument'); inviteFunction({ targetEmail: email, docPath: 'sharedData/sharedMinigames' }).then(result => alert(result.data.result)).catch(error => alert(`Erro: ${error.message}`)); });
         window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; } });
         window.addEventListener('resize', updateContainerPadding); window.addEventListener('scroll', handleHeaderScroll);
         document.addEventListener('keydown', (e) => { const modal = document.getElementById('details-modal'); if (modal.classList.contains('visible')) { if (e.key === 'Escape') { modal.classList.remove('visible'); } else if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); document.getElementById('details-form').requestSubmit(); } } });
