@@ -3,76 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Minijogos</title>
+    <title>Minhas Anotações</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-functions-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
         :root { --primary-text-color: #1a2533; --secondary-text-color: #6c757d; --page-bg-color: #f4f7f9; --card-bg-color: rgba(255, 255, 255, 0.92); --card-shadow-color: rgba(0, 0, 0, 0.1); --accent-color: #007bff; --bg-image: none; --bg-opacity: 1; }
         body.dark-theme { --primary-text-color: #e0e0e0; --secondary-text-color: #b0b0b0; --page-bg-color: #121212; --card-bg-color: rgba(40, 40, 40, 0.92); --card-shadow-color: rgba(0, 0, 0, 0.4); --accent-color: #4dabf7; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--page-bg-color); color: var(--primary-text-color); margin: 0; padding: 0; position: relative; transition: background-color 0.3s ease, color 0.3s ease; }
         body::before { content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background-image: var(--bg-image); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: var(--bg-opacity); transition: opacity 0.3s ease, background-image 0.5s ease-in-out; }
-        .container { max-width: 1800px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
         .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: var(--card-bg-color); box-shadow: 0 2px 4px var(--card-shadow-color); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; }
         .header-left-group, .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .main-header h1 { margin: 0; font-size: 1.5em; }
-        .header-actions .btn { flex-shrink: 0; }
-        #bulk-actions-container { display: none; } #bulk-actions-container.visible { display: flex; align-items: center; gap: 10px; }
-        .btn { border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s; color: white; text-align: center; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; padding: 8px 15px; font-size: 14px; }
-        .btn-sm { padding: 5px 10px; font-size: 12px; }
+        .btn { padding: 8px 15px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s; color: white; text-align: center; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; flex-shrink: 0; }
         .btn-success { background-color: #28a745; } .btn-info { background-color: #17a2b8; } .btn-primary { background-color: var(--accent-color); } .btn-secondary { background-color: #6c757d; } .btn-danger { background-color: #dc3545; }
         #back-btn { width: 40px; height: 40px; padding: 0; border-radius: 50%; } #back-btn svg { width: 22px; height: 22px; }
+        .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; } .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
+        #search-input { width: 200px; max-width: 250px; flex-grow: 1; padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; background-color: var(--page-bg-color); color: var(--primary-text-color); }
         #primary-actions-container { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; transition: max-height 0.4s ease-out, opacity 0.3s ease; }
+        #notes-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .note-card { border-radius: 8px; box-shadow: 0 4px 8px var(--card-shadow-color); padding: 15px; display: flex; flex-direction: column; gap: 10px; word-wrap: break-word; height: 250px; position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s, color 0.3s; cursor: pointer; background-color: var(--card-theme-bg); color: var(--card-theme-text); }
+        .note-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px var(--card-shadow-color); }
+        .note-card.sortable-ghost { opacity: 0.4; background: var(--accent-color); } .note-card.sortable-chosen { cursor: grabbing; }
+        .note-card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(128,128,128,0.2); padding-bottom: 8px; margin-bottom: 5px; }
+        .note-card-title { font-size: 1.2em; font-weight: bold; margin: 0; word-break: break-all; color: var(--card-theme-title); }
+        .note-card-actions button { background: none; border: none; cursor: pointer; font-size: 1.1em; opacity: 0.6; transition: opacity 0.2s; padding: 2px; color: inherit; }
+        .note-card-actions button:hover { opacity: 1; }
+        .note-card-content { flex-grow: 1; overflow-y: auto; white-space: pre-wrap; font-size: 0.95em; }
+        .note-card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 8px; font-size: 0.8em; color: inherit; opacity: 0.8; border-top: 1px solid rgba(128,128,128,0.2); }
+        .status-btn { padding: 3px 10px; border-radius: 12px; border: none; font-size: 0.9em; font-weight: bold; color: #ffffff; cursor: pointer; transition: background-color 0.2s, transform 0.2s; -webkit-appearance: none; -moz-appearance: none; appearance: none; line-height: 1.5; }
+        .status-btn:hover { transform: scale(1.05); }
+        .status-btn.status-none { background-color: #343a40; } .status-btn.status-seen { background-color: #6c757d; } .status-btn.status-in_progress { background-color: #fd7e14; } .status-btn.status-done { background-color: #28a745; }
         .modal-overlay { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
         .modal-overlay.visible { display: flex; }
-        .modal-content { background-color: var(--card-bg-color); color: var(--primary-text-color); padding: 25px; border-radius: 8px; box-shadow: 0 5px 15px var(--card-shadow-color); width: 90%; max-width: 850px; position: relative; max-height: 90vh; overflow-y: auto; }
-        .modal-close { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; }
-        .form { display: flex; flex-direction: column; gap: 10px; } .form label { font-weight: bold; margin-top: 5px; }
-        .form input, .form textarea, .form select { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; background-color: var(--page-bg-color); color: var(--primary-text-color); }
-        .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; } .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
-        .file-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        #search-input { width: 200px; padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; max-width: 250px; flex-grow: 1; }
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 800px; }
-        #table-container { background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 2px 4px var(--card-shadow-color); overflow-x: auto; }
-        th, td { padding: 12px 15px; border-bottom: 1px solid #ddd; text-align: left; vertical-align: middle; word-wrap: break-word; }
-        th { background-color: var(--accent-color); color: white; font-weight: bold; user-select: none; position: relative; }
-        th[data-column] { cursor: pointer; } th[data-column]::after { content: ' \2195'; opacity: 0.4; } th[data-column].sorted-asc::after { content: ' \2191'; opacity: 1; } th[data-column].sorted-desc::after { content: ' \2193'; opacity: 1; }
-        th.no-sort { cursor: default; } tbody tr { cursor: pointer; }
-        tr.selected-row > td { background-color: #fff3cd !important; }
-        tr:hover > td { background-color: rgba(128, 128, 128, 0.1); }
-        .table-thumb { max-width: 80px; max-height: 45px; border-radius: 4px; object-fit: cover; background-color: #eee; }
-        fieldset { border: 1px solid #ccc; border-radius: 4px; padding: 15px; margin: 15px 0; }
+        .modal-content { background-color: var(--card-theme-bg, var(--card-bg-color)); color: var(--card-theme-text, var(--primary-text-color)); padding: 25px; border-radius: 8px; box-shadow: 0 5px 15px var(--card-shadow-color); width: 90%; max-width: 500px; position: relative; max-height: 90vh; display: flex; flex-direction: column; transition: background-color 0.3s, color 0.3s; }
+        .modal-content h2, .modal-content label { color: var(--card-theme-title, var(--primary-text-color)); }
+        .modal-close { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: inherit; opacity: 0.6; cursor: pointer; }
+        .form { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
+        .form select, .form input[type="text"], .form textarea { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid rgba(128,128,128,0.3); box-sizing: border-box; font-family: inherit; font-size: 1em; background-color: rgba(255,255,255,0.1); color: inherit; }
+        .form textarea { flex-grow: 1; resize: vertical; min-height: 150px; }
+        .modal-footer { display: flex; justify-content: flex-end; margin-top: 15px; }
+        #note-theme-selector { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        #note-theme-selector .theme-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(128,128,128,0.5); transition: transform 0.2s; }
+        #note-theme-selector .theme-swatch:hover { transform: scale(1.1); }
+        #note-theme-selector .theme-swatch.active { border-color: var(--card-theme-title, var(--accent-color)); transform: scale(1.2); }
+        fieldset { border: 1px solid #ccc; border-radius: 4px; padding: 10px 15px; margin-bottom: 15px; }
         legend { font-weight: bold; padding: 0 10px; color: var(--accent-color); font-size: 1.1em;}
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } .form-grid-full { grid-column: 1 / -1; }
-        .checkbox-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .curiosity-entry { border: 1px solid #ddd; border-radius: 4px; padding: 15px; margin-top: 10px; display: grid; grid-template-columns: 1fr 200px; gap: 15px; align-items: flex-start; }
-        .curiosity-text-area { display: flex; flex-direction: column; } .curiosity-char-counter { text-align: right; font-size: 0.8em; color: var(--secondary-text-color); margin-top: 5px; }
-        .curiosity-image-area { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .curiosity-preview { width: 100%; max-width: 200px; height: 112px; border: 2px dashed #ccc; border-radius: 4px; object-fit: cover; background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; color: var(--secondary-text-color); font-size: 0.9em; }
-        @media (max-width: 768px) { .container { padding: 10px; } .header-left-group { flex-grow: 1; } .form-grid, .curiosity-entry { grid-template-columns: 1fr; } .curiosity-image-area { margin-top: 10px; } .header-scrolled #primary-actions-container, #bulk-actions-container.visible ~ #primary-actions-container { overflow: hidden; opacity: 0; max-height: 0; } table { min-width: 0; table-layout: auto; } th, td { padding: 10px 5px; } thead th:nth-child(1), tbody td:nth-child(1) { width: 8%; text-align: center; } thead th:nth-child(2), tbody td:nth-child(2) { width: 25%; } thead th:nth-child(3), tbody td:nth-child(3) { width: auto; } thead th:nth-child(7), tbody td:nth-child(7) { width: 10%; text-align: center; } thead th:nth-child(4), tbody td:nth-child(4), thead th:nth-child(5), tbody td:nth-child(5), thead th:nth-child(6), tbody td:nth-child(6) { display: none; } }
+        #filter-color-container button, #filter-status-container button { padding: 5px 10px; border: 1px solid var(--secondary-text-color); background: transparent; color: var(--primary-text-color); border-radius: 5px; cursor: pointer; transition: all 0.2s ease-in-out; }
+        #filter-status-container button.active { background-color: var(--accent-color); color: white; border-color: var(--accent-color); }
+        #filter-color-container button { width: 30px; height: 30px; border-radius: 50%; padding: 0; position: relative; }
+        #filter-color-container button.active { box-shadow: 0 0 0 2px var(--accent-color); }
+        #filter-color-container button.active::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; border-radius: 50%; background-color: var(--button-dot-color); border: 1px solid rgba(0, 0, 0, 0.3); }
+        @media (max-width: 768px) { .container { padding: 10px; } .header-left-group { flex-grow: 1; } .note-card { height: 220px; } .header-scrolled #primary-actions-container { overflow: hidden; opacity: 0; max-height: 0; } }
     </style>
 </head>
 <body>
     <header class="main-header">
         <div class="header-left-group">
             <a href="index.html" id="back-btn" class="btn btn-secondary" title="Voltar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></a>
-            <h1 id="project-title">Minigames</h1>
-            <input type="text" id="search-input" placeholder="Pesquisar na tabela...">
+            <h1>Anotações</h1>
+            <input type="text" id="search-input" placeholder="Pesquisar por texto...">
         </div>
         <div class="header-actions">
-            <div id="bulk-actions-container"><button id="delete-selected-btn" class="btn btn-danger">Excluir</button></div>
-            <button id="show-add-item-modal-btn" class="btn btn-success">Adicionar</button>
+            <button id="add-note-btn" class="btn btn-success">Adicionar</button>
             <div id="primary-actions-container">
                 <button id="invite-friend-btn" class="btn btn-info">Convidar</button>
+                <button id="show-filter-modal-btn" class="btn btn-primary">Filtro</button>
                 <div class="file-input-wrapper"><button class="btn btn-secondary">Importar</button><input type="file" id="import-json-input" accept=".json"></div>
                 <button id="export-json-btn" class="btn btn-primary">Exportar</button>
                 <button id="logout-btn" class="btn btn-danger">Sair</button>
             </div>
         </div>
     </header>
-    <div class="container"><div id="table-container"><table><thead><tr><th style="width: 5%;" data-column="#">#</th><th style="width: 10%;" class="no-sort">Thumb</th><th style="width: 25%;" data-column="Nome">Nome</th><th style="width: 25%;" data-column="Inspiração">Inspiração</th><th style="width: 15%;" data-column="Local">Local</th><th style="width: 15%;" class="no-sort">Referências</th><th style="width: 5%; text-align: center;" class="no-sort"><input type="checkbox" id="select-all-checkbox" title="Selecionar Todos"></th></tr></thead><tbody id="minigames-tbody"></tbody></table></div></div>
-    <div id="details-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close">×</span><h2 id="details-modal-title">Detalhes do Item</h2><form id="details-form" class="form"><input type="hidden" id="details-item-index"><fieldset><legend>Informações Básicas</legend><div class="form-grid"><div><label for="details-num">#:</label><input type="number" id="details-num" step="any"></div><div><label for="details-nome">Nome:</label><input type="text" id="details-nome" required></div><div class="form-grid-full"><label for="details-inspiracao">Inspiração:</label><input type="text" id="details-inspiracao"></div><div class="form-grid-full"><label for="details-descricao">Descrição:</label><textarea id="details-descricao" rows="4"></textarea></div><div><label for="details-local">Local:</label><input type="text" id="details-local"></div><div><label for="details-map-path">Nome do Arquivo do Mapa:</label><input type="text" id="details-map-path"></div></div></fieldset><fieldset><legend>Guia Visual e Textual</legend><div class="form-grid"><div><label>Thumb (Imagem):</label><div class="file-controls"><input type="file" id="details-thumb-input" accept="image/*" style="display:none;"><button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('details-thumb-input').click();">Escolher</button><button type="button" class="btn btn-danger btn-sm remove-file-btn" data-input-id="details-thumb-input" data-filename-id="details-thumb-filename" data-default-text="Nenhuma imagem.">Remover</button><span id="details-thumb-filename">Nenhuma imagem.</span></div></div><div><label>Vídeo Guia:</label><div class="file-controls"><input type="file" id="details-video-input" accept="video/*" style="display:none;"><button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('details-video-input').click();">Escolher</button><button type="button" class="btn btn-danger btn-sm remove-file-btn" data-input-id="details-video-input" data-filename-id="details-video-filename" data-default-text="Nenhum vídeo.">Remover</button><span id="details-video-filename">Nenhum vídeo.</span></div></div><div class="form-grid-full"><label for="details-titulo-guia">Título Guia (max 20):</label><input type="text" id="details-titulo-guia" maxlength="20"></div><div class="form-grid-full"><label for="details-texto-guia">Texto Guia (max 110):</label><textarea id="details-texto-guia" rows="3" maxlength="110"></textarea></div></div></fieldset><fieldset><legend>Controles Opcionais</legend><div class="checkbox-group"><input type="checkbox" id="details-usa-stick" style="width:auto;"><label for="details-usa-stick">Usa Stick?</label><input type="text" id="details-texto-stick" placeholder="Texto Stick (max 20)" maxlength="20"></div><div class="checkbox-group"><input type="checkbox" id="details-usa-btn1" style="width:auto;"><label for="details-usa-btn1">Usa Botão Primário?</label><input type="text" id="details-texto-btn1" placeholder="Texto Botão (max 20)" maxlength="20"></div><div class="checkbox-group"><input type="checkbox" id="details-usa-btn2" style="width:auto;"><label for="details-usa-btn2">Usa Botão Secundário?</label><input type="text" id="details-texto-btn2" placeholder="Texto Botão (max 20)" maxlength="20"></div></fieldset><fieldset><legend>Curiosidades</legend><div id="curiosities-container"></div><button type="button" id="add-curiosity-btn" class="btn btn-secondary" style="margin-top: 10px;">Adicionar Curiosidade</button></fieldset><button type="submit" class="btn btn-success" style="width:100%; padding: 15px; font-size: 1.2em;">Salvar Alterações</button></form></div></div>
+    <div class="container"><div id="notes-container"></div></div>
+    <div id="note-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close">×</span><h2 id="modal-title">Adicionar Anotação</h2><form id="note-form" class="form"><input type="hidden" id="note-id"><div><label for="note-title">Título:</label><input type="text" id="note-title" required></div><div><label for="note-status">Status:</label><select id="note-status"><option value="none">Nenhum</option><option value="seen">Visto</option><option value="in_progress">Em Progresso</option><option value="done">Feito</option></select></div><div><label>Tema:</label><div id="note-theme-selector"></div></div><div><label for="note-content">Conteúdo:</label><textarea id="note-content" required></textarea></div><div class="modal-footer"><button type="submit" class="btn btn-primary">Salvar Anotação</button></div></form></div></div>
+    <div id="filter-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close">×</span><h2>Filtrar Anotações</h2><form id="filter-form" class="form"><fieldset><legend>Por Data</legend><label for="start-date-filter">De:</label><input type="datetime-local" id="start-date-filter"><label for="end-date-filter">Até:</label><input type="datetime-local" id="end-date-filter"></fieldset><fieldset><legend>Por Status</legend><div id="filter-status-container" style="display: flex; flex-wrap: wrap; gap: 10px;"></div></fieldset><fieldset><legend>Por Tema</legend><div id="filter-color-container" style="display: flex; flex-wrap: wrap; gap: 10px;"></div></fieldset><div class="modal-footer" style="justify-content: space-between; gap: 10px;"><button type="button" id="clear-filters-btn" class="btn btn-secondary">Limpar Filtros</button><button type="submit" class="btn btn-primary">Aplicar</button></div></form></div></div>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // --- Configuração do Firebase ---
@@ -83,10 +91,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const functions = firebase.app().functions('us-central1');
     
     // --- Variáveis Globais ---
-    let minigameData = [], projectName = "Carregando...", selectedItems = new Set(), initialDataState = '', isSaving = false;
+    let notesData = [], initialDataState = '[]', activeFilters = { statuses: [], themes: [], startDate: null, endDate: null };
     let userStyleDocRef, currentUser, unsubscribeListener;
-    const minigamesDocRef = db.collection('sharedData').doc('sharedMinigames');
-
+    const notesDocRef = db.collection('sharedData').doc('sharedNotes');
+    
     // --- Gatekeeper de Autenticação ---
     auth.onAuthStateChanged(user => {
         if (user) {
@@ -101,82 +109,85 @@ document.addEventListener('DOMContentLoaded', () => {
         currentUser = user;
         userStyleDocRef = db.collection('userData').doc(user.uid);
         
-        initializeSharedDataAndListeners();
+        initializeSharedDataListener(); // Renomeado para clareza
         loadAndApplyGlobalStyle();
         setupEventListeners();
         updateContainerPadding();
+        initSortable();
     }
     
-    // --- Lógica de Dados Firestore ---
-    async function initializeSharedDataAndListeners() {
-        if (unsubscribeListener) unsubscribeListener();
-
-        unsubscribeListener = minigamesDocRef.onSnapshot(async (doc) => {
-            if (doc.exists) {
-                const data = doc.data();
-                minigameData = data.games || [];
-                projectName = data.projectName || "Projeto";
-                initialDataState = JSON.stringify(minigameData);
-                document.getElementById('project-title').textContent = projectName;
-                updateAndRender();
-            } else {
-                try {
-                    await minigamesDocRef.set({
-                        allowedUsers: [currentUser.uid],
-                        projectName: "Novo Projeto de Minigames",
-                        games: []
-                    });
-                } catch (error) {
-                    console.error("Erro ao criar documento de minigames:", error);
-                }
+    // --- CORREÇÃO PRINCIPAL ESTÁ AQUI ---
+    function initializeSharedDataListener() {
+        if (unsubscribeListener) unsubscribeListener(); // Para o listener antigo se houver
+        
+        unsubscribeListener = notesDocRef.onSnapshot(snapshot => {
+            // Sucesso: O usuário tem permissão para ler o documento.
+            if (!snapshot.exists) {
+                // Caso raro onde o documento foi deletado.
+                console.error("O documento de anotações compartilhadas não existe.");
+                document.querySelector('.container').innerHTML = `<p style='color:red;padding:20px; text-align:center;'>Erro: O projeto de anotações não foi encontrado.</p>`;
+                return;
             }
+            notesData = snapshot.data().notes || [];
+            initialDataState = JSON.stringify(notesData);
+            applyFiltersAndRender();
+
         }, error => {
-            console.error("Erro de permissão no listener do Firestore:", error);
-            document.getElementById('project-title').textContent = "Falha ao Carregar";
-            document.querySelector('#table-container').innerHTML = "<p style='color:red;padding:20px;text-align:center;'>Falha ao carregar dados. Você não tem permissão para ver este documento. Peça para um membro existente convidá-lo.</p>";
+            // Erro: O usuário provavelmente não tem permissão.
+            console.error("Erro no listener do Firestore:", error);
+            if (error.code === 'permission-denied') {
+                // Informa ao usuário sobre a falta de permissão.
+                document.querySelector('.container').innerHTML = `<p style='color: var(--secondary-text-color); padding: 20px; text-align: center; font-size: 1.1em;'>Você não tem acesso a estas anotações.<br>Peça para um membro existente convidá-lo usando o seu e-mail.</p>`;
+                // Desabilita botões de ação
+                document.getElementById('add-note-btn').disabled = true;
+                document.getElementById('import-json-input').disabled = true;
+            } else {
+                // Outros erros (ex: offline)
+                document.querySelector('.container').innerHTML = `<p style='color:red;padding:20px; text-align:center;'>Falha ao carregar anotações. Verifique sua conexão.</p>`;
+            }
         });
     }
 
-    const saveDataToFirebase = () => {
-        if (isSaving) return;
-        isSaving = true;
-        minigamesDocRef.update({ projectName, games: minigameData })
-            .then(() => { initialDataState = JSON.stringify(minigameData); })
-            .catch(error => console.error("Erro ao salvar:", error))
-            .finally(() => { isSaving = false; });
-    };
-    
-    // --- Demais Funções (Lógica da UI, sem alterações) ---
+    // --- O RESTANTE DO CÓDIGO PERMANECE O MESMO ---
+    const statusMap = { none: 'Nenhum', seen: 'Visto', in_progress: 'Em Progresso', done: 'Feito' };
+    const statusCycle = ['none', 'seen', 'in_progress', 'done'];
+    const themes = [ { name: 'default-light', bg: '#FFFFFF', text: '#1a2533', title: '#007bff' }, { name: 'default-dark', bg: '#2d3436', text: '#dfe6e9', title: '#74b9ff' }, { name: 'slate', bg: '#4a4a4a', text: '#f1f1f1', title: '#a4b0be' }, { name: 'solar', bg: '#fdf6e3', text: '#657b83', title: '#b58900' }, { name: 'mint', bg: '#E0F2F1', text: '#004D40', title: '#00796B' }, { name: 'apricot', bg: '#FFECB3', text: '#E65100', title: '#F57C00' }, { name: 'lavender', bg: '#E1BEE7', text: '#4A148C', title: '#7B1FA2' }, { name: 'rose', bg: '#FCE4EC', text: '#880E4F', title: '#C2185B' }, { name: 'matcha', bg: '#e8f5e9', text: '#2e7d32', title: '#4caf50' }, { name: 'ocean', bg: '#01579B', text: '#B3E5FC', title: '#E1F5FE' }, { name: 'forest', bg: '#1B5E20', text: '#C8E6C9', title: '#A5D6A7' }, { name: 'cherry', bg: '#880000', text: '#ffcdd2', title: '#ef9a9a' } ];
+    const themesStyleSheet = document.createElement('style'); document.head.appendChild(themesStyleSheet);
+    themesStyleSheet.innerHTML = themes.map(t => `.theme-${t.name} { --card-theme-bg: ${t.bg}; --card-theme-text: ${t.text}; --card-theme-title: ${t.title}; }`).join('\n');
+    const notesContainer = document.getElementById('notes-container'), searchInput = document.getElementById('search-input'), noteModal = document.getElementById('note-modal'), filterModal = document.getElementById('filter-modal'), noteForm = document.getElementById('note-form'), filterForm = document.getElementById('filter-form'), modalTitle = document.getElementById('modal-title');
+    const generateId = () => `note_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const formatTimestamp = (isoString) => isoString ? new Date(isoString).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '';
+    const hasUnsavedChanges = () => JSON.stringify(notesData) !== initialDataState;
+    const saveDataToFirebase = () => notesDocRef.update({ notes: notesData }).then(() => { initialDataState = JSON.stringify(notesData); }).catch(error => console.error("Erro ao salvar:", error));
     async function loadAndApplyGlobalStyle() { if (!userStyleDocRef) return; try { const doc = await userStyleDocRef.get(); if (doc.exists && doc.data().styleData) { const style = doc.data().styleData; document.body.className = ''; document.body.classList.add(style.theme || 'light-theme'); document.body.style.backgroundColor = style.bgColor; document.documentElement.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none'); document.documentElement.style.setProperty('--bg-opacity', style.bgOpacity || '1'); } } catch (e) { console.error("Falha ao carregar estilos:", e); } }
-    const hasUnsavedChanges = () => JSON.stringify(minigameData) !== initialDataState;
-    const updateAndRender = (doSave = false) => { filterAndRender(); if(doSave) saveDataToFirebase(); };
     const updateContainerPadding = () => { const header = document.querySelector('.main-header'), container = document.querySelector('.container'); if (header && container) container.style.paddingTop = `${header.offsetHeight + 20}px`; };
     const handleHeaderScroll = () => { if (window.matchMedia('(max-width: 768px)').matches) { document.querySelector('.main-header').classList.toggle('header-scrolled', window.scrollY > 10); } updateContainerPadding(); };
-    const updateBulkActionsVisibility = () => { document.getElementById('bulk-actions-container').classList.toggle('visible', selectedItems.size > 0); if (window.matchMedia('(max-width: 768px)').matches) { updateContainerPadding(); } };
-    const renderTable = (dataToRender) => { const tableBody = document.getElementById('minigames-tbody'); tableBody.innerHTML = ''; const placeholderThumb = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='45' viewBox='0 0 80 45'%3E%3Crect width='80' height='45' fill='%23e9ecef'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%236c757d' font-family='sans-serif' font-size='10px'%3EN/A%3C/text%3E%3C/svg%3E"; dataToRender.forEach((item) => { const originalIndex = minigameData.findIndex(originalItem => originalItem === item); if (originalIndex === -1) return; const row = tableBody.insertRow(); row.dataset.index = originalIndex; if (selectedItems.has(originalIndex)) row.classList.add('selected-row'); const referencesHTML = (item['Referências'] || []).map(ref => `<div><a href="${ref.url || '#'}" target="_blank">${ref.nome || 'Link'}</a></div>`).join(''); row.innerHTML = `<td>${item['#'] || ''}</td><td><img src="${item.Thumb || placeholderThumb}" alt="Thumb" class="table-thumb"></td><td>${item['Nome'] || ''}</td><td>${item['Inspiração'] || ''}</td><td>${item['Local'] || ''}</td><td>${referencesHTML || 'N/A'}</td><td style="text-align: center;"><input type="checkbox" class="select-checkbox" data-index="${originalIndex}" ${selectedItems.has(originalIndex) ? 'checked' : ''}></td>`; }); };
-    const filterAndRender = () => { const filterText = document.getElementById('search-input').value.toLowerCase(); const filteredData = filterText ? minigameData.filter(item => ['#', 'Nome', 'Inspiração', 'Local'].some(key => String(item[key] || '').toLowerCase().includes(filterText))) : minigameData; renderTable(filteredData); };
-    const addCuriosityRow = (container, data = {}) => { const uniqueId = `curiosity-file-${Date.now()}-${Math.random()}`; const entry = document.createElement('div'); entry.className = 'curiosity-entry'; entry.innerHTML = `<div class="curiosity-text-area"><textarea class="curiosity-text" placeholder="Texto da curiosidade (max 250)" maxlength="250">${data.texto || ''}</textarea><div class="curiosity-char-counter">0 / 250</div></div><div class="curiosity-image-area"><img src="${data.foto || ''}" class="curiosity-preview" alt="Preview"><input type="file" id="${uniqueId}" class="curiosity-image-input" accept="image/*" style="display:none;"><button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('${uniqueId}').click();">Escolher Imagem</button><button type="button" class="btn btn-danger btn-sm remove-curiosity-btn">Remover</button></div>`; const textarea = entry.querySelector('.curiosity-text'), charCounter = entry.querySelector('.curiosity-char-counter'); const updateCounter = () => { charCounter.textContent = `${textarea.value.length} / 250`; }; textarea.addEventListener('input', updateCounter); updateCounter(); entry.querySelector('.curiosity-image-input').addEventListener('change', function(e) { if (e.target.files[0]) { const reader = new FileReader(); reader.onload = (event) => { entry.querySelector('.curiosity-preview').src = event.target.result; }; reader.readAsDataURL(e.target.files[0]); } }); entry.querySelector('.remove-curiosity-btn').addEventListener('click', () => entry.remove()); container.appendChild(entry); };
-    const openDetailsModal = (mode, itemIndex = null) => { const form = document.getElementById('details-form'); form.reset(); document.getElementById('details-thumb-filename').textContent = 'Nenhuma imagem.'; document.getElementById('details-video-filename').textContent = 'Nenhum vídeo.'; document.getElementById('curiosities-container').innerHTML = ''; document.getElementById('details-modal-title').textContent = 'Adicionar Novo Item'; document.getElementById('details-item-index').value = ''; if (mode === 'edit' && itemIndex !== null) { const item = minigameData[itemIndex]; document.getElementById('details-modal-title').textContent = `#${item['#'] || '?'} - ${item['Nome'] || 'Item sem nome'}`; document.getElementById('details-item-index').value = itemIndex; const fields = { '#': 'details-num', 'Nome': 'details-nome', 'Inspiração': 'details-inspiracao', 'Descrição': 'details-descricao', 'Local': 'details-local', 'Nome do Arquivo do mapa': 'details-map-path', 'Título Guia': 'details-titulo-guia', 'Texto Guia': 'details-texto-guia', 'Usa Stick': 'details-usa-stick', 'Texto Stick': 'details-texto-stick', 'Usa Botão Primário': 'details-usa-btn1', 'Texto Botão Primário': 'details-texto-btn1', 'Usa Botão Secundário': 'details-usa-btn2', 'Texto Botão Secundário': 'details-texto-btn2' }; Object.keys(fields).forEach(key => { const el = document.getElementById(fields[key]); if(el.type === 'checkbox') el.checked = item[key] || false; else el.value = item[key] || ''; }); document.getElementById('details-thumb-filename').textContent = item.ThumbFilename || 'Nenhuma imagem.'; document.getElementById('details-video-filename').textContent = item.VideoGuiaFilename || 'Nenhum vídeo.'; (item.Curiosidades || []).forEach(curiosity => addCuriosityRow(document.getElementById('curiosities-container'), curiosity)); } document.getElementById('details-modal').classList.add('visible'); };
-    const saveDetailsForm = (e) => { e.preventDefault(); const itemIndex = document.getElementById('details-item-index').value; const isNewItem = itemIndex === ''; let item = isNewItem ? { 'Referências': [] } : minigameData[itemIndex]; const fields = { '#': 'details-num', 'Nome': 'details-nome', 'Inspiração': 'details-inspiracao', 'Descrição': 'details-descricao', 'Local': 'details-local', 'Nome do Arquivo do mapa': 'details-map-path', 'Título Guia': 'details-titulo-guia', 'Texto Guia': 'details-texto-guia', 'Usa Stick': 'details-usa-stick', 'Texto Stick': 'details-texto-stick', 'Usa Botão Primário': 'details-usa-btn1', 'Texto Botão Primário': 'details-texto-btn1', 'Usa Botão Secundário': 'details-usa-btn2', 'Texto Botão Secundário': 'details-texto-btn2' }; Object.keys(fields).forEach(key => { const el = document.getElementById(fields[key]); item[key] = (el.type === 'checkbox') ? el.checked : (el.type === 'number') ? (parseFloat(el.value) || null) : el.value; }); if (document.getElementById('details-video-input').files[0]) item.VideoGuiaFilename = document.getElementById('details-video-input').files[0].name; else if (document.getElementById('details-video-filename').textContent === 'Nenhum vídeo.') item.VideoGuiaFilename = ''; item.Curiosidades = Array.from(document.querySelectorAll('#curiosities-container .curiosity-entry')).map(entry => ({ texto: entry.querySelector('.curiosity-text').value, foto: entry.querySelector('.curiosity-preview').src })); const thumbFileInput = document.getElementById('details-thumb-input'); if (thumbFileInput.files[0]) { item.ThumbFilename = thumbFileInput.files[0].name; const reader = new FileReader(); reader.onload = (event) => { item.Thumb = event.target.result; if (isNewItem) minigameData.push(item); updateAndRender(true); }; reader.readAsDataURL(thumbFileInput.files[0]); } else { if (document.getElementById('details-thumb-filename').textContent === 'Nenhuma imagem.') { item.Thumb = ''; item.ThumbFilename = ''; } if (isNewItem) minigameData.push(item); updateAndRender(true); } document.getElementById('details-modal').classList.remove('visible'); };
+    const renderNotes = (dataToRender) => { notesContainer.innerHTML = (dataToRender.length === 0 && searchInput.value === '' && activeFilters.statuses.length === 0 && activeFilters.themes.length === 0) ? `<p style="color: var(--secondary-text-color); padding: 20px; text-align: center;">Nenhuma anotação. Clique em "Adicionar" para começar.</p>` : (dataToRender.length === 0) ? `<p style="color: var(--secondary-text-color); padding: 20px; text-align: center;">Nenhuma anotação encontrada com os filtros atuais.</p>` : ''; dataToRender.forEach(note => { const card = document.createElement('div'); const themeClass = note.theme || (document.body.classList.contains('dark-theme') ? 'theme-default-dark' : 'theme-default-light'); card.className = `note-card ${themeClass}`; card.dataset.id = note.id; const statusText = statusMap[note.status] || 'Nenhum'; card.innerHTML = `<div class="note-card-header"><h3 class="note-card-title">${note.title}</h3><div class="note-card-actions"><button class="delete-btn" title="Excluir">🗑️</button></div></div><div class="note-card-content">${note.content}</div><footer class="note-card-footer"><button class="status-btn status-${note.status || 'none'}" title="Clique para alterar status">${statusText}</button><span>${formatTimestamp(note.timestamp)}</span></footer>`; notesContainer.appendChild(card); }); };
+    const applyFiltersAndRender = () => { const filterText = searchInput.value.toLowerCase(), startDate = activeFilters.startDate ? new Date(activeFilters.startDate).getTime() : null, endDate = activeFilters.endDate ? new Date(activeFilters.endDate).getTime() : null, activeStatuses = activeFilters.statuses, activeThemes = activeFilters.themes; let filteredData = notesData.filter(note => { const textMatch = (note.title || '').toLowerCase().includes(filterText) || (note.content || '').toLowerCase().includes(filterText); const noteTime = note.timestamp ? new Date(note.timestamp).getTime() : null; const dateMatch = !noteTime || ((!startDate || noteTime >= startDate) && (!endDate || noteTime <= endDate)); const statusMatch = activeStatuses.length === 0 || activeStatuses.includes(note.status || 'none'); const defaultTheme = document.body.classList.contains('dark-theme') ? 'theme-default-dark' : 'theme-default-light'; const themeMatch = activeThemes.length === 0 || activeThemes.includes(note.theme || defaultTheme); return textMatch && dateMatch && statusMatch && themeMatch; }); renderNotes(filteredData); };
+    const updateModalTheme = (themeName) => { const modalContent = noteModal.querySelector('.modal-content'); modalContent.className = 'modal-content'; modalContent.classList.add(themeName); modalContent.dataset.selectedTheme = themeName; document.querySelectorAll('#note-theme-selector .theme-swatch').forEach(sw => { sw.classList.toggle('active', sw.dataset.themeName === themeName); }); };
+    const openNoteModal = (mode, noteId = null) => { noteForm.reset(); const modalContent = noteModal.querySelector('.modal-content'); modalContent.dataset.selectedTheme = ''; document.getElementById('note-id').value = ''; modalTitle.textContent = 'Adicionar Anotação'; let noteTheme = document.body.classList.contains('dark-theme') ? 'theme-default-dark' : 'theme-default-light'; if (mode === 'edit' && noteId) { const note = notesData.find(n => n.id === noteId); if (note) { modalTitle.textContent = 'Editar Anotação'; document.getElementById('note-id').value = note.id; document.getElementById('note-title').value = note.title; document.getElementById('note-content').value = note.content; document.getElementById('note-status').value = note.status || 'none'; noteTheme = note.theme || noteTheme; } } updateModalTheme(noteTheme); noteModal.classList.add('visible'); };
+    const closeNoteModal = () => noteModal.classList.remove('visible');
+    const openFilterModal = () => { const statusContainer = document.getElementById('filter-status-container'), colorContainer = document.getElementById('filter-color-container'); document.getElementById('start-date-filter').value = activeFilters.startDate || ''; document.getElementById('end-date-filter').value = activeFilters.endDate || ''; statusContainer.innerHTML = Object.keys(statusMap).map(key => `<button type="button" data-status="${key}" class="${activeFilters.statuses.includes(key) ? 'active' : ''}">${statusMap[key]}</button>`).join(''); colorContainer.innerHTML = themes.map(theme => `<button type="button" data-theme="theme-${theme.name}" class="${activeFilters.themes.includes(`theme-${theme.name}`) ? 'active' : ''}" style="background-color: ${theme.bg}; border: 1px solid ${theme.text}; --button-dot-color: ${theme.text};" title="${theme.name}"></button>`).join(''); statusContainer.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => btn.classList.toggle('active'))); colorContainer.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => btn.classList.toggle('active'))); filterModal.classList.add('visible'); };
+    const closeFilterModal = () => filterModal.classList.remove('visible');
+    const initSortable = () => new Sortable(notesContainer, { animation: 150, ghostClass: 'sortable-ghost', delay: 200, delayOnTouchOnly: true, onEnd: (evt) => { const hasFilters = searchInput.value || activeFilters.startDate || activeFilters.endDate || activeFilters.statuses.length > 0 || activeFilters.themes.length > 0; if (hasFilters) { alert("Limpe todos os filtros para poder reordenar as anotações."); applyFiltersAndRender(); return; } const [movedItem] = notesData.splice(evt.oldIndex, 1); notesData.splice(evt.newIndex, 0, movedItem); saveDataToFirebase(); } });
+    const themeSelector = document.getElementById('note-theme-selector'); themeSelector.innerHTML = themes.map(theme => `<div class="theme-swatch" data-theme-name="theme-${theme.name}" style="background-color: ${theme.bg};" title="${theme.name}"></div>`).join('');
     function setupEventListeners() {
-        document.getElementById('search-input').addEventListener('keyup', filterAndRender);
-        document.getElementById('show-add-item-modal-btn').addEventListener('click', () => openDetailsModal('add'));
-        document.getElementById('details-form').addEventListener('submit', saveDetailsForm);
-        document.querySelector('#details-modal .modal-close').addEventListener('click', () => document.getElementById('details-modal').classList.remove('visible'));
-        document.getElementById('details-modal').addEventListener('click', (e) => { if (e.target.id === 'details-modal') e.currentTarget.classList.remove('visible'); });
-        document.getElementById('add-curiosity-btn').addEventListener('click', () => addCuriosityRow(document.getElementById('curiosities-container')));
-        document.querySelectorAll('.remove-file-btn').forEach(btn => btn.addEventListener('click', (e) => { document.getElementById(e.currentTarget.dataset.inputId).value = ''; document.getElementById(e.currentTarget.dataset.filenameId).textContent = e.currentTarget.dataset.defaultText; }));
-        document.getElementById('table-container').addEventListener('click', (e) => { const row = e.target.closest('tbody tr'); if (!row) return; if (e.target.classList.contains('select-checkbox')) { const index = parseInt(e.target.dataset.index, 10); if (e.target.checked) selectedItems.add(index); else selectedItems.delete(index); row.classList.toggle('selected-row', e.target.checked); updateBulkActionsVisibility(); return; } if (e.target.closest('a')) { return; } const index = row.dataset.index; if (index !== undefined) { openDetailsModal('edit', index); } });
-        document.getElementById('export-json-btn').addEventListener('click', () => { if(minigameData.length === 0){ alert("Não há dados para exportar."); return; } const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({ projectName, games: minigameData }, null, 2)], { type: 'application/json' })); a.download = `${projectName.replace(/[\\/:*?"<>|]/g, '').replace(/ /g, "_") || 'minigames_projeto'}.json`; a.click(); URL.revokeObjectURL(a.href); });
-        document.getElementById('import-json-input').addEventListener('change', (e) => { if (hasUnsavedChanges() && !confirm("Isto substituirá os dados atuais. Deseja continuar?")) { e.target.value = ''; return; } const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (event) => { try { const data = JSON.parse(event.target.result); if (Array.isArray(data)) { minigameData = data; projectName = "Projeto Importado"; } else if (data && Array.isArray(data.games)) { minigameData = data.games; projectName = data.projectName || "Projeto Importado"; } else { throw new Error("Formato de JSON não reconhecido."); } selectedItems.clear(); document.getElementById('project-title').textContent = projectName; updateAndRender(true); alert(`Projeto "${projectName}" importado com sucesso!`); } catch (err) { alert('Falha ao importar: Arquivo JSON inválido ou formato não reconhecido.'); } }; reader.readAsText(file); e.target.value = ''; });
-        document.getElementById('delete-selected-btn').addEventListener('click', () => { if (selectedItems.size === 0 || !confirm(`Excluir ${selectedItems.size} item(ns)?`)) return; minigameData = minigameData.filter((_, index) => !selectedItems.has(index)); selectedItems.clear(); document.getElementById('select-all-checkbox').checked = false; updateBulkActionsVisibility(); updateAndRender(true); });
-        document.getElementById('select-all-checkbox').addEventListener('change', (e) => { selectedItems.clear(); const isChecked = e.target.checked; document.querySelectorAll('#minigames-tbody .select-checkbox').forEach(cb => { cb.checked = isChecked; if(isChecked) selectedItems.add(parseInt(cb.dataset.index, 10)); cb.closest('tr').classList.toggle('selected-row', isChecked); }); updateBulkActionsVisibility(); });
-        document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges() && !confirm("Sair e perder alterações não salvas?")) e.preventDefault(); });
+        themeSelector.addEventListener('click', e => { if (e.target.classList.contains('theme-swatch')) { updateModalTheme(e.target.dataset.themeName); } });
+        searchInput.addEventListener('input', applyFiltersAndRender); document.getElementById('add-note-btn').addEventListener('click', () => openNoteModal('add')); noteModal.querySelector('.modal-close').addEventListener('click', closeNoteModal);
+        document.getElementById('show-filter-modal-btn').addEventListener('click', openFilterModal); filterModal.querySelector('.modal-close').addEventListener('click', closeFilterModal);
         document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
-        document.getElementById('invite-friend-btn').addEventListener('click', () => { const email = prompt("Digite o e-mail do amigo que você quer convidar para este projeto:"); if (!email) return; const inviteFunction = functions.httpsCallable('inviteUserToDocument'); inviteFunction({ targetEmail: email, docPath: 'sharedData/sharedMinigames' }).then(result => alert(result.data.result)).catch(error => alert(`Erro: ${error.message}`)); });
+        document.getElementById('invite-friend-btn').addEventListener('click', () => { const email = prompt("Digite o e-mail do amigo que você quer convidar para estas anotações:"); if (!email) return; const inviteFunction = functions.httpsCallable('inviteUserToDocument'); inviteFunction({ targetEmail: email, docPath: 'sharedData/sharedNotes' }).then(result => alert(result.data.result)).catch(error => alert(`Erro: ${error.message}`)); });
+        document.getElementById('clear-filters-btn').addEventListener('click', () => { activeFilters = { statuses: [], themes: [], startDate: null, endDate: null }; applyFiltersAndRender(); closeFilterModal(); });
+        filterForm.addEventListener('submit', (e) => { e.preventDefault(); activeFilters.startDate = document.getElementById('start-date-filter').value || null; activeFilters.endDate = document.getElementById('end-date-filter').value || null; activeFilters.statuses = Array.from(document.querySelectorAll('#filter-status-container button.active')).map(b => b.dataset.status); activeFilters.themes = Array.from(document.querySelectorAll('#filter-color-container button.active')).map(b => b.dataset.theme); applyFiltersAndRender(); closeFilterModal(); });
+        noteForm.addEventListener('submit', e => { e.preventDefault(); const id = document.getElementById('note-id').value; const noteData = { title: document.getElementById('note-title').value, content: document.getElementById('note-content').value, status: document.getElementById('note-status').value, theme: noteModal.querySelector('.modal-content').dataset.selectedTheme, timestamp: new Date().toISOString() }; if (id) { const noteIndex = notesData.findIndex(n => n.id === id); if (noteIndex > -1) notesData[noteIndex] = { ...notesData[noteIndex], ...noteData }; } else { notesData.unshift({ id: generateId(), ...noteData }); } closeNoteModal(); saveDataToFirebase(); });
+        notesContainer.addEventListener('click', e => { const card = e.target.closest('.note-card'); if (!card) return; const noteId = card.dataset.id; if (e.target.closest('.status-btn')) { e.stopPropagation(); const noteIndex = notesData.findIndex(n => n.id === noteId); if (noteIndex > -1) { const currentStatus = notesData[noteIndex].status || 'none'; const nextIndex = (statusCycle.indexOf(currentStatus) + 1) % statusCycle.length; notesData[noteIndex].status = statusCycle[nextIndex]; saveDataToFirebase(); } return; } if (e.target.closest('.delete-btn')) { e.stopPropagation(); if (confirm('Tem certeza que deseja excluir esta anotação?')) { notesData = notesData.filter(n => n.id !== noteId); saveDataToFirebase(); } return; } });
+        notesContainer.addEventListener('dblclick', e => { const card = e.target.closest('.note-card'); if (card) { openNoteModal('edit', card.dataset.id); } });
+        document.getElementById('export-json-btn').addEventListener('click', () => { if(notesData.length === 0){ alert("Não há anotações para exportar."); return; } const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({ notes: notesData }, null, 2)], { type: 'application/json' })); a.download = `anotacoes_backup.json`; a.click(); URL.revokeObjectURL(a.href); });
+        document.getElementById('import-json-input').addEventListener('change', (e) => { if (hasUnsavedChanges() && !confirm("Isto substituirá suas anotações. Deseja continuar?")) { e.target.value = ''; return; } const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (event) => { try { const data = JSON.parse(event.target.result); if (Array.isArray(data)) { notesData = data; } else if (data && Array.isArray(data.notes)) { notesData = data.notes; } else { throw new Error("Formato de JSON não reconhecido."); } saveDataToFirebase(); alert(`Anotações importadas com sucesso!`); } catch (err) { alert('Falha ao importar: Arquivo JSON inválido ou formato não reconhecido.'); } }; reader.readAsText(file); e.target.value = ''; });
+        document.getElementById('back-btn').addEventListener('click', (e) => { if (hasUnsavedChanges() && !confirm("Sair e perder alterações não salvas?")) e.preventDefault(); });
         window.addEventListener('beforeunload', (e) => { if (hasUnsavedChanges()) { e.preventDefault(); e.returnValue = ''; } });
         window.addEventListener('resize', updateContainerPadding); window.addEventListener('scroll', handleHeaderScroll);
-        document.addEventListener('keydown', (e) => { const modal = document.getElementById('details-modal'); if (modal.classList.contains('visible')) { if (e.key === 'Escape') { modal.classList.remove('visible'); } else if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); document.getElementById('details-form').requestSubmit(); } } });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (noteModal.classList.contains('visible')) closeNoteModal(); if (filterModal.classList.contains('visible')) closeFilterModal(); } else if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); if (noteModal.classList.contains('visible')) { noteForm.requestSubmit(); } else if (filterModal.classList.contains('visible')) { filterForm.requestSubmit(); } } });
     }
 });
 </script>
