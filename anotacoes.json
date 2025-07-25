@@ -1,76 +1,84 @@
 {
   "notes": [
     {
+      "id": "note_1753475001602_p6j005gr4",
+      "title": "Layout daqui!",
+      "timestamp": "2025-07-25T20:25:55.312Z",
+      "content": "Mobile Friendly. Tá tudo cagado.\n\nTarefas dá pra arrumar e o ícone de perfil tá cagado.",
+      "status": "in_progress",
+      "theme": "theme-mint"
+    },
+    {
+      "content": "Empatou? Minigame entre os empatados. TUDO BUFADO. TELA BRANCA DO AKUMA E KONAMI CODE",
       "theme": "theme-matcha",
-      "status": "seen",
-      "timestamp": "2025-07-24T23:08:07.756Z",
+      "timestamp": "2025-07-25T19:07:33.201Z",
       "id": "note_1753398477470_1xcjzbbph",
-      "title": "Empate OP",
-      "content": "Empatou? Minigame entre os empatados. TUDO BUFADO."
+      "status": "seen",
+      "title": "Empate OP"
     },
     {
       "timestamp": "2025-07-24T22:56:50.845Z",
-      "theme": "theme-ocean",
-      "status": "seen",
       "id": "note_1753397810845_p318u3ror",
-      "content": "Of course. Crafting palettes where all 8 colors are highly distinguishable from each other for a specific type of color blindness is an excellent accessibility goal. The key is to leverage variations in **brightness and saturation** in addition to hues that the user can perceive well.\n\nHere are three distinct 8-color palettes, one for each major type of color vision deficiency. Each is designed so that the colors within that set are as distinct as possible from one another.\n\n---\n\n### 1. Palette for Deuteranopia (Green-Blind)\n\n*   **Design Philosophy:** Deuteranopes struggle to distinguish reds, greens, and browns. Their world is built primarily on a spectrum of **blues and yellows**. This palette leans heavily into that strength, using highly distinct shades of blue and ensuring that any \"warm\" colors are differentiated by extreme brightness, making them stand out as \"bright\" even if the hue is ambiguous.\n\n| Color Name | Hex Code | Swatch | Rationale |\n| :--- | :--- | :--- | :--- |\n| **Pure White** | `#FFFFFF` | ⬜️ | Maximum brightness, universal anchor. |\n| **Near Black** | `#1C1C1C` | ⬛️ | Maximum darkness, universal anchor. |\n| **Bright Yellow** | `#FDE100` | 🟨 | A core color that is perceived very clearly. |\n| **Vibrant Orange** | `#FF6A00` | 🟧 | Perceived as a variant of yellow, but its intensity and darkness distinguish it from pure yellow. |\n| **Deep Blue** | `#0044CC` | 🟦 | A strong, dark blue that is unmistakable and contrasts well with yellow/orange tones. |\n| **Sky Blue** | `#00A9E8` | 💧 | A much lighter, brighter blue. Its brightness makes it clearly distinct from the deep blue. |\n| **Vibrant Magenta**| `#E6007E` | 🌺 | Appears as a grayish-pink or magenta, but is distinct from the pure blues and yellows. |\n| **Medium Grey** | `#808080` | ◻️ | A neutral mid-tone that won't be confused with any of the vibrant colors. |\n\n---\n\n### 2. Palette for Protanopia (Red-Blind)\n\n*   **Design Philosophy:** Similar to Deuteranopia, but with a critical difference: reds appear very dark and dim, sometimes merging with black or dark brown. This palette **avoids pure reds** and instead focuses on a strong blue/yellow axis, adding distinct blue-green and yellow-green tones that are easily differentiated.\n\n| Color Name | Hex Code | Swatch | Rationale |\n| :--- | :--- | :--- | :--- |\n| **Pure White** | `#FFFFFF` | ⬜️ | Maximum brightness, universal anchor. |\n| **Near Black** | `#1C1C1C` | ⬛️ | Maximum darkness, universal anchor. |\n| **Bright Yellow** | `#FDE100` | 🟨 | The most vibrant and easily identifiable color for Protanopes. |\n| **Lime Green** | `#B3D400` | 🟩 | Perceived as a distinct shade of yellow, easily separated from pure yellow. |\n| **Strong Blue** | `#0050CF` | 🟦 | A pure, strong blue that provides a solid cool-color anchor. |\n| **Bright Cyan** | `#00A9E8` | 💧 | A light, bright blue-green that is clearly different in brightness and hue from the strong blue. |\n| **Turquoise** | `#009E97` | ✳️ | A darker blue-green. Its hue is distinct from pure blue for protanopes. |\n| **Bright Orange** | `#FF8C00` | 🟧 | Riskiest color here. It will appear as a dim yellow, but its saturation makes it distinct from black, the blues, and the brighter yellows. |\n\n---\n\n### 3. Palette for Tritanopia (Blue-Yellow Blind)\n\n*   **Design Philosophy:** Tritanopes struggle to distinguish blue from green and yellow from pink. This means the blue/yellow axis is unreliable. The palette must be built on the **red/cyan axis**, which they perceive clearly. We can use variations of red (pinks, oranges) and then contrast them with shades of cyan and neutral tones.\n\n| Color Name | Hex Code | Swatch | Rationale |\n| :--- | :--- | :--- | :--- |\n| **Pure White** | `#FFFFFF` | ⬜️ | Maximum brightness, universal anchor. |\n| **Near Black** | `#1C1C1C` | ⬛️ | Maximum darkness, universal anchor. |\n| **Bright Red** | `#E60000` | 🟥 | A core color that is perceived very clearly and strongly. |\n| **Vibrant Pink** | `#FF69B4` | 🌺 | Perceived as a lighter shade of red, its brightness clearly separates it from pure red. |\n| **Vivid Orange** | `#FF7F00` | 🟧 | Seen as a yellowish-red, it's distinct in hue from both pure red and pink. |\n| **Teal / Cyan** | `#009E97` | ✳️ | A core \"cool\" color. This is perceived as a distinct hue, not blue or green. |\n| **Rich Purple** | `#8A00C2` | 🟪 | Seen as a mix of red and a dark color (their perception of blue), making it a distinct \"dark reddish\" hue. |\n| **Medium Grey** | `#808080` | ◻️ | A safe neutral that provides a non-color option for contrast. |\n\n### Universal Tip\n\nWhen implementing these, remember that **brightness contrast is your most powerful tool**. Even if two hues are confusing, a very light version and a very dark version of those hues will almost always be distinguishable. This is why each palette includes pure white and near-black anchors.",
-      "title": "Colorblind PALETAS"
+      "status": "seen",
+      "theme": "theme-ocean",
+      "title": "Colorblind PALETAS",
+      "content": "Of course. Crafting palettes where all 8 colors are highly distinguishable from each other for a specific type of color blindness is an excellent accessibility goal. The key is to leverage variations in **brightness and saturation** in addition to hues that the user can perceive well.\n\nHere are three distinct 8-color palettes, one for each major type of color vision deficiency. Each is designed so that the colors within that set are as distinct as possible from one another.\n\n---\n\n### 1. Palette for Deuteranopia (Green-Blind)\n\n*   **Design Philosophy:** Deuteranopes struggle to distinguish reds, greens, and browns. Their world is built primarily on a spectrum of **blues and yellows**. This palette leans heavily into that strength, using highly distinct shades of blue and ensuring that any \"warm\" colors are differentiated by extreme brightness, making them stand out as \"bright\" even if the hue is ambiguous.\n\n| Color Name | Hex Code | Swatch | Rationale |\n| :--- | :--- | :--- | :--- |\n| **Pure White** | `#FFFFFF` | ⬜️ | Maximum brightness, universal anchor. |\n| **Near Black** | `#1C1C1C` | ⬛️ | Maximum darkness, universal anchor. |\n| **Bright Yellow** | `#FDE100` | 🟨 | A core color that is perceived very clearly. |\n| **Vibrant Orange** | `#FF6A00` | 🟧 | Perceived as a variant of yellow, but its intensity and darkness distinguish it from pure yellow. |\n| **Deep Blue** | `#0044CC` | 🟦 | A strong, dark blue that is unmistakable and contrasts well with yellow/orange tones. |\n| **Sky Blue** | `#00A9E8` | 💧 | A much lighter, brighter blue. Its brightness makes it clearly distinct from the deep blue. |\n| **Vibrant Magenta**| `#E6007E` | 🌺 | Appears as a grayish-pink or magenta, but is distinct from the pure blues and yellows. |\n| **Medium Grey** | `#808080` | ◻️ | A neutral mid-tone that won't be confused with any of the vibrant colors. |\n\n---\n\n### 2. Palette for Protanopia (Red-Blind)\n\n*   **Design Philosophy:** Similar to Deuteranopia, but with a critical difference: reds appear very dark and dim, sometimes merging with black or dark brown. This palette **avoids pure reds** and instead focuses on a strong blue/yellow axis, adding distinct blue-green and yellow-green tones that are easily differentiated.\n\n| Color Name | Hex Code | Swatch | Rationale |\n| :--- | :--- | :--- | :--- |\n| **Pure White** | `#FFFFFF` | ⬜️ | Maximum brightness, universal anchor. |\n| **Near Black** | `#1C1C1C` | ⬛️ | Maximum darkness, universal anchor. |\n| **Bright Yellow** | `#FDE100` | 🟨 | The most vibrant and easily identifiable color for Protanopes. |\n| **Lime Green** | `#B3D400` | 🟩 | Perceived as a distinct shade of yellow, easily separated from pure yellow. |\n| **Strong Blue** | `#0050CF` | 🟦 | A pure, strong blue that provides a solid cool-color anchor. |\n| **Bright Cyan** | `#00A9E8` | 💧 | A light, bright blue-green that is clearly different in brightness and hue from the strong blue. |\n| **Turquoise** | `#009E97` | ✳️ | A darker blue-green. Its hue is distinct from pure blue for protanopes. |\n| **Bright Orange** | `#FF8C00` | 🟧 | Riskiest color here. It will appear as a dim yellow, but its saturation makes it distinct from black, the blues, and the brighter yellows. |\n\n---\n\n### 3. Palette for Tritanopia (Blue-Yellow Blind)\n\n*   **Design Philosophy:** Tritanopes struggle to distinguish blue from green and yellow from pink. This means the blue/yellow axis is unreliable. The palette must be built on the **red/cyan axis**, which they perceive clearly. We can use variations of red (pinks, oranges) and then contrast them with shades of cyan and neutral tones.\n\n| Color Name | Hex Code | Swatch | Rationale |\n| :--- | :--- | :--- | :--- |\n| **Pure White** | `#FFFFFF` | ⬜️ | Maximum brightness, universal anchor. |\n| **Near Black** | `#1C1C1C` | ⬛️ | Maximum darkness, universal anchor. |\n| **Bright Red** | `#E60000` | 🟥 | A core color that is perceived very clearly and strongly. |\n| **Vibrant Pink** | `#FF69B4` | 🌺 | Perceived as a lighter shade of red, its brightness clearly separates it from pure red. |\n| **Vivid Orange** | `#FF7F00` | 🟧 | Seen as a yellowish-red, it's distinct in hue from both pure red and pink. |\n| **Teal / Cyan** | `#009E97` | ✳️ | A core \"cool\" color. This is perceived as a distinct hue, not blue or green. |\n| **Rich Purple** | `#8A00C2` | 🟪 | Seen as a mix of red and a dark color (their perception of blue), making it a distinct \"dark reddish\" hue. |\n| **Medium Grey** | `#808080` | ◻️ | A safe neutral that provides a non-color option for contrast. |\n\n### Universal Tip\n\nWhen implementing these, remember that **brightness contrast is your most powerful tool**. Even if two hues are confusing, a very light version and a very dark version of those hues will almost always be distinguishable. This is why each palette includes pure white and near-black anchors."
     },
     {
-      "content": "Na hora que morre, fazer um juice.",
-      "id": "note_1753393567815_npenv1phq",
-      "timestamp": "2025-07-24T22:59:12.931Z",
+      "status": "seen",
       "theme": "theme-matcha",
+      "timestamp": "2025-07-24T22:59:12.931Z",
       "title": "Juice da Arubinha",
+      "content": "Na hora que morre, fazer um juice.",
+      "id": "note_1753393567815_npenv1phq"
+    },
+    {
+      "id": "note_1753392807845_trp1xh1v6",
+      "theme": "theme-cherry",
+      "title": "EDSON",
+      "timestamp": "2025-07-25T20:24:40.410Z",
+      "status": "in_progress",
+      "content": "Ver negócio da sombra\n[X] Arrumar o final map q n tá na build\n[X] Fog collision\n[X] câmera n segue na arubinha\n[X] Personagem fica branco depois da porrada\n[X] O loading tem que ser local (é local mas tava fora de ordem)\n- arrumar o loading screen que não tá saindo pro client\n[X] animação loading screen\npregame não tá puxando informação no client\ngameselection bilboard puxando errado nos clients"
+    },
+    {
+      "content": "Lembrar de arrumar o collider dos Arcos da Lapa",
+      "title": "Collider da Lapa",
+      "id": "note_1753311195823_wonywunwi",
+      "timestamp": "2025-07-24T18:25:23.591Z",
+      "theme": "theme-matcha",
       "status": "seen"
     },
     {
-      "theme": "theme-cherry",
-      "status": "none",
-      "id": "note_1753392807845_trp1xh1v6",
-      "timestamp": "2025-07-24T23:42:00.573Z",
-      "content": "[x] Arrumar o final map q n tá na build\narrumar o loading screen que não tá saindo pro client\nanimação loading screen\npregame não tá puxando informação no client\nVer negócio da sombra\nCorrida ao topo cheio de problemas - Personagem fica branco depois da porrada\n[X] Fog collision\n[X] câmera n segue na arubinha\nO loading tem que ser local",
-      "title": "GIL"
-    },
-    {
-      "theme": "theme-matcha",
-      "id": "note_1753311195823_wonywunwi",
-      "status": "seen",
-      "content": "Lembrar de arrumar o collider dos Arcos da Lapa",
-      "timestamp": "2025-07-24T18:25:23.591Z",
-      "title": "Collider da Lapa"
-    },
-    {
+      "id": "note_1753300087580_up41ho8pi",
       "content": "Ajustar a camera dos sequencers, e botar pra tocar na BP do GameState. Tem que ajustar a camera normal também, com base na imagem de referência.",
       "status": "seen",
       "title": "[GameSelection] Sequencers",
-      "theme": "theme-rose",
-      "id": "note_1753300087580_up41ho8pi",
-      "timestamp": "2025-07-24T18:25:17.211Z"
+      "timestamp": "2025-07-24T18:25:17.211Z",
+      "theme": "theme-rose"
     },
     {
-      "theme": "theme-rose",
+      "content": "precisa da música do pião da casa própria",
+      "id": "note_1753300060252_lc82bjm4k",
       "status": "seen",
       "title": "[GameSelection] Música",
-      "content": "precisa da música do pião da casa própria",
-      "timestamp": "2025-07-24T18:14:35.729Z",
-      "id": "note_1753300060252_lc82bjm4k"
+      "theme": "theme-rose",
+      "timestamp": "2025-07-24T18:14:35.729Z"
     },
     {
-      "theme": "theme-apricot",
-      "id": "note_1753204632199_718fokpbh",
+      "timestamp": "2025-07-24T18:25:29.673Z",
       "title": "Arrumar Site",
       "status": "seen",
-      "timestamp": "2025-07-24T18:25:29.673Z",
-      "content": "Logo antigo, imagens velhas, informações faltando..."
+      "content": "Logo antigo, imagens velhas, informações faltando...",
+      "id": "note_1753204632199_718fokpbh",
+      "theme": "theme-apricot"
     },
     {
-      "status": "seen",
-      "id": "note_1753136350021_x9pe3nstt",
+      "theme": "theme-matcha",
       "title": "Mudança nos mapas",
+      "status": "seen",
       "content": "Mudar o Sol de posição no mesmo minigame em vezes diferentes que se acessa o mapa.",
-      "timestamp": "2025-07-24T18:25:03.455Z",
-      "theme": "theme-matcha"
+      "id": "note_1753136350021_x9pe3nstt",
+      "timestamp": "2025-07-24T18:25:03.455Z"
     }
   ]
 }

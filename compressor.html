@@ -19,7 +19,7 @@
         body::before { content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background-image: var(--bg-image); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: var(--bg-opacity); transition: opacity 0.3s ease, background-image 0.5s ease-in-out; }
         .container { max-width: 900px; margin: 0 auto; padding: 20px; }
         .main-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: var(--card-bg-color); box-shadow: 0 2px 4px var(--card-shadow-color); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; }
-        .header-left-group { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; flex-grow: 1; }
+        .header-left-group { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .main-header h1 { margin: 0; font-size: 1.5em; }
         .btn { padding: 8px 15px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s, opacity 0.2s; color: white; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; flex-shrink: 0; }
         .btn-secondary { background-color: #6c757d; } .btn-primary { background-color: var(--accent-color); } .btn-success { background-color: var(--success-color); } .btn-danger { background-color: #dc3545; }
@@ -62,6 +62,12 @@
         .profile-menu-body .btn-sm.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
         .profile-menu-footer { padding: 15px; border-top: 1px solid rgba(128,128,128,0.1); display: flex; justify-content: center; }
         #logout-from-menu-btn { width: 100%; background-color: #dc3545; color: white; border: none; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold;}
+
+        @media (max-width: 768px) {
+            .header-left-group {
+                flex-grow: 1;
+            }
+        }
     </style>
 </head>
 <body>
