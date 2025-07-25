@@ -82,7 +82,6 @@
     <div id="note-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close">×</span><h2 id="modal-title">Adicionar Anotação</h2><form id="note-form" class="form"><input type="hidden" id="note-id"><div><label for="note-title">Título:</label><input type="text" id="note-title" required></div><div><label for="note-status">Status:</label><select id="note-status"><option value="none">Nenhum</option><option value="seen">Visto</option><option value="in_progress">Em Progresso</option><option value="done">Feito</option></select></div><div><label>Tema:</label><div id="note-theme-selector"></div></div><div><label for="note-content">Conteúdo:</label><textarea id="note-content" required></textarea></div><div class="modal-footer"><button type="submit" class="btn btn-primary">Salvar Anotação</button></div></form></div></div>
     <div id="filter-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close">×</span><h2>Filtrar Anotações</h2><form id="filter-form" class="form"><fieldset><legend>Por Data</legend><label for="start-date-filter">De:</label><input type="datetime-local" id="start-date-filter"><label for="end-date-filter">Até:</label><input type="datetime-local" id="end-date-filter"></fieldset><fieldset><legend>Por Status</legend><div id="filter-status-container" style="display: flex; flex-wrap: wrap; gap: 10px;"></div></fieldset><fieldset><legend>Por Tema</legend><div id="filter-color-container" style="display: flex; flex-wrap: wrap; gap: 10px;"></div></fieldset><div class="modal-footer" style="justify-content: space-between; gap: 10px;"><button type="button" id="clear-filters-btn" class="btn btn-secondary">Limpar Filtros</button><button type="submit" class="btn btn-primary">Aplicar</button></div></form></div></div>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
     // --- Configuração do Firebase ---
     const firebaseConfig = { apiKey: "AIzaSyC9OjBDOX9UUlCrPuhIZj5ipolRT4Gu420", authDomain: "gerenciadorcentral-f01e3.firebaseapp.com", projectId: "gerenciadorcentral-f01e3", storageBucket: "gerenciadorcentral-f01e3.appspot.com", messagingSenderId: "8874050225", appId: "1:8874050225:web:a536c7feb14f36af7cd890" };
     firebase.initializeApp(firebaseConfig);
@@ -94,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let notesData = [], initialDataState = '[]', activeFilters = { statuses: [], themes: [], startDate: null, endDate: null };
     let userStyleDocRef, currentUser, unsubscribeListener;
     const notesDocRef = db.collection('sharedData').doc('sharedNotes');
-    
+
     // --- Gatekeeper de Autenticação ---
     auth.onAuthStateChanged(user => {
         if (user) {
@@ -109,41 +108,47 @@ document.addEventListener('DOMContentLoaded', () => {
         currentUser = user;
         userStyleDocRef = db.collection('userData').doc(user.uid);
         
-        initializeSharedData();
+        initializeSharedDataAndListeners();
         loadAndApplyGlobalStyle();
         setupEventListeners();
         updateContainerPadding();
         initSortable();
     }
     
-    async function initializeSharedData() {
-        try {
-            const doc = await notesDocRef.get();
-            if (!doc.exists) {
-                // Se o doc não existe, o primeiro usuário a entrar o cria.
-                await notesDocRef.set({
-                    allowedUsers: [currentUser.uid],
-                    notes: []
-                });
-            }
-            // Agora que o documento com certeza existe, podemos escutar por mudanças.
-            if (unsubscribeListener) unsubscribeListener(); // Para o listener antigo se houver
-            
-            unsubscribeListener = notesDocRef.onSnapshot(snapshot => {
-                if (!snapshot.exists) return; // Segurança extra
-                notesData = snapshot.data().notes || [];
+    // --- Lógica de Dados Firestore ---
+    async function initializeSharedDataAndListeners() {
+        if (unsubscribeListener) unsubscribeListener(); // Para o listener antigo para evitar duplicação
+
+        unsubscribeListener = notesDocRef.onSnapshot(async (doc) => {
+            if (doc.exists) {
+                notesData = doc.data().notes || [];
                 initialDataState = JSON.stringify(notesData);
                 applyFiltersAndRender();
-            }, error => {
-                console.error("Erro de permissão no listener:", error);
-                document.querySelector('.container').innerHTML = `<p style='color:red;padding:20px; text-align:center; font-size:1.2em;'>Falha ao carregar anotações. Você não tem permissão para ver este documento. Peça para um membro existente convidá-lo.</p>`;
-            });
-        } catch (error) {
-            console.error("Erro Crítico ao inicializar dados compartilhados:", error);
-        }
+            } else {
+                // Documento não existe, vamos criá-lo.
+                try {
+                    await notesDocRef.set({
+                        allowedUsers: [currentUser.uid],
+                        notes: []
+                    });
+                    // O próprio onSnapshot será acionado novamente após a criação.
+                } catch (error) {
+                    console.error("Erro ao criar documento compartilhado:", error);
+                }
+            }
+        }, error => {
+            console.error("Erro de permissão no listener do Firestore:", error);
+            document.querySelector('.container').innerHTML = `<p style='color:red;padding:20px; text-align:center; font-size:1.2em;'>Falha ao carregar anotações. Você não tem permissão para ver este documento. Peça para um membro existente convidá-lo.</p>`;
+        });
     }
+    
+    const saveDataToFirebase = () => {
+        notesDocRef.update({ notes: notesData })
+            .then(() => { initialDataState = JSON.stringify(notesData); })
+            .catch(error => console.error("Erro ao salvar:", error));
+    };
 
-    // --- Demais Funções (sem alterações estruturais) ---
+    // --- Demais Funções (Lógica da UI, sem alterações) ---
     const statusMap = { none: 'Nenhum', seen: 'Visto', in_progress: 'Em Progresso', done: 'Feito' };
     const statusCycle = ['none', 'seen', 'in_progress', 'done'];
     const themes = [ { name: 'default-light', bg: '#FFFFFF', text: '#1a2533', title: '#007bff' }, { name: 'default-dark', bg: '#2d3436', text: '#dfe6e9', title: '#74b9ff' }, { name: 'slate', bg: '#4a4a4a', text: '#f1f1f1', title: '#a4b0be' }, { name: 'solar', bg: '#fdf6e3', text: '#657b83', title: '#b58900' }, { name: 'mint', bg: '#E0F2F1', text: '#004D40', title: '#00796B' }, { name: 'apricot', bg: '#FFECB3', text: '#E65100', title: '#F57C00' }, { name: 'lavender', bg: '#E1BEE7', text: '#4A148C', title: '#7B1FA2' }, { name: 'rose', bg: '#FCE4EC', text: '#880E4F', title: '#C2185B' }, { name: 'matcha', bg: '#e8f5e9', text: '#2e7d32', title: '#4caf50' }, { name: 'ocean', bg: '#01579B', text: '#B3E5FC', title: '#E1F5FE' }, { name: 'forest', bg: '#1B5E20', text: '#C8E6C9', title: '#A5D6A7' }, { name: 'cherry', bg: '#880000', text: '#ffcdd2', title: '#ef9a9a' } ];
@@ -153,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const generateId = () => `note_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const formatTimestamp = (isoString) => isoString ? new Date(isoString).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '';
     const hasUnsavedChanges = () => JSON.stringify(notesData) !== initialDataState;
-    const saveDataToFirebase = () => notesDocRef.update({ notes: notesData }).then(() => { initialDataState = JSON.stringify(notesData); }).catch(error => console.error("Erro ao salvar:", error));
     async function loadAndApplyGlobalStyle() { if (!userStyleDocRef) return; try { const doc = await userStyleDocRef.get(); if (doc.exists && doc.data().styleData) { const style = doc.data().styleData; document.body.className = ''; document.body.classList.add(style.theme || 'light-theme'); document.body.style.backgroundColor = style.bgColor; document.documentElement.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none'); document.documentElement.style.setProperty('--bg-opacity', style.bgOpacity || '1'); } } catch (e) { console.error("Falha ao carregar estilos:", e); } }
     const updateContainerPadding = () => { const header = document.querySelector('.main-header'), container = document.querySelector('.container'); if (header && container) container.style.paddingTop = `${header.offsetHeight + 20}px`; };
     const handleHeaderScroll = () => { if (window.matchMedia('(max-width: 768px)').matches) { document.querySelector('.main-header').classList.toggle('header-scrolled', window.scrollY > 10); } updateContainerPadding(); };
