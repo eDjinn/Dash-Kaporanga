@@ -85,7 +85,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const firebaseConfig = { apiKey: "AIzaSyC9OjBDOX9UUlCrPuhIZj5ipolRT4Gu420", authDomain: "gerenciadorcentral-f01e3.firebaseapp.com", projectId: "gerenciadorcentral-f01e3", storageBucket: "gerenciadorcentral-f01e3.appspot.com", messagingSenderId: "8874050225", appId: "1:8874050225:web:a536c7feb14f36af7cd890" };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore(), auth = firebase.auth(), functions = firebase.functions();
+    const db = firebase.firestore(), auth = firebase.auth();
+    // ALTERAÇÃO CRÍTICA: Especifique a região da sua função aqui!
+    const functions = firebase.app().functions('us-central1');
     const notesDocRef = db.collection('sharedData').doc('sharedNotes');
     let userStyleDocRef, currentUser;
     let notesData = [], initialDataState = '[]', activeFilters = { statuses: [], themes: [], startDate: null, endDate: null };
