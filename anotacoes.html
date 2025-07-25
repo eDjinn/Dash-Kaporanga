@@ -86,20 +86,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const firebaseConfig = { apiKey: "AIzaSyC9OjBDOX9UUlCrPuhIZj5ipolRT4Gu420", authDomain: "gerenciadorcentral-f01e3.firebaseapp.com", projectId: "gerenciadorcentral-f01e3", storageBucket: "gerenciadorcentral-f01e3.appspot.com", messagingSenderId: "8874050225", appId: "1:8874050225:web:a536c7feb14f36af7cd890" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore(), auth = firebase.auth();
-    // ALTERAÇÃO CRÍTICA: Especifique a região da sua função aqui!
     const functions = firebase.app().functions('us-central1');
     const notesDocRef = db.collection('sharedData').doc('sharedNotes');
-    let userStyleDocRef, currentUser;
+    let userStyleDocRef, currentUser, unsubscribe;
     let notesData = [], initialDataState = '[]', activeFilters = { statuses: [], themes: [], startDate: null, endDate: null };
 
     auth.onAuthStateChanged(user => {
         if (user) {
             currentUser = user;
             userStyleDocRef = db.collection('userData').doc(user.uid);
-            loadAndApplyGlobalStyle(); loadDataFromFirebase(); initSortable(); updateContainerPadding(); setupEventListeners();
+            initializeSharedData();
+            loadAndApplyGlobalStyle();
+            initSortable();
+            updateContainerPadding();
+            setupEventListeners();
         } else { window.location.href = 'login.html'; }
     });
-
+    
+    async function initializeSharedData() {
+        try {
+            const doc = await notesDocRef.get();
+            if (!doc.exists) {
+                await notesDocRef.set({
+                    allowedUsers: [currentUser.uid],
+                    notes: []
+                });
+            }
+            // Agora que garantimos que o doc existe, podemos escutar
+            if(unsubscribe) unsubscribe(); // Para o listener antigo se houver
+            unsubscribe = notesDocRef.onSnapshot(snapshot => {
+                notesData = snapshot.data().notes || [];
+                initialDataState = JSON.stringify(notesData);
+                applyFiltersAndRender();
+            }, error => {
+                console.error("Erro no listener do snapshot:", error);
+                 notesContainer.innerHTML = `<p style='color:red;padding:20px; text-align:center;'>Falha ao carregar anotações. Você não tem permissão para ver este documento. Peça para um membro existente convidá-lo.</p>`;
+            });
+        } catch (error) {
+            console.error("Erro ao inicializar dados compartilhados:", error);
+        }
+    }
+    
     const statusMap = { none: 'Nenhum', seen: 'Visto', in_progress: 'Em Progresso', done: 'Feito' };
     const statusCycle = ['none', 'seen', 'in_progress', 'done'];
     const themes = [ { name: 'default-light', bg: '#FFFFFF', text: '#1a2533', title: '#007bff' }, { name: 'default-dark', bg: '#2d3436', text: '#dfe6e9', title: '#74b9ff' }, { name: 'slate', bg: '#4a4a4a', text: '#f1f1f1', title: '#a4b0be' }, { name: 'solar', bg: '#fdf6e3', text: '#657b83', title: '#b58900' }, { name: 'mint', bg: '#E0F2F1', text: '#004D40', title: '#00796B' }, { name: 'apricot', bg: '#FFECB3', text: '#E65100', title: '#F57C00' }, { name: 'lavender', bg: '#E1BEE7', text: '#4A148C', title: '#7B1FA2' }, { name: 'rose', bg: '#FCE4EC', text: '#880E4F', title: '#C2185B' }, { name: 'matcha', bg: '#e8f5e9', text: '#2e7d32', title: '#4caf50' }, { name: 'ocean', bg: '#01579B', text: '#B3E5FC', title: '#E1F5FE' }, { name: 'forest', bg: '#1B5E20', text: '#C8E6C9', title: '#A5D6A7' }, { name: 'cherry', bg: '#880000', text: '#ffcdd2', title: '#ef9a9a' } ];
@@ -110,25 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const formatTimestamp = (isoString) => isoString ? new Date(isoString).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '';
     const hasUnsavedChanges = () => JSON.stringify(notesData) !== initialDataState;
     const saveDataToFirebase = () => notesDocRef.set({ notes: notesData }, { merge: true }).then(() => { initialDataState = JSON.stringify(notesData); }).catch(error => console.error("Erro ao salvar:", error));
-    
-    const loadDataFromFirebase = () => {
-        notesDocRef.onSnapshot(doc => {
-            if (doc.exists) {
-                notesData = doc.data().notes || [];
-                initialDataState = JSON.stringify(notesData);
-                applyFiltersAndRender();
-            } else {
-                notesDocRef.set({
-                    allowedUsers: [currentUser.uid],
-                    notes: []
-                }).catch(error => console.error("Erro ao criar documento compartilhado:", error));
-            }
-        }, error => {
-            console.error("Erro de permissão ao carregar dados:", error);
-            notesContainer.innerHTML = `<p style='color:red;padding:20px; text-align:center;'>Falha ao carregar anotações. Você não tem permissão para ver este documento. Peça para um membro existente convidá-lo.</p>`;
-        });
-    };
-    
     async function loadAndApplyGlobalStyle() { if (!userStyleDocRef) return; try { const doc = await userStyleDocRef.get(); if (doc.exists && doc.data().styleData) { const style = doc.data().styleData; document.body.className = ''; document.body.classList.add(style.theme || 'light-theme'); document.body.style.backgroundColor = style.bgColor; document.documentElement.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none'); document.documentElement.style.setProperty('--bg-opacity', style.bgOpacity || '1'); } } catch (e) { console.error("Falha ao carregar estilos:", e); } }
     const updateContainerPadding = () => { const header = document.querySelector('.main-header'), container = document.querySelector('.container'); if (header && container) container.style.paddingTop = `${header.offsetHeight + 20}px`; };
     const handleHeaderScroll = () => { if (window.matchMedia('(max-width: 768px)').matches) { document.querySelector('.main-header').classList.toggle('header-scrolled', window.scrollY > 10); } updateContainerPadding(); };

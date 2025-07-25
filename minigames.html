@@ -78,45 +78,51 @@ document.addEventListener('DOMContentLoaded', () => {
     const firebaseConfig = { apiKey: "AIzaSyC9OjBDOX9UUlCrPuhIZj5ipolRT4Gu420", authDomain: "gerenciadorcentral-f01e3.firebaseapp.com", projectId: "gerenciadorcentral-f01e3", storageBucket: "gerenciadorcentral-f01e3.appspot.com", messagingSenderId: "8874050225", appId: "1:8874050225:web:a536c7feb14f36af7cd890" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore(), auth = firebase.auth();
-    // ALTERAÇÃO CRÍTICA: Especifique a região da sua função aqui!
     const functions = firebase.app().functions('us-central1'); 
     const minigamesDocRef = db.collection('sharedData').doc('sharedMinigames');
-    let userStyleDocRef, currentUser;
+    let userStyleDocRef, currentUser, unsubscribe;
     let minigameData = [], projectName = "Carregando...", selectedItems = new Set(), currentSort = {}, initialDataState = '', isSaving = false;
 
     auth.onAuthStateChanged(user => {
         if (user) {
             currentUser = user;
             userStyleDocRef = db.collection('userData').doc(user.uid);
-            loadAndApplyGlobalStyle(); loadDataFromFirebase(); setupEventListeners(); updateContainerPadding();
+            initializeSharedData();
+            loadAndApplyGlobalStyle();
+            setupEventListeners();
+            updateContainerPadding();
         } else { window.location.href = 'login.html'; }
     });
-
-    const saveDataToFirebase = () => { if (isSaving) return; isSaving = true; minigamesDocRef.set({ projectName, games: minigameData }, { merge: true }).then(() => { initialDataState = JSON.stringify(minigameData); }).catch(error => console.error("Erro ao salvar:", error)).finally(() => { isSaving = false; }); };
     
-    const loadDataFromFirebase = () => {
-        minigamesDocRef.onSnapshot(doc => {
-            if (doc.exists) {
-                const data = doc.data();
+    async function initializeSharedData() {
+        try {
+            const doc = await minigamesDocRef.get();
+            if (!doc.exists) {
+                await minigamesDocRef.set({
+                    allowedUsers: [currentUser.uid],
+                    projectName: "Novo Projeto de Minigames",
+                    games: []
+                });
+            }
+            if (unsubscribe) unsubscribe();
+            unsubscribe = minigamesDocRef.onSnapshot(snapshot => {
+                const data = snapshot.data();
                 minigameData = data.games || [];
                 projectName = data.projectName || "Projeto";
                 initialDataState = JSON.stringify(minigameData);
                 document.getElementById('project-title').textContent = projectName;
                 updateAndRender();
-            } else {
-                 minigamesDocRef.set({
-                    allowedUsers: [currentUser.uid],
-                    projectName: "Novo Projeto de Minigames",
-                    games: []
-                }).catch(error => console.error("Erro ao criar documento de minigames:", error));
-            }
-        }, error => {
-            console.error("Erro de permissão ao carregar dados:", error);
-            document.getElementById('project-title').textContent = "Falha ao Carregar";
-            document.querySelector('#table-container').innerHTML = "<p style='color:red;padding:20px;text-align:center;'>Falha ao carregar dados. Você não tem permissão para ver este documento. Peça para um membro existente convidá-lo.</p>";
-        });
-    };
+            }, error => {
+                console.error("Erro no listener do snapshot:", error);
+                document.getElementById('project-title').textContent = "Falha ao Carregar";
+                document.querySelector('#table-container').innerHTML = "<p style='color:red;padding:20px;text-align:center;'>Falha ao carregar dados. Você não tem permissão para ver este documento. Peça para um membro existente convidá-lo.</p>";
+            });
+        } catch (error) {
+             console.error("Erro ao inicializar dados compartilhados:", error);
+        }
+    }
 
+    const saveDataToFirebase = () => { if (isSaving) return; isSaving = true; minigamesDocRef.set({ projectName, games: minigameData }, { merge: true }).then(() => { initialDataState = JSON.stringify(minigameData); }).catch(error => console.error("Erro ao salvar:", error)).finally(() => { isSaving = false; }); };
     async function loadAndApplyGlobalStyle() { if (!userStyleDocRef) return; try { const doc = await userStyleDocRef.get(); if (doc.exists && doc.data().styleData) { const style = doc.data().styleData; document.body.className = ''; document.body.classList.add(style.theme || 'light-theme'); document.body.style.backgroundColor = style.bgColor; document.documentElement.style.setProperty('--bg-image', style.bgImage ? `url('${style.bgImage}')` : 'none'); document.documentElement.style.setProperty('--bg-opacity', style.bgOpacity || '1'); } } catch (e) { console.error("Falha ao carregar estilos:", e); } }
     const hasUnsavedChanges = () => JSON.stringify(minigameData) !== initialDataState;
     const updateAndRender = (doSave = false) => { filterAndRender(); if(doSave) saveDataToFirebase(); };
