@@ -27,9 +27,9 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--page-bg-color); color: var(--primary-text-color);
-            margin: 0; padding: 5vh 15px; box-sizing: border-box;
-            position: relative;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            margin: 0; padding: 20px 15px 20px; display: flex; flex-direction: column;
+            align-items: center; min-height: 100vh; position: relative;
+            transition: background-color 0.3s ease, color 0.3s ease; box-sizing: border-box;
         }
         body::before {
             content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -37,7 +37,6 @@
             background-position: center; background-repeat: no-repeat;
             opacity: var(--bg-opacity); transition: opacity 0.3s ease, background-image 0.5s ease-in-out;
         }
-        .page-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto; }
         .main-container { width: 100%; max-width: 1200px; margin-top: 20px; }
         .card-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; min-height: 100px; }
         .section-divider { width: 100%; border: none; border-top: 1px solid var(--secondary-text-color); margin: 25px 0; opacity: 0.3; }
@@ -63,22 +62,27 @@
         .card-tiny .card-icon { font-size: 2.8em; margin-bottom: 10px; }
         .card-tiny h3 { font-size: 1em; margin-bottom: 0; }
         .card-tiny p { display: none; }
+        
         .add-card-placeholder { width: 48px; height: 48px; border-radius: 10px; background-color: #e9ecef; color: #495057; font-size: 24px; font-weight: bold; cursor: pointer; display: grid; place-items: center; transition: all 0.3s ease; border: none; margin-left: 10px; align-self: center; flex-shrink: 0; }
         .add-card-placeholder > span { position: relative; top: -3px; }
         .add-card-placeholder:hover { background-color: #d7dde2; transform: scale(1.08); }
         body.dark-theme .add-card-placeholder { background-color: #383838; color: var(--primary-text-color); }
         body.dark-theme .add-card-placeholder:hover { background-color: #4f4f4f; }
-        .card-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 5px; opacity: 0; transition: opacity 0.2s ease-in-out; z-index: 5; }
+        .card-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 5px; opacity: 0; transition: opacity 0.2s ease-in-out; }
         .card:hover .card-actions { opacity: 1; }
         .card-action-btn { background: rgba(0,0,0,0.4); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
         .card-action-btn:hover { background: rgba(0,0,0,0.7); }
-        .header-container { width: 100%; display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 40px; position: relative; z-index: 10; }
-        .google-apps-header { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; }
+        .header-container { width: 100%; max-width: 1200px; display: flex; flex-direction: row; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 0; position: relative; }
+        .google-apps-header { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; flex-grow: 1; justify-content: flex-start; }
         .app-link-header img { width: 32px; height: 32px; transition: transform 0.2s ease; }
         .app-link-header:hover img { transform: scale(1.15); }
+        .google-search-form { display: inline-flex; align-items: center; border: 1px solid #dfe1e5; border-radius: 24px; padding: 5px 15px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%; max-width: 600px; margin: 0 auto; }
+        .google-search-form:hover { box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .google-search-form input[type="text"] { border: none; outline: none; padding: 10px; font-size: 16px; width: 100%; background: transparent; }
+        .google-search-form button { background: none; border: none; cursor: pointer; font-size: 18px; color: #4285F4; padding-right: 5px; }
         
-        #modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: none; }
-        #add-item-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--page-bg-color); padding: 25px; border-radius: 10px; z-index: 10001; width: 90%; max-width: 400px; display: none; }
+        #modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10; display: none; }
+        #add-item-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--page-bg-color); padding: 25px; border-radius: 10px; z-index: 11; width: 90%; max-width: 400px; display: none; }
         #add-item-modal h3 { margin-top: 0; color: var(--primary-text-color); }
         #add-item-form { display: flex; flex-direction: column; gap: 15px; }
         #add-item-form input { padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 1em; background-color: var(--card-bg-color); color: var(--primary-text-color); }
@@ -92,10 +96,10 @@
         .emoji-picker-container { position: absolute; top: 110%; right: 0; z-index: 12; display: none; }
 
         /* --- ESTILOS DO MENU DE PERFIL DO USUÁRIO --- */
-        #user-profile-menu-container { position: relative; }
+        #user-profile-menu-container { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); }
         .user-profile-trigger { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 2px solid var(--accent-color); padding: 2px; background-color: var(--card-bg-color); }
         .user-profile-trigger img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-        .profile-menu-dropdown { display: none; position: absolute; top: calc(100% + 10px); right: 0; background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 8px 16px var(--card-shadow-color); z-index: 10001; width: 300px; border: 1px solid rgba(128,128,128,0.2); }
+        .profile-menu-dropdown { display: none; position: absolute; top: calc(100% + 10px); right: 0; background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 8px 16px var(--card-shadow-color); z-index: 2000; width: 300px; border: 1px solid rgba(128,128,128,0.2); }
         .profile-menu-dropdown.visible { display: block; }
         .profile-menu-header { display: flex; flex-direction: column; align-items: center; padding: 20px; border-bottom: 1px solid rgba(128,128,128,0.1); }
         .profile-menu-header .profile-pic-wrapper { position: relative; cursor: pointer; }
@@ -113,46 +117,50 @@
         .btn-primary { background-color: var(--accent-color); color: white; } .btn-secondary { background-color: var(--secondary-text-color); color: white; } .btn-danger { background-color: #dc3545; color: white; }
 
         @media (max-width: 768px) {
-            body { padding-top: 30px; }
-            .header-container { flex-direction: column; gap: 20px; margin-bottom: 20px; }
+            body { padding: 15px 10px; } 
+            .main-container { margin-top: 15px; } 
+            .google-apps-header { gap: 10px; }
             .card { padding: 20px; } 
             .card-small { width: 150px; padding: 15px 10px; }
             .card-tiny { width: 100px; height: 100px; }
             .card:not(.card-small):not(.card-tiny) { width: 150px; padding: 15px 10px; }
             .card:not(.card-small):not(.card-tiny) .card-icon { font-size: 2.5em; }
             .card:not(.card-small):not(.card-tiny) h3 { font-size: 1.1em; }
-            .profile-menu-dropdown { right: 10px; left: auto; width: 300px; max-width: calc(100vw - 20px); }
+            #user-profile-menu-container { position: static; transform: none; margin-top: 10px; width: 100%; display: flex; justify-content: flex-end; }
         }
     </style>
 </head>
 <body class="light-theme">
-    <div class="page-wrapper">
-        <header class="header-container">
-            <div class="google-apps-header">
-                <a href="https://myaccount.google.com/" class="app-link-header" title="Conta Google"><img src="https://ssl.gstatic.com/images/branding/product/2x/avatar_circle_blue_96dp.png" alt="Conta Google"></a>
-                <a href="https://mail.google.com/" class="app-link-header" title="Gmail"><img src="https://ssl.gstatic.com/images/branding/product/1x/gmail_2020q4_48dp.png" alt="Gmail"></a>
-                <a href="https://drive.google.com/" class="app-link-header" title="Google Drive"><img src="https://ssl.gstatic.com/images/branding/product/2x/drive_48dp.png" alt="Google Drive"></a>
-                <a href="https://docs.google.com/" class="app-link-header" title="Google Documentos"><img src="https://ssl.gstatic.com/images/branding/product/2x/docs_48dp.png" alt="Google Documentos"></a>
-                <a href="https://sheets.google.com/" class="app-link-header" title="Google Planilhas"><img src="https://ssl.gstatic.com/images/branding/product/2x/sheets_48dp.png" alt="Google Planilhas"></a>
-                <a href="https://youtube.com/" class="app-link-header" title="YouTube"><img src="https://ssl.gstatic.com/images/branding/product/2x/youtube_48dp.png" alt="YouTube"></a>
-                <a href="https://maps.google.com/" class="app-link-header" title="Google Maps"><img src="https://ssl.gstatic.com/images/branding/product/2x/maps_48dp.png" alt="Google Maps"></a>
-                <a href="https://calendar.google.com/" class="app-link-header" title="Google Calendário"><img src="https://ssl.gstatic.com/images/branding/product/2x/calendar_48dp.png" alt="Google Calendário"></a>
-                <a href="https://photos.google.com/" class="app-link-header" title="Google Fotos"><img src="https://ssl.gstatic.com/images/branding/product/2x/photos_48dp.png" alt="Google Fotos"></a>
-                <a href="https://translate.google.com/" class="app-link-header" title="Google Tradutor"><img src="https://www.gstatic.com/images/branding/product/1x/translate_48dp.png" alt="Google Tradutor"></a>
-            </div>
-            <div id="user-profile-menu-container"></div>
-        </header>
 
-        <main class="main-container">
-            <div class="content">
-                <div id="managers-container" class="card-container"></div>
-                <hr class="section-divider">
-                <div id="links-container" class="card-container"></div>
-                <hr class="section-divider">
-                <div id="quick-access-container" class="card-container"></div>
-            </div>
-        </main>
-    </div>
+    <header class="header-container">
+        <div class="google-apps-header">
+             <a href="https://myaccount.google.com/" class="app-link-header" title="Conta Google"><img src="https://ssl.gstatic.com/images/branding/product/2x/avatar_circle_blue_96dp.png" alt="Conta Google"></a>
+             <a href="https://mail.google.com/" class="app-link-header" title="Gmail"><img src="https://ssl.gstatic.com/images/branding/product/1x/gmail_2020q4_48dp.png" alt="Gmail"></a>
+             <a href="https://drive.google.com/" class="app-link-header" title="Google Drive"><img src="https://ssl.gstatic.com/images/branding/product/2x/drive_48dp.png" alt="Google Drive"></a>
+             <a href="https://docs.google.com/" class="app-link-header" title="Google Documentos"><img src="https://ssl.gstatic.com/images/branding/product/2x/docs_48dp.png" alt="Google Documentos"></a>
+             <a href="https://sheets.google.com/" class="app-link-header" title="Google Planilhas"><img src="https://ssl.gstatic.com/images/branding/product/2x/sheets_48dp.png" alt="Google Planilhas"></a>
+             <a href="https://youtube.com/" class="app-link-header" title="YouTube"><img src="https://ssl.gstatic.com/images/branding/product/2x/youtube_48dp.png" alt="YouTube"></a>
+             <a href="https://maps.google.com/" class="app-link-header" title="Google Maps"><img src="https://ssl.gstatic.com/images/branding/product/2x/maps_48dp.png" alt="Google Maps"></a>
+             <a href="https://calendar.google.com/" class="app-link-header" title="Google Calendário"><img src="https://ssl.gstatic.com/images/branding/product/2x/calendar_48dp.png" alt="Google Calendário"></a>
+             <a href="https://photos.google.com/" class="app-link-header" title="Google Fotos"><img src="https://ssl.gstatic.com/images/branding/product/2x/photos_48dp.png" alt="Google Fotos"></a>
+             <a href="https://translate.google.com/" class="app-link-header" title="Google Tradutor"><img src="https://www.gstatic.com/images/branding/product/1x/translate_48dp.png" alt="Google Tradutor"></a>
+        </div>
+        <form action="https://www.google.com/search" method="get" target="_blank" class="google-search-form" id="search-form">
+            <button type="submit">🔍</button>
+            <input type="text" name="q" placeholder="Pesquisar ou digitar um endereço" autofocus id="search-input">
+        </form>
+        <div id="user-profile-menu-container"></div>
+    </header>
+
+    <main class="main-container">
+        <div class="content">
+            <div id="managers-container" class="card-container"></div>
+            <hr class="section-divider">
+            <div id="links-container" class="card-container"></div>
+            <hr class="section-divider">
+            <div id="quick-access-container" class="card-container"></div>
+        </div>
+    </main>
     
     <div id="modal-backdrop">
         <div id="add-item-modal">
@@ -203,23 +211,11 @@
         let currentModalType = null;
         let currentEditingId = null;
         let sortableInstances = {};
-        const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
         const defaultData = {
             styleData: { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' },
-            layoutData: { 
-                managers: [],
-                usefulLinks: [], 
-                quickAccessLinks: [] 
-            }
+            layoutData: { managers: [], usefulLinks: [], quickAccessLinks: [] }
         };
-
-        const initialManagers = [
-            { icon: '📅', title: 'Tarefas', url: 'tarefas.html', description: 'Gerencie seus projetos e prazos.' },
-            { icon: '📝', title: 'Anotações', url: 'anotacoes.html', description: 'Crie e gerencie notas compartilhadas.' },
-            { icon: '🎮', title: 'Minigames', url: 'minigames.html', description: 'Organize dados de seus minigames.' },
-            { icon: '🖼️', title: 'Compressor', url: 'compressor.html', description: 'Otimize imagens PNG rapidamente.' }
-        ];
         
         auth.onAuthStateChanged(user => {
             if (user) {
@@ -264,7 +260,7 @@
             document.addEventListener('click', (e) => { if (!dropdown.contains(e.target) && !trigger.contains(e.target)) { dropdown.classList.remove('visible'); } });
             document.getElementById('logout-from-menu-btn').addEventListener('click', () => auth.signOut());
             const lightThemeBtn = document.getElementById('menu-light-theme-btn'), darkThemeBtn = document.getElementById('menu-dark-theme-btn'), colorPicker = document.getElementById('menu-color-picker'), opacitySlider = document.getElementById('menu-opacity-slider'), bgInput = document.getElementById('menu-bg-input'), removeBgBtn = document.getElementById('menu-remove-bg-btn');
-            if(styleDataObject.theme === 'dark-theme') { darkThemeBtn.classList.add('active'); lightThemeBtn.classList.remove('active');} else { lightThemeBtn.classList.add('active'); darkThemeBtn.classList.remove('active'); }
+            if(styleDataObject.theme === 'dark-theme') darkThemeBtn.classList.add('active'); else lightThemeBtn.classList.add('active');
             colorPicker.value = styleDataObject.bgColor; opacitySlider.value = styleDataObject.bgOpacity;
             lightThemeBtn.addEventListener('click', () => { styleDataObject.theme = 'light-theme'; saveDataFunction(); });
             darkThemeBtn.addEventListener('click', () => { styleDataObject.theme = 'dark-theme'; saveDataFunction(); });
@@ -300,7 +296,7 @@
                             try {
                                 const importedData = JSON.parse(re.target.result);
                                 if (importedData.styleData && importedData.layoutData) {
-                                    Object.assign(appData, importedData); saveDataFunction(true);
+                                    Object.assign(styleDataObject, importedData.styleData); Object.assign(layoutDataObject, importedData.layoutData); saveDataFunction(true);
                                 } else { alert('Arquivo JSON de layout inválido.'); }
                             } catch (err) { alert('Erro ao ler o arquivo JSON.'); }
                         };
@@ -310,6 +306,8 @@
             }
         }
         // --- FIM DO COMPONENTE DE MENU DE PERFIL REUTILIZÁVEL ---
+
+        const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
         async function saveAllData(fullReload = false) {
             if (!userDocRef) return;
@@ -323,17 +321,14 @@
         function loadAllData(user) {
             if (!userDocRef) return;
             userDocRef.onSnapshot(doc => {
-                if (doc.exists && doc.data().layoutData) {
-                    appData = doc.data();
-                    appData.styleData = { ...defaultData.styleData, ...(appData.styleData || {}) };
-                    appData.layoutData = { ...defaultData.layoutData, ...(appData.layoutData || {}) };
-                     if(!appData.layoutData.managers || appData.layoutData.managers.length === 0) {
-                        appData.layoutData.managers = initialManagers.map(m => ({...m, id: generateId()}));
-                    }
+                if (doc.exists) {
+                    const data = doc.data();
+                    appData = data;
+                    appData.styleData = { ...defaultData.styleData, ...(data.styleData || {}) };
+                    appData.layoutData = { ...defaultData.layoutData, ...(data.layoutData || {}) };
                 } else {
                     appData = JSON.parse(JSON.stringify(defaultData));
-                    appData.layoutData.managers = initialManagers.map(m => ({...m, id: generateId()}));
-                    saveAllData(); 
+                    saveAllData();
                 }
                 applyStyles();
                 renderCards();
@@ -392,6 +387,7 @@
             root.style.setProperty('--bg-opacity', appData.styleData.bgOpacity);
             root.style.setProperty('--bg-image', appData.styleData.bgImage ? `url('${appData.styleData.bgImage}')` : 'none');
             emojiPicker.className = (appData.styleData.theme || 'light-theme') === 'dark-theme' ? 'dark' : 'light';
+            // Atualizar valores nos controles do menu se o menu já existir
             const menuColorPicker = document.getElementById('menu-color-picker');
             if(menuColorPicker) menuColorPicker.value = appData.styleData.bgColor;
             const menuOpacitySlider = document.getElementById('menu-opacity-slider');
@@ -451,6 +447,19 @@
                 else if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); modalForm.requestSubmit(); }
             }
         });
+
+        const searchForm = document.getElementById('search-form');
+        const searchInput = document.getElementById('search-input');
+        searchForm.addEventListener('submit', (e) => {
+            const query = searchInput.value.trim();
+            const urlPattern = new RegExp('^(https?://)?'+'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+'((\\d{1,3}\\.){3}\\d{1,3}))'+'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+'(\\?[;&a-z\\d%_.~+=-]*)?'+'(\\#[-a-z\\d_]*)?$','i');
+            if (urlPattern.test(query)) {
+                e.preventDefault();
+                let url = query; if (!/^https?:\/\//i.test(url)) { url = 'https://' + url; }
+                window.open(url, '_blank');
+            }
+        });
+
     });
     </script>
 </body>

@@ -79,13 +79,7 @@
         .profile-menu-footer { padding: 15px; border-top: 1px solid rgba(128,128,128,0.1); display: flex; justify-content: center; }
         #logout-from-menu-btn { width: 100%; background-color: #dc3545; color: white; border: none; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold;}
         
-        @media (max-width: 768px) { 
-            .container { padding: 10px; } 
-            .header-left-group { flex-grow: 1; } 
-            .note-card { height: 220px; } 
-            .header-scrolled #primary-actions-container { overflow: hidden; opacity: 0; max-height: 0; }
-            .profile-menu-dropdown { left: 10px; right: 10px; width: auto; }
-        }
+        @media (max-width: 768px) { .container { padding: 10px; } .header-left-group { flex-grow: 1; } .note-card { height: 220px; } .header-scrolled #primary-actions-container { overflow: hidden; opacity: 0; max-height: 0; } }
     </style>
 </head>
 <body>
@@ -224,21 +218,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!userStyleDocRef) return; 
         try { 
             const doc = await userStyleDocRef.get(); 
-            let styleData;
             if (doc.exists && doc.data().styleData) { 
-                 styleData = doc.data().styleData; 
+                const styleData = doc.data().styleData; 
+                document.body.className = ''; document.body.classList.add(styleData.theme || 'light-theme');
+                document.body.style.backgroundColor = styleData.bgColor;
+                document.documentElement.style.setProperty('--bg-image', styleData.bgImage ? `url('${styleData.bgImage}')` : 'none');
+                document.documentElement.style.setProperty('--bg-opacity', styleData.bgOpacity || '1');
+                
+                setupProfileMenuEventListeners(user, userStyleDocRef, styleData, async () => {
+                    await userStyleDocRef.set({ styleData }, { merge: true });
+                    loadAndApplyGlobalStyle(user);
+                });
             } else {
-                 styleData = { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' };
+                 // Caso não tenha estilo, usa um padrão e configura o menu
+                 const defaultStyle = { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' };
+                 setupProfileMenuEventListeners(user, userStyleDocRef, defaultStyle, async () => {
+                    await userStyleDocRef.set({ styleData: defaultStyle }, { merge: true });
+                    loadAndApplyGlobalStyle(user);
+                 });
             }
-            document.body.className = ''; document.body.classList.add(styleData.theme || 'light-theme');
-            document.body.style.backgroundColor = styleData.bgColor;
-            document.documentElement.style.setProperty('--bg-image', styleData.bgImage ? `url('${styleData.bgImage}')` : 'none');
-            document.documentElement.style.setProperty('--bg-opacity', styleData.bgOpacity || '1');
-            
-            setupProfileMenuEventListeners(user, userStyleDocRef, styleData, async () => {
-                await userStyleDocRef.set({ styleData }, { merge: true });
-                loadAndApplyGlobalStyle(user);
-            });
         } catch (e) { console.error("Falha ao carregar estilos:", e); } 
     }
     const updateContainerPadding = () => { const header = document.querySelector('.main-header'), container = document.querySelector('.container'); if (header && container) container.style.paddingTop = `${header.offsetHeight + 20}px`; };
