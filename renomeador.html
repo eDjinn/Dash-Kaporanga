@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <title>Alterador de Nomes de Arquivo em Massa</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Scripts do Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-storage-compat.js"></script>
+    <!-- Outras bibliotecas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        :root { --primary-text-color: #1a2533; --secondary-text-color: #6c757d; --page-bg-color: #f4f7f9; --card-bg-color: rgba(255, 255, 255, 0.92); --card-shadow-color: rgba(0, 0, 0, 0.1); --accent-color: #007bff; --success-color: #28a745; --bg-image: none; --bg-opacity: 1; }
+        body.dark-theme { --primary-text-color: #e0e0e0; --secondary-text-color: #b0b0b0; --page-bg-color: #121212; --card-bg-color: rgba(40, 40, 40, 0.92); --card-shadow-color: rgba(0, 0, 0, 0.4); --accent-color: #4dabf7; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--page-bg-color); color: var(--primary-text-color); margin: 0; padding: 0; position: relative; transition: background-color 0.3s ease, color 0.3s ease; padding-top: 80px; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background-image: var(--bg-image); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: var(--bg-opacity); transition: opacity 0.3s ease, background-image 0.5s ease-in-out; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .main-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: var(--card-bg-color); box-shadow: 0 2px 4px var(--card-shadow-color); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; }
+        .header-left-group { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .main-header h1 { margin: 0; font-size: 1.5em; }
+        .btn { padding: 8px 15px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: background-color 0.2s, opacity 0.2s; color: white; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; flex-shrink: 0; }
+        .btn-secondary { background-color: #6c757d; } .btn-primary { background-color: var(--accent-color); } .btn-success { background-color: var(--success-color); } .btn-danger { background-color: #dc3545; }
+        #back-btn { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
+        #back-btn svg { width: 22px; height: 22px; }
+        #upload-container { text-align: center; border: 3px dashed var(--accent-color); padding: 50px 20px; margin-bottom: 20px; cursor: pointer; border-radius: 8px; transition: background-color 0.3s, border-color 0.3s; background-color: var(--card-bg-color); }
+        #upload-container.dragover { background-color: #e6f2ff; border-color: #0056b3; }
+        #file-input { display: none; } #preview-area { display: none; margin-bottom: 20px; }
+        #preview-list { list-style: none; padding: 10px; background-color: var(--card-bg-color); border-radius: 8px; max-height: 200px; overflow-y: auto; }
+        .preview-list-item { padding: 5px; border-bottom: 1px solid rgba(128,128,128,0.1); font-size: 0.9em; }
+        .options-panel { background-color: var(--card-bg-color); padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px var(--card-shadow-color); margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .input-group { display: flex; flex-direction: column; text-align: left; }
+        .input-group label { margin-bottom: 5px; font-weight: bold; }
+        .input-group input { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 1em; }
+        #rename-btn { width: 100%; font-size: 18px; padding: 12px; margin-top: 15px; }
+        #rename-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        #results-area { display: none; margin-top: 30px; }
+        #results-actions { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 15px; }
+        .result-card { display: flex; align-items: center; gap: 15px; background-color: var(--card-bg-color); padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px var(--card-shadow-color); margin-bottom: 10px; }
+        .result-icon { width: 40px; height: 40px; flex-shrink: 0; display: grid; place-items: center; font-size: 24px; }
+        .result-info { flex-grow: 1; font-family: 'Courier New', Courier, monospace; }
+        .result-info .file-name-change { word-break: break-all; }
+        .result-info .original-name { color: var(--secondary-text-color); font-size: 0.9em; }
+        .result-info .new-name { font-weight: bold; color: var(--success-color); }
+
+        /* --- ESTILOS DO MENU DE PERFIL DO USUÁRIO --- */
+        #user-profile-menu-container { position: relative; margin-left: 15px; }
+        .user-profile-trigger { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 2px solid var(--accent-color); padding: 2px; background-color: var(--card-bg-color); }
+        .user-profile-trigger img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .profile-menu-dropdown { display: none; position: absolute; top: calc(100% + 10px); right: 0; background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 8px 16px var(--card-shadow-color); z-index: 2000; width: 300px; border: 1px solid rgba(128,128,128,0.2); }
+        .profile-menu-dropdown.visible { display: block; }
+        .profile-menu-header { display: flex; flex-direction: column; align-items: center; padding: 20px; border-bottom: 1px solid rgba(128,128,128,0.1); }
+        .profile-menu-header .profile-pic-wrapper { position: relative; cursor: pointer; }
+        .profile-menu-header .profile-pic-wrapper:hover::after { content: '✏️'; position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.6); color: white; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; }
+        .profile-menu-header img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid var(--accent-color); }
+        .profile-menu-header #user-email-display { font-size: 0.9em; color: var(--secondary-text-color); word-break: break-all; }
+        .profile-menu-body { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        .profile-menu-body .control-group { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .profile-menu-body label { font-weight: 500; font-size: 0.95em; }
+        .profile-menu-body .button-container { display: flex; gap: 8px; }
+        .profile-menu-body .btn-sm { padding: 5px 10px; font-size: 12px; border: 1px solid var(--secondary-text-color); background: transparent; color: var(--primary-text-color); cursor: pointer; border-radius: 3px; }
+        .profile-menu-body .btn-sm.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
+        .profile-menu-footer { padding: 15px; border-top: 1px solid rgba(128,128,128,0.1); display: flex; justify-content: center; }
+        #logout-from-menu-btn { width: 100%; background-color: #dc3545; color: white; border: none; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold;}
+
+        @media (max-width: 768px) {
+            .header-left-group { flex-grow: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-left-group">
+            <a href="index.html" id="back-btn" class="btn btn-secondary" title="Voltar">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </a>
+            <h1>Alterador de Nomes em Massa</h1>
+        </div>
+        <div id="user-profile-menu-container"></div>
+    </header>
+
+    <div class="container">
+        <div id="upload-container">
+            <p id="upload-text">Arraste e solte seus arquivos aqui<br>ou clique para selecionar.</p>
+        </div>
+        <input type="file" id="file-input" multiple>
+        
+        <div id="preview-area">
+            <h4>Arquivos Selecionados:</h4>
+            <ul id="preview-list"></ul>
+        </div>
+        
+        <div class="options-panel">
+            <div class="input-group">
+                <label for="find-text">Localizar Texto:</label>
+                <input type="text" id="find-text" placeholder="Ex: img_">
+            </div>
+            <div class="input-group">
+                <label for="replace-text">Substituir por:</label>
+                <input type="text" id="replace-text" placeholder="Ex: imagem_">
+            </div>
+            <button id="rename-btn" class="btn btn-success" disabled>Renomear Arquivos</button>
+        </div>
+
+        <div id="results-area">
+            <h3>Resultados</h3>
+            <div id="results-actions">
+                <button id="download-all-btn" class="btn btn-primary">Baixar Todos (.zip)</button>
+                <button id="clear-results-btn" class="btn btn-danger">Limpar Tudo</button>
+            </div>
+            <div id="results-list"></div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const firebaseConfig = {
+        apiKey: "AIzaSyC9OjBDOX9UUlCrPuhIZj5ipolRT4Gu420",
+        authDomain: "gerenciadorcentral-f01e3.firebaseapp.com",
+        projectId: "gerenciadorcentral-f01e3",
+        storageBucket: "gerenciadorcentral-f01e3.appspot.com",
+        messagingSenderId: "8874050225",
+        appId: "1:8874050225:web:a536c7feb14f36af7cd890"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    let userDocRef;
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            userDocRef = db.collection('userData').doc(user.uid);
+            const menuContainer = document.getElementById('user-profile-menu-container');
+            if(menuContainer) menuContainer.innerHTML = createProfileMenuHTML(user);
+            loadAndApplyGlobalStyle(user);
+            initializeRenamer(); // Alterado de initializeCompressor
+        } else {
+            window.location.href = 'login.html';
+        }
+    });
+
+    // --- INÍCIO DO COMPONENTE DE MENU DE PERFIL REUTILIZÁVEL (sem alterações) ---
+    function createProfileMenuHTML(user) {
+        const photoURL = user.photoURL || 'https://ssl.gstatic.com/images/branding/product/2x/avatar_circle_blue_96dp.png';
+        const userEmail = user.email || 'Nenhum e-mail';
+        return `
+            <div class="user-profile-trigger" id="profile-pic-trigger" title="Menu de Perfil"><img src="${photoURL}" alt="Foto de Perfil"></div>
+            <div class="profile-menu-dropdown" id="profile-menu-dropdown">
+                <div class="profile-menu-header">
+                    <div class="profile-pic-wrapper"><img src="${photoURL}" alt="Foto de Perfil" id="profile-pic-display"><input type="file" id="profile-pic-input" accept="image/*" style="display:none;"></div>
+                    <span id="user-email-display">${userEmail}</span>
+                </div>
+                <div class="profile-menu-body">
+                    <div class="control-group"><label>Tema</label><div class="button-container"><button id="menu-light-theme-btn" class="btn-sm">Claro</button><button id="menu-dark-theme-btn" class="btn-sm">Escuro</button></div></div>
+                    <div class="control-group"><label>Fundo</label><div class="button-container"><label for="menu-bg-input" class="btn-sm btn-primary" style="padding: 5px 10px;">Imagem</label><input type="file" id="menu-bg-input" accept="image/*" style="display:none;"><button id="menu-remove-bg-btn" class="btn-sm btn-danger">Remover</button></div></div>
+                    <div class="control-group"><label for="menu-opacity-slider">Opacidade</label><input type="range" id="menu-opacity-slider" min="0" max="1" step="0.05" style="max-width: 120px;"></div>
+                    <div class="control-group"><label for="menu-color-picker">Cor Fundo</label><input type="color" id="menu-color-picker" style="width: 40px; height: 25px; border: 1px solid #ccc; padding: 2px; background: transparent;"></div>
+                </div>
+                <div class="profile-menu-footer"><button id="logout-from-menu-btn" class="btn">Sair</button></div>
+            </div>`;
+    }
+    function setupProfileMenuEventListeners(user, userDocRef, styleDataObject, saveDataFunction) {
+        const auth = firebase.auth(), storage = firebase.storage();
+        const trigger = document.getElementById('profile-pic-trigger'), dropdown = document.getElementById('profile-menu-dropdown');
+        if (!trigger || !dropdown) return;
+        trigger.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('visible'); });
+        document.addEventListener('click', (e) => { if (!dropdown.contains(e.target) && !trigger.contains(e.target)) { dropdown.classList.remove('visible'); } });
+        document.getElementById('logout-from-menu-btn').addEventListener('click', () => auth.signOut());
+        const lightThemeBtn = document.getElementById('menu-light-theme-btn'), darkThemeBtn = document.getElementById('menu-dark-theme-btn'), colorPicker = document.getElementById('menu-color-picker'), opacitySlider = document.getElementById('menu-opacity-slider'), bgInput = document.getElementById('menu-bg-input'), removeBgBtn = document.getElementById('menu-remove-bg-btn');
+        if(styleDataObject.theme === 'dark-theme') { darkThemeBtn.classList.add('active'); lightThemeBtn.classList.remove('active'); } else { lightThemeBtn.classList.add('active'); darkThemeBtn.classList.remove('active'); }
+        colorPicker.value = styleDataObject.bgColor; opacitySlider.value = styleDataObject.bgOpacity;
+        lightThemeBtn.addEventListener('click', () => { styleDataObject.theme = 'light-theme'; saveDataFunction(); });
+        darkThemeBtn.addEventListener('click', () => { styleDataObject.theme = 'dark-theme'; saveDataFunction(); });
+        colorPicker.addEventListener('input', (e) => { styleDataObject.bgColor = e.target.value; saveDataFunction(); });
+        opacitySlider.addEventListener('input', (e) => { styleDataObject.bgOpacity = e.target.value; saveDataFunction(); });
+        removeBgBtn.addEventListener('click', () => { styleDataObject.bgImage = null; saveDataFunction(); });
+        bgInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (re) => { styleDataObject.bgImage = re.target.result; saveDataFunction(); }; reader.readAsDataURL(file); } });
+        const profilePicWrapper = document.querySelector('.profile-pic-wrapper'), profilePicInput = document.getElementById('profile-pic-input');
+        profilePicWrapper.addEventListener('click', () => profilePicInput.click());
+        profilePicInput.addEventListener('change', (e) => {
+            const file = e.target.files[0]; if (!file) return; if (file.size > 50 * 1024) { alert("A imagem é muito grande! Por favor, escolha um arquivo com menos de 50KB."); return; }
+            const uploadTask = storage.ref(`profile_pictures/${user.uid}`).put(file);
+            uploadTask.on('state_changed', null, (error) => { console.error("Erro no upload:", error); alert("Falha ao enviar imagem."); }, () => {
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    user.updateProfile({ photoURL: downloadURL }).then(() => {
+                        document.getElementById('profile-pic-display').src = downloadURL; document.querySelector('#profile-pic-trigger img').src = downloadURL;
+                    });
+                });
+            });
+        });
+    }
+    // --- FIM DO COMPONENTE DE MENU DE PERFIL REUTILIZÁVEL ---
+    
+    async function loadAndApplyGlobalStyle(user) {
+        if (!userDocRef) return;
+        try {
+            const doc = await userDocRef.get();
+            let styleData = doc.exists && doc.data().styleData ? doc.data().styleData : { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' };
+            const body = document.body, root = document.documentElement;
+            body.className = ''; body.classList.add(styleData.theme || 'light-theme');
+            body.style.backgroundColor = styleData.bgColor;
+            root.style.setProperty('--bg-image', styleData.bgImage ? `url('${styleData.bgImage}')` : 'none');
+            root.style.setProperty('--bg-opacity', styleData.bgOpacity || '1');
+            
+            setupProfileMenuEventListeners(user, userDocRef, styleData, async () => {
+                await userDocRef.set({ styleData }, { merge: true });
+                loadAndApplyGlobalStyle(user); // Recarrega para aplicar mudanças
+            });
+        } catch (e) { console.error("Não foi possível carregar estilos do Firebase.", e); }
+    }
+
+    function initializeRenamer() {
+        const fileInput = document.getElementById('file-input');
+        const uploadContainer = document.getElementById('upload-container');
+        const findText = document.getElementById('find-text');
+        const replaceText = document.getElementById('replace-text');
+        const renameBtn = document.getElementById('rename-btn');
+        const resultsArea = document.getElementById('results-area');
+        const resultsList = document.getElementById('results-list');
+        const downloadAllBtn = document.getElementById('download-all-btn');
+        const clearResultsBtn = document.getElementById('clear-results-btn');
+        const previewArea = document.getElementById('preview-area');
+        const previewList = document.getElementById('preview-list');
+
+        let filesToProcess = [];
+        let renamedFiles = [];
+
+        const handleFiles = (fileList) => {
+            if (fileList.length === 0) { return; }
+            filesToProcess = Array.from(fileList);
+            renameBtn.disabled = false;
+            resultsArea.style.display = 'none';
+            resultsList.innerHTML = '';
+            renamedFiles = [];
+            updatePreview();
+        };
+
+        const updatePreview = () => {
+            previewList.innerHTML = '';
+            if (filesToProcess.length === 0) {
+                previewArea.style.display = 'none';
+                return;
+            }
+            filesToProcess.forEach(file => {
+                const li = document.createElement('li');
+                li.textContent = file.name;
+                li.className = 'preview-list-item';
+                previewList.appendChild(li);
+            });
+            previewArea.style.display = 'block';
+        };
+        
+        const createResultCard = (originalFile, newFileName) => {
+            const fileUrl = URL.createObjectURL(originalFile);
+            const card = document.createElement('div');
+            card.className = 'result-card';
+            card.innerHTML = `
+                <div class="result-icon">📄</div>
+                <div class="result-info">
+                    <div class="file-name-change">
+                        <span class="original-name">${originalFile.name}</span><br>
+                        → <span class="new-name">${newFileName}</span>
+                    </div>
+                </div>
+                <a href="${fileUrl}" download="${newFileName}" class="btn btn-primary">Baixar</a>`;
+            resultsList.appendChild(card);
+        };
+
+        const processFiles = () => {
+            if (filesToProcess.length === 0) return;
+            const findValue = findText.value;
+            if (!findValue) {
+                alert("Por favor, preencha o campo 'Localizar Texto'.");
+                return;
+            }
+            const replaceValue = replaceText.value;
+            
+            renameBtn.disabled = true;
+            renameBtn.textContent = 'Renomeando...';
+            resultsArea.style.display = 'none';
+            resultsList.innerHTML = '';
+            renamedFiles = [];
+
+            for (const file of filesToProcess) {
+                try {
+                    const newName = file.name.replaceAll(findValue, replaceValue);
+                    renamedFiles.push({ blob: file, newName: newName, originalName: file.name });
+                    createResultCard(file, newName);
+                } catch (error) {
+                    console.error(`Falha ao renomear ${file.name}:`, error);
+                    alert(`Ocorreu um erro ao processar o arquivo ${file.name}.`);
+                }
+            }
+            
+            renameBtn.textContent = 'Renomear Arquivos';
+            renameBtn.disabled = filesToProcess.length === 0;
+            if (renamedFiles.length > 0) {
+                resultsArea.style.display = 'block';
+            }
+        };
+
+        const clearAll = () => {
+            filesToProcess = [];
+            renamedFiles = [];
+            fileInput.value = '';
+            findText.value = '';
+            replaceText.value = '';
+            resultsArea.style.display = 'none';
+            resultsList.innerHTML = '';
+            previewArea.style.display = 'none';
+            previewList.innerHTML = '';
+            renameBtn.disabled = true;
+        };
+
+        uploadContainer.addEventListener('click', () => fileInput.click());
+        uploadContainer.addEventListener('dragover', (e) => { e.preventDefault(); uploadContainer.classList.add('dragover'); });
+        uploadContainer.addEventListener('dragleave', () => uploadContainer.classList.remove('dragover'));
+        uploadContainer.addEventListener('drop', (e) => { e.preventDefault(); uploadContainer.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+        renameBtn.addEventListener('click', processFiles);
+
+        downloadAllBtn.addEventListener('click', () => {
+            if (renamedFiles.length === 0) return;
+            const zip = new JSZip();
+            renamedFiles.forEach(file => zip.file(file.newName, file.blob));
+            zip.generateAsync({ type: "blob" }).then(content => {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = "arquivos_renomeados.zip";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        });
+
+        clearResultsBtn.addEventListener('click', clearAll);
+    }
+});
+</script>
+</body>
+</html>
