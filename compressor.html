@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <title>Compressor de Imagens PNG</title>
+    <title>Compressor de Imagens</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Scripts do Firebase -->
@@ -25,16 +25,21 @@
         .btn-secondary { background-color: #6c757d; } .btn-primary { background-color: var(--accent-color); } .btn-success { background-color: var(--success-color); } .btn-danger { background-color: #dc3545; }
         #back-btn { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
         #back-btn svg { width: 22px; height: 22px; }
-        #upload-container { text-align: center; border: 3px dashed var(--accent-color); padding: 50px 20px; margin-bottom: 20px; cursor: pointer; border-radius: 8px; transition: background-color 0.3s, border-color 0.3s; background-color: var(--card-bg-color); }
-        #upload-container.dragover { background-color: #e6f2ff; border-color: #0056b3; }
-        #file-input { display: none; } #preview-area { display: none; margin-bottom: 20px; }
-        #preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
-        .preview-item { width: 80px; height: 80px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; background-color: white; }
+        .tab-nav { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; cursor: pointer; background: none; border: none; font-size: 1.1em; font-weight: 500; color: var(--secondary-text-color); border-bottom: 3px solid transparent; }
+        .tab-btn.active { color: var(--accent-color); border-bottom-color: var(--accent-color); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .upload-container { text-align: center; border: 3px dashed var(--accent-color); padding: 50px 20px; margin-bottom: 20px; cursor: pointer; border-radius: 8px; transition: background-color 0.3s, border-color 0.3s; background-color: var(--card-bg-color); }
+        .upload-container.dragover { background-color: #e6f2ff; border-color: #0056b3; }
+        .file-input { display: none; }
         .options-panel { background-color: var(--card-bg-color); padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px var(--card-shadow-color); margin-bottom: 20px; text-align: center; }
-        #compress-btn { width: 100%; font-size: 18px; padding: 12px; margin-top: 15px; }
-        #compress-btn:disabled { background-color: #ccc; cursor: not-allowed; }
-        #quality-slider { width: 100%; cursor: pointer; }
-        #quality-value { font-weight: bold; color: var(--accent-color); }
+        .compress-btn { width: 100%; font-size: 18px; padding: 12px; margin-top: 15px; }
+        .compress-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        .quality-slider { width: 100%; cursor: pointer; }
+        .quality-value { font-weight: bold; color: var(--accent-color); }
+        #jpg-live-preview-area { display: none; text-align: center; margin-bottom: 20px; padding: 15px; background-color: var(--card-bg-color); border-radius: 8px; }
+        #jpg-live-preview-image { max-width: 100%; max-height: 400px; border: 1px solid #ddd; margin-top: 10px; }
         #results-area { display: none; margin-top: 30px; }
         #results-actions { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 15px; }
         .result-card { display: flex; align-items: center; gap: 15px; background-color: var(--card-bg-color); padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px var(--card-shadow-color); margin-bottom: 10px; }
@@ -62,12 +67,6 @@
         .profile-menu-body .btn-sm.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
         .profile-menu-footer { padding: 15px; border-top: 1px solid rgba(128,128,128,0.1); display: flex; justify-content: center; }
         #logout-from-menu-btn { width: 100%; background-color: #dc3545; color: white; border: none; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold;}
-
-        @media (max-width: 768px) {
-            .header-left-group {
-                flex-grow: 1;
-            }
-        }
     </style>
 </head>
 <body>
@@ -79,31 +78,55 @@
                     <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
             </a>
-            <h1>Compressor de PNG</h1>
+            <h1>Compressor de Imagens</h1>
         </div>
         <div id="user-profile-menu-container"></div>
     </header>
 
     <div class="container">
-        <div id="upload-container">
-            <p id="upload-text">Arraste e solte seus arquivos PNG aqui<br>ou clique para selecionar.</p>
-        </div>
-        <input type="file" id="file-input" accept="image/png" multiple>
-        
-        <div id="preview-area">
-            <h4>Pré-visualização:</h4>
-            <div id="preview-grid"></div>
-        </div>
-        
-        <div class="options-panel">
-            <div>
-                <label for="quality-slider">Qualidade da Compressão:</label>
-                <input type="range" id="quality-slider" min="0.01" max="1" step="0.01" value="0.8">
-                <span id="quality-value">0.80</span>
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="png">Compressor PNG</button>
+            <button class="tab-btn" data-tab="jpg">Compressor JPG</button>
+        </nav>
+
+        <!-- ABA PNG -->
+        <div id="tab-content-png" class="tab-content active">
+            <div id="upload-container-png" class="upload-container">
+                <p>Arraste e solte seus arquivos PNG aqui<br>ou clique para selecionar.</p>
             </div>
-            <button id="compress-btn" class="btn btn-success" disabled>Comprimir PNGs</button>
+            <input type="file" id="file-input-png" class="file-input" accept="image/png" multiple>
+            <div class="options-panel">
+                <div>
+                    <label for="quality-slider-png">Qualidade da Compressão:</label>
+                    <input type="range" id="quality-slider-png" class="quality-slider" min="0.01" max="1" step="0.01" value="0.8">
+                    <span id="quality-value-png" class="quality-value">0.80</span>
+                </div>
+                <button id="compress-btn-png" class="compress-btn btn btn-success" disabled>Comprimir PNGs</button>
+            </div>
         </div>
 
+        <!-- ABA JPG -->
+        <div id="tab-content-jpg" class="tab-content">
+            <div id="upload-container-jpg" class="upload-container">
+                <p>Arraste e solte seus arquivos JPG/JPEG aqui<br>ou clique para selecionar.</p>
+            </div>
+            <input type="file" id="file-input-jpg" class="file-input" accept="image/jpeg, image/jpg" multiple>
+             <div id="jpg-live-preview-area">
+                <h4>Pré-visualização da Compressão</h4>
+                <p id="jpg-live-preview-info">Original: --- | Comprimido: --- (---% de redução)</p>
+                <img id="jpg-live-preview-image" src="" alt="Pré-visualização da compressão JPG">
+            </div>
+            <div class="options-panel">
+                <div>
+                    <label for="quality-slider-jpg">Qualidade da Compressão:</label>
+                    <input type="range" id="quality-slider-jpg" class="quality-slider" min="0.01" max="1" step="0.01" value="0.8">
+                    <span id="quality-value-jpg" class="quality-value">0.80</span>
+                </div>
+                <button id="compress-btn-jpg" class="compress-btn btn btn-success" disabled>Comprimir JPGs</button>
+            </div>
+        </div>
+
+        <!-- ÁREA DE RESULTADOS (COMPARTILHADA) -->
         <div id="results-area">
             <h3>Resultados</h3>
             <div id="results-actions">
@@ -116,6 +139,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // Configuração do Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyC9OjBDOX9UUlCrPuhIZj5ipolRT4Gu420",
         authDomain: "gerenciadorcentral-f01e3.firebaseapp.com",
@@ -136,13 +160,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const menuContainer = document.getElementById('user-profile-menu-container');
             if(menuContainer) menuContainer.innerHTML = createProfileMenuHTML(user);
             loadAndApplyGlobalStyle(user);
-            initializeCompressor();
+            initializeCompressorApp(); // Função principal da aplicação
         } else {
             window.location.href = 'login.html';
         }
     });
-
-    // --- INÍCIO DO COMPONENTE DE MENU DE PERFIL REUTILIZÁVEL ---
+    
+    // --- COMPONENTE DE MENU DE PERFIL (sem alterações) ---
     function createProfileMenuHTML(user) {
         const photoURL = user.photoURL || 'https://ssl.gstatic.com/images/branding/product/2x/avatar_circle_blue_96dp.png';
         const userEmail = user.email || 'Nenhum e-mail';
@@ -165,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupProfileMenuEventListeners(user, userDocRef, styleDataObject, saveDataFunction) {
         const auth = firebase.auth(), storage = firebase.storage();
         const trigger = document.getElementById('profile-pic-trigger'), dropdown = document.getElementById('profile-menu-dropdown');
+        if (!trigger || !dropdown) return;
         trigger.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('visible'); });
         document.addEventListener('click', (e) => { if (!dropdown.contains(e.target) && !trigger.contains(e.target)) { dropdown.classList.remove('visible'); } });
         document.getElementById('logout-from-menu-btn').addEventListener('click', () => auth.signOut());
@@ -191,18 +216,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-    // --- FIM DO COMPONENTE DE MENU DE PERFIL REUTILIZÁVEL ---
-    
     async function loadAndApplyGlobalStyle(user) {
         if (!userDocRef) return;
         try {
             const doc = await userDocRef.get();
-            let styleData;
-            if (doc.exists && doc.data().styleData) {
-                styleData = doc.data().styleData;
-            } else {
-                styleData = { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' };
-            }
+            let styleData = doc.exists && doc.data().styleData ? doc.data().styleData : { theme: 'light-theme', bgColor: '#f4f7f9', bgImage: null, bgOpacity: '1' };
             const body = document.body, root = document.documentElement;
             body.className = ''; body.classList.add(styleData.theme || 'light-theme');
             body.style.backgroundColor = styleData.bgColor;
@@ -211,53 +229,54 @@ document.addEventListener('DOMContentLoaded', () => {
             
             setupProfileMenuEventListeners(user, userDocRef, styleData, async () => {
                 await userDocRef.set({ styleData }, { merge: true });
-                loadAndApplyGlobalStyle(user); // Recarrega para aplicar mudanças
+                loadAndApplyGlobalStyle(user);
             });
         } catch (e) { console.error("Não foi possível carregar estilos do Firebase.", e); }
     }
+    // --- FIM DOS SCRIPTS DE ESTILO E PERFIL ---
 
-    function initializeCompressor() {
-        const fileInput = document.getElementById('file-input');
-        const uploadContainer = document.getElementById('upload-container');
-        const qualitySlider = document.getElementById('quality-slider');
-        const qualityValue = document.getElementById('quality-value');
-        const compressBtn = document.getElementById('compress-btn');
+    // --- INÍCIO DA LÓGICA DO COMPRESSOR ---
+    function initializeCompressorApp() {
+        // Elementos globais
         const resultsArea = document.getElementById('results-area');
         const resultsList = document.getElementById('results-list');
         const downloadAllBtn = document.getElementById('download-all-btn');
         const clearResultsBtn = document.getElementById('clear-results-btn');
-        const previewArea = document.getElementById('preview-area');
-        const previewGrid = document.getElementById('preview-grid');
-
-        let filesToProcess = [];
         let compressedFiles = [];
 
-        const handleFiles = (fileList) => {
-            const pngFiles = Array.from(fileList).filter(file => file.type === 'image/png');
-            if (pngFiles.length === 0) { alert("Nenhum arquivo PNG válido foi selecionado."); return; }
-            filesToProcess = pngFiles;
-            compressBtn.disabled = false;
-            resultsArea.style.display = 'none';
-            resultsList.innerHTML = '';
-            compressedFiles = [];
-            updatePreview();
-        };
+        // Elementos da Aba PNG
+        const fileInputPng = document.getElementById('file-input-png');
+        const uploadContainerPng = document.getElementById('upload-container-png');
+        const qualitySliderPng = document.getElementById('quality-slider-png');
+        const qualityValuePng = document.getElementById('quality-value-png');
+        const compressBtnPng = document.getElementById('compress-btn-png');
+        let filesToProcessPng = [];
 
-        const updatePreview = () => {
-            previewGrid.innerHTML = '';
-            if (filesToProcess.length === 0) { previewArea.style.display = 'none'; return; }
-            filesToProcess.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = document.createElement('img');
-                    img.src = e.target.result; img.title = file.name; img.className = 'preview-item';
-                    previewGrid.appendChild(img);
-                };
-                reader.readAsDataURL(file);
+        // Elementos da Aba JPG
+        const fileInputJpg = document.getElementById('file-input-jpg');
+        const uploadContainerJpg = document.getElementById('upload-container-jpg');
+        const qualitySliderJpg = document.getElementById('quality-slider-jpg');
+        const qualityValueJpg = document.getElementById('quality-value-jpg');
+        const compressBtnJpg = document.getElementById('compress-btn-jpg');
+        const livePreviewArea = document.getElementById('jpg-live-preview-area');
+        const livePreviewImage = document.getElementById('jpg-live-preview-image');
+        const livePreviewInfo = document.getElementById('jpg-live-preview-info');
+        let filesToProcessJpg = [];
+
+        // Lógica de TABS
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(`tab-content-${button.dataset.tab}`).classList.add('active');
+                clearAll(); // Limpa tudo ao trocar de aba
             });
-            previewArea.style.display = 'block';
-        };
+        });
 
+        // Funções de utilidade
         const formatBytes = (bytes, decimals = 2) => {
             if (bytes === 0) return '0 Bytes';
             const k = 1024; const dm = decimals < 0 ? 0 : decimals;
@@ -265,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
         };
-        
+
         const createResultCard = (originalFile, compressedBlob) => {
             const originalSize = originalFile.size, compressedSize = compressedBlob.size;
             const reduction = (((originalSize - compressedSize) / originalSize) * 100).toFixed(2);
@@ -275,46 +294,120 @@ document.addEventListener('DOMContentLoaded', () => {
             card.innerHTML = `<img src="${compressedUrl}" class="result-thumbnail" alt="Miniatura de ${originalFile.name}"><div class="result-info"><span class="file-name">${originalFile.name}</span><span>${formatBytes(originalSize)} → ${formatBytes(compressedSize)}</span><span class="size-reduction">Redução de ${reduction}%</span></div><a href="${compressedUrl}" download="comprimido_${originalFile.name}" class="btn btn-primary">Baixar</a>`;
             resultsList.appendChild(card);
         };
+        
+        const resetUI = () => {
+            resultsArea.style.display = 'none';
+            resultsList.innerHTML = '';
+            compressedFiles = [];
+        };
+        
+        // Manipulador de Arquivos PNG
+        const handleFilesPng = (fileList) => {
+            const pngFiles = Array.from(fileList).filter(file => file.type === 'image/png');
+            if (pngFiles.length === 0) { alert("Nenhum arquivo PNG válido foi selecionado."); return; }
+            filesToProcessPng = pngFiles;
+            compressBtnPng.disabled = false;
+            resetUI();
+        };
 
-        const processImages = async () => {
-            if (filesToProcess.length === 0) return;
-            compressBtn.disabled = true; compressBtn.textContent = 'Comprimindo...';
-            resultsArea.style.display = 'none'; resultsList.innerHTML = ''; compressedFiles = [];
-            const options = { maxSizeMB: Infinity, useWebWorker: true, initialQuality: parseFloat(qualitySlider.value), fileType: 'image/png' };
-            for (const [index, file] of filesToProcess.entries()) {
-                compressBtn.textContent = `Comprimindo... (${index + 1}/${filesToProcess.length})`;
+        // Manipulador de Arquivos JPG
+        const handleFilesJpg = (fileList) => {
+            const jpgFiles = Array.from(fileList).filter(file => ['image/jpeg', 'image/jpg'].includes(file.type));
+            if (jpgFiles.length === 0) { alert("Nenhum arquivo JPG/JPEG válido foi selecionado."); return; }
+            filesToProcessJpg = jpgFiles;
+            compressBtnJpg.disabled = false;
+            resetUI();
+            updateJpgLivePreview();
+        };
+        
+        // Pré-visualização em tempo real para JPG
+        const updateJpgLivePreview = async () => {
+            if (filesToProcessJpg.length === 0) {
+                livePreviewArea.style.display = 'none';
+                return;
+            }
+            livePreviewArea.style.display = 'block';
+            const firstFile = filesToProcessJpg[0];
+            const quality = parseFloat(qualitySliderJpg.value);
+            livePreviewInfo.textContent = 'Comprimindo prévia...';
+
+            try {
+                const compressedResult = await imageCompression(firstFile, { maxSizeMB: Infinity, useWebWorker: true, initialQuality: quality });
+                livePreviewImage.src = URL.createObjectURL(compressedResult);
+                const originalSize = formatBytes(firstFile.size);
+                const compressedSize = formatBytes(compressedResult.size);
+                const reduction = (((firstFile.size - compressedResult.size) / firstFile.size) * 100).toFixed(1);
+                livePreviewInfo.textContent = `Original: ${originalSize} | Comprimido: ${compressedSize} (${reduction}% de redução)`;
+            } catch (error) {
+                livePreviewInfo.textContent = 'Erro ao gerar prévia.';
+                console.error(error);
+            }
+        };
+
+        // Processamento de Imagens
+        const processImages = async (files, options, btn, namePrefix) => {
+            if (files.length === 0) return;
+            btn.disabled = true;
+            btn.textContent = 'Comprimindo...';
+            resetUI();
+
+            for (const [index, file] of files.entries()) {
+                btn.textContent = `Comprimindo... (${index + 1}/${files.length})`;
                 try {
                     const compressedResult = await imageCompression(file, options);
-                    compressedFiles.push({ name: `comprimido_${file.name}`, blob: compressedResult });
+                    compressedFiles.push({ name: `${namePrefix}_${file.name}`, blob: compressedResult });
                     createResultCard(file, compressedResult);
                 } catch (error) { console.error(`Falha ao comprimir ${file.name}:`, error); alert(`Ocorreu um erro ao comprimir o arquivo ${file.name}.`); }
             }
-            compressBtn.textContent = 'Comprimir PNGs';
-            compressBtn.disabled = filesToProcess.length === 0;
+            btn.textContent = `Comprimir ${namePrefix.toUpperCase()}s`;
+            btn.disabled = files.length === 0;
             if (compressedFiles.length > 0) { resultsArea.style.display = 'block'; }
         };
-
+        
+        // Limpar tudo
         const clearAll = () => {
-            filesToProcess = []; compressedFiles = []; fileInput.value = '';
+            filesToProcessPng = []; filesToProcessJpg = []; compressedFiles = [];
+            fileInputPng.value = ''; fileInputJpg.value = '';
             resultsArea.style.display = 'none'; resultsList.innerHTML = '';
-            previewArea.style.display = 'none'; previewGrid.innerHTML = '';
-            compressBtn.disabled = true;
+            livePreviewArea.style.display = 'none';
+            compressBtnPng.disabled = true; compressBtnJpg.disabled = true;
         };
 
-        qualitySlider.addEventListener('input', (e) => { qualityValue.textContent = parseFloat(e.target.value).toFixed(2); });
-        uploadContainer.addEventListener('click', () => fileInput.click());
-        uploadContainer.addEventListener('dragover', (e) => { e.preventDefault(); uploadContainer.classList.add('dragover'); });
-        uploadContainer.addEventListener('dragleave', () => uploadContainer.classList.remove('dragover'));
-        uploadContainer.addEventListener('drop', (e) => { e.preventDefault(); uploadContainer.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
-        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
-        compressBtn.addEventListener('click', processImages);
+        // Event Listeners PNG
+        qualitySliderPng.addEventListener('input', (e) => { qualityValuePng.textContent = parseFloat(e.target.value).toFixed(2); });
+        uploadContainerPng.addEventListener('click', () => fileInputPng.click());
+        uploadContainerPng.addEventListener('dragover', (e) => { e.preventDefault(); uploadContainerPng.classList.add('dragover'); });
+        uploadContainerPng.addEventListener('dragleave', () => uploadContainerPng.classList.remove('dragover'));
+        uploadContainerPng.addEventListener('drop', (e) => { e.preventDefault(); uploadContainerPng.classList.remove('dragover'); handleFilesPng(e.dataTransfer.files); });
+        fileInputPng.addEventListener('change', (e) => handleFilesPng(e.target.files));
+        compressBtnPng.addEventListener('click', () => {
+            const options = { maxSizeMB: Infinity, useWebWorker: true, initialQuality: parseFloat(qualitySliderPng.value), fileType: 'image/png' };
+            processImages(filesToProcessPng, options, compressBtnPng, 'comprimido');
+        });
+
+        // Event Listeners JPG
+        qualitySliderJpg.addEventListener('input', (e) => { 
+            qualityValueJpg.textContent = parseFloat(e.target.value).toFixed(2);
+            updateJpgLivePreview();
+        });
+        uploadContainerJpg.addEventListener('click', () => fileInputJpg.click());
+        uploadContainerJpg.addEventListener('dragover', (e) => { e.preventDefault(); uploadContainerJpg.classList.add('dragover'); });
+        uploadContainerJpg.addEventListener('dragleave', () => uploadContainerJpg.classList.remove('dragover'));
+        uploadContainerJpg.addEventListener('drop', (e) => { e.preventDefault(); uploadContainerJpg.classList.remove('dragover'); handleFilesJpg(e.dataTransfer.files); });
+        fileInputJpg.addEventListener('change', (e) => handleFilesJpg(e.target.files));
+        compressBtnJpg.addEventListener('click', () => {
+             const options = { maxSizeMB: Infinity, useWebWorker: true, initialQuality: parseFloat(qualitySliderJpg.value) };
+             processImages(filesToProcessJpg, options, compressBtnJpg, 'comprimido');
+        });
+
+        // Event Listeners Globais
         downloadAllBtn.addEventListener('click', () => {
             if (compressedFiles.length === 0) return;
             const zip = new JSZip();
             compressedFiles.forEach(file => zip.file(file.name, file.blob));
             zip.generateAsync({ type: "blob" }).then(content => {
                 const link = document.createElement('a');
-                link.href = URL.createObjectURL(content); link.download = "imagens_png_comprimidas.zip";
+                link.href = URL.createObjectURL(content); link.download = "imagens_comprimidas.zip";
                 document.body.appendChild(link); link.click(); document.body.removeChild(link);
             });
         });
