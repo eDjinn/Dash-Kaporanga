@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <title>Alterador de Nomes de Arquivo em Massa</title>
+    <title>Alterador de Nomes de Arquivos</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Scripts do Firebase -->
@@ -32,7 +32,7 @@
         .options-panel { background-color: var(--card-bg-color); padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px var(--card-shadow-color); margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px; }
         .input-group { display: flex; flex-direction: column; text-align: left; }
         .input-group label { margin-bottom: 5px; font-weight: bold; }
-        .input-group input { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 1em; }
+        .input-group input { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 1em; background-color: var(--page-bg-color); color: var(--primary-text-color);}
         #rename-btn { width: 100%; font-size: 18px; padding: 12px; margin-top: 15px; }
         #rename-btn:disabled { background-color: #ccc; cursor: not-allowed; }
         #results-area { display: none; margin-top: 30px; }
@@ -78,7 +78,7 @@
                     <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
             </a>
-            <h1>Alterador de Nomes em Massa</h1>
+            <h1>Alterador de Nomes de Arquivos</h1>
         </div>
         <div id="user-profile-menu-container"></div>
     </header>
@@ -96,12 +96,20 @@
         
         <div class="options-panel">
             <div class="input-group">
-                <label for="find-text">Localizar Texto:</label>
+                <label for="find-text">Localizar Texto (opcional):</label>
                 <input type="text" id="find-text" placeholder="Ex: img_">
             </div>
             <div class="input-group">
-                <label for="replace-text">Substituir por:</label>
+                <label for="replace-text">Substituir por (opcional):</label>
                 <input type="text" id="replace-text" placeholder="Ex: imagem_">
+            </div>
+             <div class="input-group">
+                <label for="prefix-text">Adicionar Prefixo (opcional):</label>
+                <input type="text" id="prefix-text" placeholder="Ex: FOTO_">
+            </div>
+             <div class="input-group">
+                <label for="suffix-text">Adicionar Sufixo (opcional):</label>
+                <input type="text" id="suffix-text" placeholder="Ex: _final">
             </div>
             <button id="rename-btn" class="btn btn-success" disabled>Renomear Arquivos</button>
         </div>
@@ -138,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const menuContainer = document.getElementById('user-profile-menu-container');
             if(menuContainer) menuContainer.innerHTML = createProfileMenuHTML(user);
             loadAndApplyGlobalStyle(user);
-            initializeRenamer(); // Alterado de initializeCompressor
+            initializeRenamer();
         } else {
             window.location.href = 'login.html';
         }
@@ -215,10 +223,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function initializeRenamer() {
+        // Obtenção dos elementos do DOM
         const fileInput = document.getElementById('file-input');
         const uploadContainer = document.getElementById('upload-container');
         const findText = document.getElementById('find-text');
         const replaceText = document.getElementById('replace-text');
+        const prefixText = document.getElementById('prefix-text'); // Novo
+        const suffixText = document.getElementById('suffix-text'); // Novo
         const renameBtn = document.getElementById('rename-btn');
         const resultsArea = document.getElementById('results-area');
         const resultsList = document.getElementById('results-list');
@@ -273,12 +284,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const processFiles = () => {
             if (filesToProcess.length === 0) return;
+            
+            // Pega os valores de todos os campos
             const findValue = findText.value;
-            if (!findValue) {
-                alert("Por favor, preencha o campo 'Localizar Texto'.");
+            const replaceValue = replaceText.value;
+            const prefixValue = prefixText.value;
+            const suffixValue = suffixText.value;
+
+            if (!findValue && !prefixValue && !suffixValue) {
+                alert("Por favor, preencha pelo menos um campo: 'Localizar', 'Prefixo' ou 'Sufixo'.");
                 return;
             }
-            const replaceValue = replaceText.value;
             
             renameBtn.disabled = true;
             renameBtn.textContent = 'Renomeando...';
@@ -288,9 +304,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
             for (const file of filesToProcess) {
                 try {
-                    const newName = file.name.replaceAll(findValue, replaceValue);
+                    // --- LÓGICA DE RENOMEAÇÃO APRIMORADA ---
+
+                    // 1. Separa o nome base da extensão
+                    const originalName = file.name;
+                    const lastDotIndex = originalName.lastIndexOf('.');
+                    const hasExtension = lastDotIndex !== -1 && lastDotIndex > 0;
+                    
+                    let baseName = hasExtension ? originalName.substring(0, lastDotIndex) : originalName;
+                    const extension = hasExtension ? originalName.substring(lastDotIndex) : '';
+
+                    // 2. Aplica a substituição (se houver)
+                    let modifiedBaseName = baseName;
+                    if (findValue) {
+                        modifiedBaseName = baseName.replaceAll(findValue, replaceValue);
+                    }
+
+                    // 3. Adiciona prefixo e sufixo
+                    const finalBaseName = prefixValue + modifiedBaseName + suffixValue;
+
+                    // 4. Junta tudo de volta
+                    const newName = finalBaseName + extension;
+
                     renamedFiles.push({ blob: file, newName: newName, originalName: file.name });
                     createResultCard(file, newName);
+
                 } catch (error) {
                     console.error(`Falha ao renomear ${file.name}:`, error);
                     alert(`Ocorreu um erro ao processar o arquivo ${file.name}.`);
@@ -310,6 +348,8 @@ document.addEventListener('DOMContentLoaded', () => {
             fileInput.value = '';
             findText.value = '';
             replaceText.value = '';
+            prefixText.value = ''; // Limpa novo campo
+            suffixText.value = ''; // Limpa novo campo
             resultsArea.style.display = 'none';
             resultsList.innerHTML = '';
             previewArea.style.display = 'none';
@@ -317,6 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renameBtn.disabled = true;
         };
 
+        // Event Listeners
         uploadContainer.addEventListener('click', () => fileInput.click());
         uploadContainer.addEventListener('dragover', (e) => { e.preventDefault(); uploadContainer.classList.add('dragover'); });
         uploadContainer.addEventListener('dragleave', () => uploadContainer.classList.remove('dragover'));
